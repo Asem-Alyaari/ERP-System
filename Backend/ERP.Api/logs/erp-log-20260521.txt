@@ -2838,3 +2838,73 @@ FROM [StockGroups] AS [s]
 2026-05-21 23:40:59.997 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.StockGroupsController.GetAll (ERP.Api)'
 2026-05-21 23:41:00.006 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/StockGroups?PageNumber=1&PageSize=100 - 200 null application/json; charset=utf-8 59.8422ms
 2026-05-21 23:40:59.999 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/StockGroups/list - 200 null application/json; charset=utf-8 51.572ms
+2026-05-21 23:55:59.834 +03:00 [INF] User profile is available. Using 'C:\Users\عاصم\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-05-21 23:56:03.169 +03:00 [INF] Executed DbCommand (120ms) [Parameters=[@__normalizedName_0='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @__normalizedName_0
+2026-05-21 23:56:03.325 +03:00 [INF] Executed DbCommand (6ms) [Parameters=[@__normalizedEmail_0='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[Email], [a].[EmailConfirmed], [a].[FullName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UserName]
+FROM [AspNetUsers] AS [a]
+WHERE [a].[NormalizedEmail] = @__normalizedEmail_0
+2026-05-21 23:56:03.387 +03:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [c].[Id], [c].[Code], [c].[IsLocal], [c].[Name], [c].[Symbol]
+FROM [Currencies] AS [c]
+WHERE [c].[IsLocal] = CAST(1 AS bit)
+2026-05-21 23:56:03.439 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Accounts] AS [a]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-05-21 23:56:03.859 +03:00 [INF] Now listening on: https://localhost:7172
+2026-05-21 23:56:03.861 +03:00 [INF] Now listening on: http://localhost:5250
+2026-05-21 23:56:04.035 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-05-21 23:56:04.037 +03:00 [INF] Hosting environment: Development
+2026-05-21 23:56:04.039 +03:00 [INF] Content root path: H:\ERP\Backend\ERP.Api
+2026-05-21 23:56:04.333 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/swagger/index.html - null null
+2026-05-21 23:56:04.603 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/swagger/index.html - 200 null text/html;charset=utf-8 271.4935ms
+2026-05-21 23:56:04.662 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/swagger/swagger-ui.css - null null
+2026-05-21 23:56:04.662 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/swagger/index.css - null null
+2026-05-21 23:56:04.662 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/swagger/swagger-ui-standalone-preset.js - null null
+2026-05-21 23:56:04.662 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/swagger/swagger-ui-bundle.js - null null
+2026-05-21 23:56:04.662 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/swagger/index.js - null null
+2026-05-21 23:56:04.662 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/_framework/aspnetcore-browser-refresh.js - null null
+2026-05-21 23:56:04.663 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/_vs/browserLink - null null
+2026-05-21 23:56:04.680 +03:00 [INF] Sending file. Request path: '/index.css'. Physical path: 'N/A'
+2026-05-21 23:56:04.680 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/swagger/index.js - 200 null application/javascript;charset=utf-8 18.0516ms
+2026-05-21 23:56:04.689 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/swagger/index.css - 200 202 text/css 27.5851ms
+2026-05-21 23:56:04.693 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/_framework/aspnetcore-browser-refresh.js - 200 16499 application/javascript; charset=utf-8 30.5087ms
+2026-05-21 23:56:04.695 +03:00 [INF] Sending file. Request path: '/swagger-ui-standalone-preset.js'. Physical path: 'N/A'
+2026-05-21 23:56:04.695 +03:00 [INF] Sending file. Request path: '/swagger-ui.css'. Physical path: 'N/A'
+2026-05-21 23:56:04.710 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/swagger/swagger-ui.css - 200 152035 text/css 48.3145ms
+2026-05-21 23:56:04.710 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/swagger/swagger-ui-standalone-preset.js - 200 230007 text/javascript 48.1843ms
+2026-05-21 23:56:04.715 +03:00 [INF] Sending file. Request path: '/swagger-ui-bundle.js'. Physical path: 'N/A'
+2026-05-21 23:56:04.723 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/swagger/swagger-ui-bundle.js - 200 1426001 text/javascript 60.7298ms
+2026-05-21 23:56:04.732 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/_vs/browserLink - 200 null text/javascript; charset=UTF-8 69.7546ms
+2026-05-21 23:56:05.051 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/swagger/v1/swagger.json - null null
+2026-05-21 23:56:05.051 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/swagger/favicon-32x32.png - null null
+2026-05-21 23:56:05.067 +03:00 [INF] Sending file. Request path: '/favicon-32x32.png'. Physical path: 'N/A'
+2026-05-21 23:56:05.069 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/swagger/favicon-32x32.png - 200 628 image/png 18.2141ms
+2026-05-21 23:56:05.244 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 193.1148ms
+2026-05-21 23:56:17.282 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/CurrencyExchangeRates - null null
+2026-05-21 23:56:20.159 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.CurrencyExchangeRatesController.GetAll (ERP.Api)'
+2026-05-21 23:56:20.187 +03:00 [INF] Route matched with {action = "GetAll", controller = "CurrencyExchangeRates"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[ERP.Application.Features.Accounting.CurrencyExchangeRates.Queries.GetCurrencyExchangeRatesWithPagination.CurrencyExchangeRatesPagedResponse]] GetAll(ERP.Application.Features.Accounting.CurrencyExchangeRates.Queries.GetCurrencyExchangeRatesWithPagination.GetCurrencyExchangeRatesWithPaginationQuery) on controller ERP.Api.Controllers.CurrencyExchangeRatesController (ERP.Api).
+2026-05-21 23:56:20.493 +03:00 [INF] Executed DbCommand (8ms) [Parameters=[@__p_0='?' (DbType = Int32), @__p_1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [c1].[Id], [c1].[CurrencyId], [c1].[EffectiveDate], [c1].[Rate], [c0].[Id], [c0].[Code], [c0].[IsLocal], [c0].[Name], [c0].[Symbol]
+FROM (
+    SELECT [c].[Id], [c].[CurrencyId], [c].[EffectiveDate], [c].[Rate]
+    FROM [CurrencyExchangeRates] AS [c]
+    ORDER BY [c].[EffectiveDate] DESC
+    OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY
+) AS [c1]
+INNER JOIN [Currencies] AS [c0] ON [c1].[CurrencyId] = [c0].[Id]
+ORDER BY [c1].[EffectiveDate] DESC
+2026-05-21 23:56:20.522 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [CurrencyExchangeRates] AS [c]
+2026-05-21 23:56:20.532 +03:00 [INF] Executing OkObjectResult, writing value of type 'ERP.Application.Features.Accounting.CurrencyExchangeRates.Queries.GetCurrencyExchangeRatesWithPagination.CurrencyExchangeRatesPagedResponse'.
+2026-05-21 23:56:20.555 +03:00 [INF] Executed action ERP.Api.Controllers.CurrencyExchangeRatesController.GetAll (ERP.Api) in 358.4977ms
+2026-05-21 23:56:20.557 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.CurrencyExchangeRatesController.GetAll (ERP.Api)'
+2026-05-21 23:56:20.560 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/CurrencyExchangeRates - 200 null application/json; charset=utf-8 3278.3401ms
