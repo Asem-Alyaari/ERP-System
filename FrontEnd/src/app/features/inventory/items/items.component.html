@@ -1,0 +1,628 @@
+<p-toast position="top-right" />
+<p-confirmDialog />
+
+<div class="animate-fade-in">
+
+  <!-- Toolbar -->
+  <p-toolbar styleClass="mb-4 erp-toolbar">
+    <ng-template #start>
+      <div>
+        <h2 class="page-title">الأصناف (المنتجات)</h2>
+        <p class="page-subtitle">تعريف الأكواد والأسعار وحدود الطلب للأصناف</p>
+      </div>
+    </ng-template>
+    <ng-template #end>
+      <p-button
+        label="إضافة صنف"
+        icon="pi pi-plus"
+        (onClick)="openAddDialog()"
+        severity="primary"
+      />
+    </ng-template>
+  </p-toolbar>
+
+  <!-- DataTable -->
+  <p-table
+    #dt
+    [value]="items"
+    [loading]="isLoading"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    [globalFilterFields]="['itemCode', 'itemNameAr', 'itemNameEn', 'sku', 'barcode']"
+    dataKey="id"
+    styleClass="p-datatable-gridlines p-datatable-striped erp-table-prime"
+    [tableStyle]="{ 'min-width': '75rem' }"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="عرض {first} إلى {last} من أصل {totalRecords} صنف"
+  >
+    <ng-template #caption>
+      <div class="table-caption">
+        <span class="p-input-icon-left">
+          <i class="pi pi-search"></i>
+          <input
+            pInputText
+            type="text"
+            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+            placeholder="بحث..."
+            class="table-search"
+          />
+        </span>
+        <span class="table-count">إجمالي: {{ items.length }} صنف</span>
+      </div>
+    </ng-template>
+
+    <ng-template #header>
+      <tr>
+        <th pSortableColumn="itemCode" style="width:130px">
+          كود الصنف <p-sortIcon field="itemCode" />
+        </th>
+        <th pSortableColumn="itemNameAr" style="min-width:180px">
+          الاسم (عربي) <p-sortIcon field="itemNameAr" />
+        </th>
+        <th pSortableColumn="stockGroupNameAr" style="min-width:140px">
+          المجموعة المخزنية
+        </th>
+        <th pSortableColumn="defaultPurchasePrice" style="width:120px; text-align:right">
+          سعر الشراء <p-sortIcon field="defaultPurchasePrice" />
+        </th>
+        <th pSortableColumn="salesPrice" style="width:120px; text-align:right">
+          سعر البيع <p-sortIcon field="salesPrice" />
+        </th>
+        <th style="width:120px; text-align:center">رقم الباركود</th>
+        <th pSortableColumn="isActive" style="width:100px; text-align:center">
+          الحالة <p-sortIcon field="isActive" />
+        </th>
+        <th style="width:130px; text-align:center">الإجراءات</th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-item>
+      <tr>
+        <td>
+          <span class="font-mono font-bold text-gray-700">{{ item.itemCode }}</span>
+        </td>
+        <td>
+          <div>
+            <div class="font-semibold">{{ item.itemNameAr }}</div>
+            <div class="text-sm text-gray-500 font-mono">{{ item.itemNameEn }}</div>
+          </div>
+        </td>
+        <td>
+          <span class="text-primary font-semibold">
+            {{ item.stockGroupNameAr || getStockGroupName(item.stockGroupId) }}
+          </span>
+        </td>
+        <td style="text-align:right" class="font-mono text-green-700 font-bold">
+          {{ item.defaultPurchasePrice | number:'1.2-2' }}
+        </td>
+        <td style="text-align:right" class="font-mono text-blue-700 font-bold">
+          {{ item.salesPrice | number:'1.2-2' }}
+        </td>
+        <td style="text-align:center" class="font-mono">
+          {{ item.barcode || '—' }}
+        </td>
+        <td style="text-align:center">
+          <p-tag
+            [value]="item.isActive ? 'نشط' : 'موقف'"
+            [severity]="item.isActive ? 'success' : 'danger'"
+          />
+        </td>
+        <td style="text-align:center">
+          <div class="action-btns">
+            <p-button
+              icon="pi pi-pencil"
+              [rounded]="true"
+              [text]="true"
+              severity="info"
+              pTooltip="تعديل"
+              tooltipPosition="top"
+              (onClick)="openEditDialog(item)"
+            />
+            <p-button
+              icon="pi pi-trash"
+              [rounded]="true"
+              [text]="true"
+              severity="danger"
+              pTooltip="حذف"
+              tooltipPosition="top"
+              (onClick)="confirmDelete(item)"
+            />
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="8" class="empty-state">
+          <i class="pi pi-box"></i>
+          <p>لا توجد أصناف مضافة حالياً</p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     Add / Edit Dialog  – تصميم جديد
+════════════════════════════════════════════════════ -->
+<p-dialog
+  [(visible)]="dialogVisible"
+  [header]="isEditMode ? 'تعديل بيانات المنتج' : 'إضافة منتج جديد'"
+  [modal]="true"
+  [style]="{ width: '860px', maxWidth: '98vw' }"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="erp-dialog item-dialog"
+>
+  <form (ngSubmit)="saveItem()" #itemForm="ngForm">
+
+    <!-- ── Tab Bar ── -->
+    <div class="item-tabs">
+      <button type="button" class="item-tab" [class.active]="activeTab === 0" (click)="activeTab = 0">
+        <i class="pi pi-info-circle"></i>
+        البيانات الأساسية
+      </button>
+      <button type="button" class="item-tab" [class.active]="activeTab === 1" (click)="activeTab = 1">
+        <i class="pi pi-tags"></i>
+        وحدات القياس
+        <span class="tab-badge" *ngIf="currentItem.itemUnits && currentItem.itemUnits.length > 0">
+          {{ currentItem.itemUnits.length }}
+        </span>
+      </button>
+      <button type="button" class="item-tab" [class.active]="activeTab === 2" (click)="activeTab = 2">
+        <i class="pi pi-chart-bar"></i>
+        حدود المخزون
+      </button>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         TAB 0 – البيانات الأساسية
+    ══════════════════════════════════════════════ -->
+    <div class="tab-panel" *ngIf="activeTab === 0">
+
+      <!-- Row 1: الكود + الباركود -->
+      <div class="form-row">
+        <div class="form-group" style="flex: 1">
+          <label class="field-label">
+            <i class="pi pi-barcode"></i>
+            كود الصنف
+            <span class="required">*</span>
+          </label>
+          <input
+            pInputText
+            id="itemCode"
+            name="itemCode"
+            [(ngModel)]="currentItem.itemCode"
+            required
+            placeholder="مثال: PRD-001"
+            class="w-full font-mono"
+          />
+        </div>
+
+        <div class="form-group" style="flex: 1">
+          <label class="field-label">
+            <i class="pi pi-qrcode"></i>
+            رقم الباركود
+          </label>
+          <input
+            pInputText
+            id="barcode"
+            name="barcode"
+            [(ngModel)]="currentItem.barcode"
+            placeholder="مثال: 628110001"
+            class="w-full font-mono"
+          />
+        </div>
+      </div>
+
+      <!-- Row 2: الاسم عربي + الاسم إنجليزي -->
+      <div class="form-row">
+        <div class="form-group" style="flex: 1">
+          <label class="field-label">
+            <i class="pi pi-language"></i>
+            الاسم (عربي)
+            <span class="required">*</span>
+          </label>
+          <input
+            pInputText
+            id="itemNameAr"
+            name="itemNameAr"
+            [(ngModel)]="currentItem.itemNameAr"
+            required
+            placeholder="مثال: شاشة سامسونج 24"
+            class="w-full"
+          />
+        </div>
+
+        <div class="form-group" style="flex: 1">
+          <label class="field-label">
+            <i class="pi pi-language"></i>
+            الاسم (إنجليزي)
+            <span class="required">*</span>
+          </label>
+          <input
+            pInputText
+            id="itemNameEn"
+            name="itemNameEn"
+            [(ngModel)]="currentItem.itemNameEn"
+            required
+            placeholder="e.g. Samsung Screen 24"
+            class="w-full"
+            dir="ltr"
+          />
+        </div>
+      </div>
+
+      <!-- Row 3: المجموعة + التصنيف -->
+      <div class="form-row">
+        <div class="form-group" style="flex: 1">
+          <label class="field-label">
+            <i class="pi pi-sitemap"></i>
+            المجموعة المخزنية
+            <span class="required">*</span>
+          </label>
+          <p-select
+            id="stockGroupId"
+            name="stockGroupId"
+            [options]="stockGroups"
+            [(ngModel)]="currentItem.stockGroupId"
+            optionLabel="groupNameAr"
+            optionValue="id"
+            [filter]="true"
+            filterPlaceholder="بحث..."
+            placeholder="اختر المجموعة"
+            class="w-full"
+            required
+          />
+        </div>
+
+        <div class="form-group" style="flex: 1">
+          <label class="field-label">
+            <i class="pi pi-tag"></i>
+            التصنيف التسويقي
+          </label>
+          <p-select
+            id="categoryId"
+            name="categoryId"
+            [options]="categories"
+            [(ngModel)]="currentItem.categoryId"
+            optionLabel="nameAr"
+            optionValue="id"
+            [filter]="true"
+            filterPlaceholder="بحث..."
+            placeholder="اختر التصنيف (اختياري)"
+            class="w-full"
+            [showClear]="true"
+          />
+        </div>
+      </div>
+
+      <!-- Row 4: سعر الشراء + سعر البيع -->
+      <div class="form-row">
+        <div class="form-group price-group" style="flex: 1">
+          <label class="field-label">
+            <i class="pi pi-shopping-cart"></i>
+            سعر الشراء الافتراضي
+          </label>
+          <div class="price-input-wrap purchase">
+            <p-inputNumber
+              id="defaultPurchasePrice"
+              name="defaultPurchasePrice"
+              [(ngModel)]="currentItem.defaultPurchasePrice"
+              [min]="0"
+              mode="decimal"
+              [minFractionDigits]="2"
+              [maxFractionDigits]="4"
+              styleClass="w-full"
+              inputStyleClass="w-full font-mono"
+            />
+            <span class="price-currency">ر.س</span>
+          </div>
+        </div>
+
+        <div class="form-group price-group" style="flex: 1">
+          <label class="field-label">
+            <i class="pi pi-money-bill"></i>
+            سعر البيع
+          </label>
+          <div class="price-input-wrap sales">
+            <p-inputNumber
+              id="salesPrice"
+              name="salesPrice"
+              [(ngModel)]="currentItem.salesPrice"
+              [min]="0"
+              mode="decimal"
+              [minFractionDigits]="2"
+              [maxFractionDigits]="4"
+              styleClass="w-full"
+              inputStyleClass="w-full font-mono"
+            />
+            <span class="price-currency">ر.س</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- حالة التنشيط -->
+      <div class="status-row">
+        <div class="status-toggle">
+          <p-toggleSwitch
+            id="isActive"
+            name="isActive"
+            [(ngModel)]="currentItem.isActive"
+          />
+          <div class="status-text">
+            <span class="status-label">حالة الصنف</span>
+            <span class="status-value" [class.active]="currentItem.isActive">
+              {{ currentItem.isActive ? 'نشط – يمكن استخدامه في الفواتير' : 'موقف – لا يظهر في الفواتير' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         TAB 1 – وحدات القياس
+    ══════════════════════════════════════════════ -->
+    <div class="tab-panel" *ngIf="activeTab === 1">
+
+      <!-- شرح سريع -->
+      <div class="units-hint">
+        <i class="pi pi-info-circle"></i>
+        <span>أضف الوحدة الأصغر أولاً (مثل: <strong>حبة</strong>)، ثم الوحدات الأكبر مع تحديد علاقة التعبئة (مثل: <strong>باكيت = 12 حبة</strong>).</span>
+      </div>
+
+      <!-- نموذج إضافة وحدة -->
+      <div class="unit-add-card">
+        <div class="unit-add-title">
+          <i class="pi pi-plus-circle"></i>
+          إضافة وحدة قياس
+        </div>
+
+        <div class="unit-add-body">
+          <!-- الوحدة -->
+          <div class="unit-add-field" style="flex: 1.5">
+            <label class="field-label-sm">وحدة القياس</label>
+            <p-select
+              [options]="units"
+              [(ngModel)]="tempUnitId"
+              [ngModelOptions]="{standalone: true}"
+              optionLabel="nameAr"
+              optionValue="id"
+              [filter]="true"
+              filterPlaceholder="بحث..."
+              placeholder="اختر الوحدة"
+              class="w-full"
+            />
+          </div>
+
+          <!-- حقول الوحدة الفرعية (تظهر فقط إن وُجدت وحدة أساسية) -->
+          <ng-container *ngIf="currentItem.itemUnits && currentItem.itemUnits.length > 0">
+
+            <div class="unit-separator">
+              <i class="pi pi-arrow-left"></i>
+              <span>تحتوي على</span>
+            </div>
+
+            <div class="unit-add-field" style="width: 90px">
+              <label class="field-label-sm">الكمية</label>
+              <p-inputNumber
+                [(ngModel)]="tempMultiplier"
+                [ngModelOptions]="{standalone: true}"
+                [min]="1"
+                placeholder="12"
+                class="w-full"
+                inputStyleClass="text-center font-mono font-bold"
+              />
+            </div>
+
+            <div class="unit-separator">
+              <span>من</span>
+            </div>
+
+            <div class="unit-add-field" style="flex: 1.5">
+              <label class="field-label-sm">الوحدة المرجعية</label>
+              <p-select
+                [options]="currentItem.itemUnits"
+                [(ngModel)]="tempParentUnitId"
+                [ngModelOptions]="{standalone: true}"
+                optionLabel="unitNameAr"
+                optionValue="unitId"
+                placeholder="الوحدة المرجعية"
+                class="w-full"
+              />
+            </div>
+
+          </ng-container>
+
+          <!-- سعر البيع -->
+          <div class="unit-add-field" style="width: 120px" *ngIf="currentItem.itemUnits && currentItem.itemUnits.length > 0">
+            <label class="field-label-sm" pTooltip="اتركه فارغاً للحساب التلقائي" tooltipPosition="top">سعر البيع (اختياري)</label>
+            <p-inputNumber
+              [(ngModel)]="tempPrice"
+              [ngModelOptions]="{standalone: true}"
+              [min]="0"
+              mode="decimal"
+              [minFractionDigits]="2"
+              placeholder="تلقائي"
+              class="w-full"
+              inputStyleClass="font-mono"
+            />
+          </div>
+
+          <!-- زر الإضافة -->
+          <div class="unit-add-action">
+            <label class="field-label-sm">&nbsp;</label>
+            <p-button
+              type="button"
+              icon="pi pi-plus"
+              label="إضافة"
+              (onClick)="addUnit()"
+              severity="success"
+              styleClass="unit-add-btn"
+            />
+          </div>
+
+        </div>
+      </div>
+
+      <!-- جدول الوحدات -->
+      <div class="units-table-wrap" *ngIf="currentItem.itemUnits && currentItem.itemUnits.length > 0">
+        <table class="units-table">
+          <thead>
+            <tr>
+              <th>الوحدة</th>
+              <th class="center">النوع</th>
+              <th class="center">معامل التحويل</th>
+              <th>العلاقة التسلسلية</th>
+              <th class="center">سعر البيع</th>
+              <th class="center" style="width:50px"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let u of currentItem.itemUnits; let i = index">
+              <td class="unit-name">
+                <i class="pi pi-box unit-icon"></i>
+                {{ u.unitNameAr }}
+              </td>
+              <td class="center">
+                <span class="unit-badge base" *ngIf="u.isBaseUnit">الأساسية</span>
+                <span class="unit-badge sub" *ngIf="!u.isBaseUnit">فرعية</span>
+              </td>
+              <td class="center font-mono font-bold">× {{ u.conversionRate | number }}</td>
+              <td class="unit-relation">
+                <span class="text-muted-sm" *ngIf="u.isBaseUnit">أصغر وحدة للمنتج</span>
+                <span class="relation-formula" *ngIf="!u.isBaseUnit">
+                  1 {{ u.unitNameAr }} = {{ u.multiplier }} {{ getUnitName(u.parentUnitId || '') }}
+                </span>
+              </td>
+              <td class="center font-mono price-cell">{{ u.price | number:'1.2-2' }}</td>
+              <td class="center">
+                <p-button
+                  type="button"
+                  icon="pi pi-trash"
+                  [text]="true"
+                  [rounded]="true"
+                  severity="danger"
+                  (onClick)="deleteUnit(u)"
+                  styleClass="p-button-sm"
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- حالة فارغة -->
+      <div class="units-empty" *ngIf="!currentItem.itemUnits || currentItem.itemUnits.length === 0">
+        <i class="pi pi-box"></i>
+        <p>لم تُضف أي وحدات بعد</p>
+        <small>ابدأ بإضافة الوحدة الأساسية (مثل: حبة، كيلو، متر...)</small>
+      </div>
+
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         TAB 2 – حدود المخزون
+    ══════════════════════════════════════════════ -->
+    <div class="tab-panel" *ngIf="activeTab === 2">
+
+      <div class="stock-limits-grid">
+
+        <div class="stock-limit-card reorder">
+          <div class="stock-limit-icon"><i class="pi pi-bell"></i></div>
+          <div class="form-group w-full">
+            <label class="field-label">وحدة الجرد</label>
+            <p-select
+              id="safetyStockUnitId"
+              name="safetyStockUnitId"
+              [options]="currentItem.itemUnits || []"
+              [(ngModel)]="currentItem.safetyStockUnitId"
+              optionLabel="unitNameAr"
+              optionValue="unitId"
+              placeholder="اختر الوحدة"
+              class="w-full"
+            />
+          </div>
+        </div>
+
+        <div class="stock-limit-card">
+          <div class="stock-limit-icon warning"><i class="pi pi-bell"></i></div>
+          <div class="form-group w-full">
+            <label class="field-label">حد إعادة الطلب</label>
+            <p-inputNumber
+              id="reorderLevel"
+              name="reorderLevel"
+              [(ngModel)]="currentItem.reorderLevel"
+              [min]="0"
+              styleClass="w-full"
+              placeholder="0"
+            />
+            <small class="field-hint">يُنبه عند الوصول لهذا المستوى</small>
+          </div>
+        </div>
+
+        <div class="stock-limit-card">
+          <div class="stock-limit-icon danger"><i class="pi pi-arrow-down"></i></div>
+          <div class="form-group w-full">
+            <label class="field-label">الحد الأدنى</label>
+            <p-inputNumber
+              id="minimumQuantity"
+              name="minimumQuantity"
+              [(ngModel)]="currentItem.minimumQuantity"
+              [min]="0"
+              styleClass="w-full"
+              placeholder="0"
+            />
+            <small class="field-hint">أقل كمية مسموح بها في المخزن</small>
+          </div>
+        </div>
+
+        <div class="stock-limit-card">
+          <div class="stock-limit-icon success"><i class="pi pi-arrow-up"></i></div>
+          <div class="form-group w-full">
+            <label class="field-label">الحد الأقصى</label>
+            <p-inputNumber
+              id="maximumQuantity"
+              name="maximumQuantity"
+              [(ngModel)]="currentItem.maximumQuantity"
+              [min]="0"
+              styleClass="w-full"
+              placeholder="0"
+            />
+            <small class="field-hint">أعلى كمية يُسمح بتخزينها</small>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- تنبيه إذا لم تُضف وحدات بعد -->
+      <div class="no-units-warn" *ngIf="!currentItem.itemUnits || currentItem.itemUnits.length === 0">
+        <i class="pi pi-exclamation-triangle"></i>
+        يرجى إضافة وحدات القياس أولاً من تبويب "وحدات القياس" لتحديد وحدة الجرد
+      </div>
+
+    </div>
+
+    <!-- ── Footer ── -->
+    <div class="dialog-footer-bar">
+      <p-button
+        type="button"
+        label="إلغاء"
+        severity="secondary"
+        [outlined]="true"
+        (onClick)="closeDialog()"
+      />
+      <p-button
+        type="submit"
+        [label]="isEditMode ? 'حفظ التعديلات' : 'حفظ المنتج'"
+        icon="pi pi-check"
+        [disabled]="!itemForm.form.valid"
+      />
+    </div>
+
+  </form>
+</p-dialog>

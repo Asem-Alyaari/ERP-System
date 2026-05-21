@@ -1,0 +1,34 @@
+.footer {
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-color);
+  padding: var(--space-4) var(--space-6);
+  margin-top: auto; // Pushes footer to the bottom of the main area
+  
+  &__content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+
+    @media (max-width: 600px) {
+      flex-direction: column;
+      gap: var(--space-2);
+      text-align: center;
+    }
+  }
+
+  .links {
+    display: flex;
+    gap: var(--space-4);
+
+    a {
+      color: var(--text-muted);
+      transition: color var(--transition-fast);
+      
+      &:hover {
+        color: var(--color-primary-light);
+      }
+    }
+  }
+}

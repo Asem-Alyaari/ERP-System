@@ -1,0 +1,250 @@
+<p-toast position="top-right" />
+<p-confirmDialog />
+
+<div class="animate-fade-in">
+
+  <!-- Toolbar -->
+  <p-toolbar styleClass="mb-4 erp-toolbar">
+    <ng-template #start>
+      <div>
+        <h2 class="page-title">إدارة الموردين</h2>
+        <p class="page-subtitle">إدارة بيانات الموردين وربطهم بالحسابات المحاسبية</p>
+      </div>
+    </ng-template>
+    <ng-template #end>
+      <p-button
+        label="إضافة مورد جديد"
+        icon="pi pi-plus"
+        (onClick)="openAddDialog()"
+        severity="primary"
+      />
+    </ng-template>
+  </p-toolbar>
+
+  <!-- DataTable -->
+  <p-table
+    #dt
+    [value]="vendors"
+    [loading]="isLoading"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    [globalFilterFields]="['vendorCode', 'nameAr', 'nameEn', 'taxNumber', 'phone', 'email', 'accountNameAr']"
+    dataKey="id"
+    styleClass="p-datatable-gridlines p-datatable-striped erp-table-prime"
+    [tableStyle]="{ 'min-width': '60rem' }"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="عرض {first} إلى {last} من أصل {totalRecords} مورد"
+  >
+    <ng-template #caption>
+      <div class="table-caption">
+        <span class="p-input-icon-left">
+          <i class="pi pi-search"></i>
+          <input
+            pInputText
+            type="text"
+            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+            placeholder="بحث في الموردين..."
+            class="table-search"
+          />
+        </span>
+        <span class="table-count">إجمالي: {{ vendors.length }} مورد</span>
+      </div>
+    </ng-template>
+
+    <ng-template #header>
+      <tr>
+        <th pSortableColumn="vendorCode" style="width:130px">
+          كود المورد <p-sortIcon field="vendorCode" />
+        </th>
+        <th pSortableColumn="nameAr" style="min-width:180px">
+          الاسم (عربي) <p-sortIcon field="nameAr" />
+        </th>
+        <th pSortableColumn="nameEn" style="min-width:180px">
+          الاسم (إنجليزي) <p-sortIcon field="nameEn" />
+        </th>
+        <th pSortableColumn="accountNameAr" style="min-width:180px">
+          الحساب المحاسبي <p-sortIcon field="accountNameAr" />
+        </th>
+        <th pSortableColumn="taxNumber" style="width:140px">
+          الرقم الضريبي <p-sortIcon field="taxNumber" />
+        </th>
+        <th pSortableColumn="phone" style="width:140px">
+          الهاتف <p-sortIcon field="phone" />
+        </th>
+        <th style="width:130px; text-align:center">الإجراءات</th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-vendor>
+      <tr>
+        <td>
+          <span class="font-bold text-primary">{{ vendor.vendorCode }}</span>
+        </td>
+        <td>{{ vendor.nameAr }}</td>
+        <td>{{ vendor.nameEn }}</td>
+        <td>
+          <div class="flex flex-column">
+            <span class="text-sm font-semibold">{{ vendor.accountNameAr }}</span>
+            <span class="text-xs text-muted">كود: {{ vendor.accountId | slice:0:8 }}...</span>
+          </div>
+        </td>
+        <td>
+          <span *ngIf="vendor.taxNumber" class="font-mono text-sm">{{ vendor.taxNumber }}</span>
+          <span *ngIf="!vendor.taxNumber" class="text-gray-400">-</span>
+        </td>
+        <td>
+          <span *ngIf="vendor.phone">{{ vendor.phone }}</span>
+          <span *ngIf="!vendor.phone" class="text-gray-400">-</span>
+        </td>
+        <td style="text-align:center">
+          <div class="action-btns">
+            <p-button
+              icon="pi pi-pencil"
+              [rounded]="true"
+              [text]="true"
+              severity="info"
+              pTooltip="تعديل"
+              tooltipPosition="top"
+              (onClick)="openEditDialog(vendor)"
+            />
+            <p-button
+              icon="pi pi-trash"
+              [rounded]="true"
+              [text]="true"
+              severity="danger"
+              pTooltip="حذف"
+              tooltipPosition="top"
+              (onClick)="confirmDelete(vendor)"
+            />
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="7" class="empty-state">
+          <i class="pi pi-users" style="font-size: 2.5rem; color: var(--text-muted);"></i>
+          <p class="mt-2">لا يوجد موردون مضافون حالياً</p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+</div>
+
+<!-- Add / Edit Dialog -->
+<p-dialog
+  [(visible)]="dialogVisible"
+  [header]="isEditMode ? 'تعديل بيانات المورد' : 'إضافة مورد جديد'"
+  [modal]="true"
+  [style]="{ width: '480px' }"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="erp-dialog"
+>
+  <form (ngSubmit)="saveVendor()" #vendorForm="ngForm" class="dialog-form">
+
+    <div class="form-field">
+      <label for="vendorCode" class="form-label">
+        كود المورد <span class="required">*</span>
+      </label>
+      <input
+        pInputText
+        id="vendorCode"
+        name="vendorCode"
+        [(ngModel)]="currentVendor.vendorCode"
+        required
+        placeholder="مثال: VND-001"
+        class="w-full"
+      />
+    </div>
+
+    <div class="form-field">
+      <label for="nameAr" class="form-label">
+        الاسم (عربي) <span class="required">*</span>
+      </label>
+      <input
+        pInputText
+        id="nameAr"
+        name="nameAr"
+        [(ngModel)]="currentVendor.nameAr"
+        required
+        placeholder="مثال: شركة التوريدات العمومية"
+        class="w-full"
+      />
+    </div>
+
+    <div class="form-field">
+      <label for="nameEn" class="form-label">
+        الاسم (إنجليزي) <span class="required">*</span>
+      </label>
+      <input
+        pInputText
+        id="nameEn"
+        name="nameEn"
+        [(ngModel)]="currentVendor.nameEn"
+        required
+        placeholder="e.g. General Supplies Co."
+        class="w-full"
+      />
+    </div>
+
+
+
+    <div class="form-field">
+      <label for="taxNumber" class="form-label">الرقم الضريبي</label>
+      <input
+        pInputText
+        id="taxNumber"
+        name="taxNumber"
+        [(ngModel)]="currentVendor.taxNumber"
+        placeholder="الرقم الضريبي المكون من 15 خانة"
+        class="w-full"
+      />
+    </div>
+
+    <div class="form-field">
+      <label for="phone" class="form-label">رقم الهاتف</label>
+      <input
+        pInputText
+        id="phone"
+        name="phone"
+        [(ngModel)]="currentVendor.phone"
+        placeholder="مثال: 0501234567"
+        class="w-full"
+      />
+    </div>
+
+    <div class="form-field">
+      <label for="email" class="form-label">البريد الإلكتروني</label>
+      <input
+        pInputText
+        type="email"
+        id="email"
+        name="email"
+        [(ngModel)]="currentVendor.email"
+        placeholder="مثال: supplier@email.com"
+        class="w-full"
+      />
+    </div>
+
+    <div class="dialog-footer">
+      <p-button
+        type="button"
+        label="إلغاء"
+        severity="secondary"
+        [outlined]="true"
+        (onClick)="closeDialog()"
+      />
+      <p-button
+        type="submit"
+        label="حفظ"
+        icon="pi pi-check"
+        [disabled]="!vendorForm.form.valid"
+      />
+    </div>
+
+  </form>
+</p-dialog>

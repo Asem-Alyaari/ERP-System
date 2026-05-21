@@ -1,0 +1,213 @@
+<p-toast position="top-right" />
+<p-confirmDialog />
+
+<div class="animate-fade-in">
+
+  <!-- Toolbar -->
+  <p-toolbar styleClass="mb-4 erp-toolbar">
+    <ng-template #start>
+      <div>
+        <h2 class="page-title">تهيئة العملات</h2>
+        <p class="page-subtitle">تعريف عملات النظام وتحديد العملة المحلية الرسمية</p>
+      </div>
+    </ng-template>
+    <ng-template #end>
+      <p-button
+        label="إضافة عملة"
+        icon="pi pi-plus"
+        (onClick)="openAddDialog()"
+        severity="primary"
+      />
+    </ng-template>
+  </p-toolbar>
+
+  <!-- DataTable -->
+  <p-table
+    #dt
+    [value]="currencies"
+    [loading]="isLoading"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    [globalFilterFields]="['code', 'name', 'symbol']"
+    dataKey="id"
+    styleClass="p-datatable-gridlines p-datatable-striped erp-table-prime"
+    [tableStyle]="{ 'min-width': '50rem' }"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="عرض {first} إلى {last} من أصل {totalRecords} عملة"
+  >
+    <ng-template #caption>
+      <div class="table-caption">
+        <span class="p-input-icon-left">
+          <i class="pi pi-search"></i>
+          <input
+            pInputText
+            type="text"
+            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+            placeholder="بحث..."
+            class="table-search"
+          />
+        </span>
+        <span class="table-count">إجمالي: {{ currencies.length }} عملة</span>
+      </div>
+    </ng-template>
+
+    <ng-template #header>
+      <tr>
+        <th pSortableColumn="code" style="width:140px">
+          كود العملة <p-sortIcon field="code" />
+        </th>
+        <th pSortableColumn="name" style="min-width:200px">
+          اسم العملة <p-sortIcon field="name" />
+        </th>
+        <th pSortableColumn="symbol" style="width:120px; text-align:center">
+          الرمز <p-sortIcon field="symbol" />
+        </th>
+        <th pSortableColumn="isLocal" style="width:180px; text-align:center">
+          نوع العملة <p-sortIcon field="isLocal" />
+        </th>
+        <th style="width:130px; text-align:center">الإجراءات</th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-currency>
+      <tr>
+        <td>
+          <span class="font-mono font-bold text-gray-700">{{ currency.code }}</span>
+        </td>
+        <td>{{ currency.name }}</td>
+        <td style="text-align:center" class="font-bold text-gray-800 text-lg">
+          {{ currency.symbol }}
+        </td>
+        <td style="text-align:center">
+          <p-tag
+            [value]="currency.isLocal ? 'عملة محلية أساسية' : 'عملة أجنبية'"
+            [severity]="currency.isLocal ? 'success' : 'info'"
+          />
+        </td>
+        <td style="text-align:center">
+          <div class="action-btns">
+            <p-button
+              icon="pi pi-pencil"
+              [rounded]="true"
+              [text]="true"
+              severity="info"
+              pTooltip="تعديل"
+              tooltipPosition="top"
+              (onClick)="openEditDialog(currency)"
+            />
+            <p-button
+              icon="pi pi-trash"
+              [rounded]="true"
+              [text]="true"
+              severity="danger"
+              pTooltip="حذف"
+              tooltipPosition="top"
+              [disabled]="currency.isLocal"
+              (onClick)="confirmDelete(currency)"
+            />
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="5" class="empty-state">
+          <i class="pi pi-wallet"></i>
+          <p>لا توجد عملات مضافة حالياً</p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+</div>
+
+<!-- Add / Edit Dialog -->
+<p-dialog
+  [(visible)]="dialogVisible"
+  [header]="isEditMode ? 'تعديل بيانات العملة' : 'إضافة عملة جديدة'"
+  [modal]="true"
+  [style]="{ width: '420px' }"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="erp-dialog"
+>
+  <form (ngSubmit)="saveCurrency()" #currencyForm="ngForm" class="dialog-form">
+
+    <div class="form-field">
+      <label for="code" class="form-label">
+        كود العملة <span class="required">*</span>
+      </label>
+      <input
+        pInputText
+        id="code"
+        name="code"
+        [(ngModel)]="currentCurrency.code"
+        required
+        placeholder="مثال: USD, SAR, YER"
+        class="w-full font-mono uppercase"
+        [disabled]="isEditMode && currentCurrency.isLocal === true"
+      />
+    </div>
+
+    <div class="form-field">
+      <label for="name" class="form-label">
+        اسم العملة <span class="required">*</span>
+      </label>
+      <input
+        pInputText
+        id="name"
+        name="name"
+        [(ngModel)]="currentCurrency.name"
+        required
+        placeholder="مثال: ريال سعودي، دولار أمريكي"
+        class="w-full"
+      />
+    </div>
+
+    <div class="form-field">
+      <label for="symbol" class="form-label">
+        الرمز <span class="required">*</span>
+      </label>
+      <input
+        pInputText
+        id="symbol"
+        name="symbol"
+        [(ngModel)]="currentCurrency.symbol"
+        required
+        placeholder="مثال: $ ، ر.س"
+        class="w-full text-center"
+      />
+    </div>
+
+    <div class="form-field flex align-items-center gap-2 py-2">
+      <p-toggleSwitch
+        id="isLocal"
+        name="isLocal"
+        [(ngModel)]="currentCurrency.isLocal"
+        [disabled]="isEditMode && currentCurrency.isLocal === true"
+      />
+      <label for="isLocal" class="form-label mb-0 cursor-pointer">
+        العملة المحلية الأساسية للنظام
+      </label>
+    </div>
+
+    <div class="dialog-footer mt-4">
+      <p-button
+        type="button"
+        label="إلغاء"
+        severity="secondary"
+        [outlined]="true"
+        (onClick)="closeDialog()"
+      />
+      <p-button
+        type="submit"
+        label="حفظ"
+        icon="pi pi-check"
+        [disabled]="!currencyForm.form.valid"
+      />
+    </div>
+
+  </form>
+</p-dialog>

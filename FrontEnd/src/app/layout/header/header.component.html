@@ -1,0 +1,56 @@
+<header class="header">
+  
+  <div class="header__left">
+    <button class="toggle-btn" (click)="toggleSidebar.emit()" title="تبديل القائمة الجانبية">
+      <i class="pi pi-bars"></i>
+    </button>
+
+    <div class="header__search">
+      <i class="pi pi-search"></i>
+      <input type="text" placeholder="بحث سريع..." />
+    </div>
+  </div>
+
+  <div class="header__right">
+    
+    <!-- Time / Date (Optional) -->
+    <div class="header__date hidden-mobile">
+      <i class="pi pi-calendar"></i>
+      {{ currentDate | date:'dd/MM/yyyy' }}
+    </div>
+
+    <!-- Notifications -->
+    <button class="icon-btn">
+      <i class="pi pi-bell"></i>
+      <span class="badge-dot"></span>
+    </button>
+
+    <!-- User Profile Dropdown -->
+    <div class="user-menu" (click)="showUserMenu = !showUserMenu">
+      <img src="https://ui-avatars.com/api/?name=Admin&background=6366f1&color=fff" alt="User" class="avatar" />
+      <div class="user-info hidden-mobile">
+        <span class="name">مدير النظام</span>
+        <span class="role">Admin</span>
+      </div>
+      <i class="pi pi-angle-down"></i>
+
+      <div class="dropdown" *ngIf="showUserMenu">
+        <a href="javascript:void(0)" class="dropdown-item">
+          <i class="pi pi-user"></i>
+          الملف الشخصي
+        </a>
+        <a href="javascript:void(0)" class="dropdown-item">
+          <i class="pi pi-cog"></i>
+          الإعدادات
+        </a>
+        <div class="divider"></div>
+        <a href="javascript:void(0)" class="dropdown-item text-danger" (click)="logout()">
+          <i class="pi pi-power-off"></i>
+          تسجيل الخروج
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+</header>

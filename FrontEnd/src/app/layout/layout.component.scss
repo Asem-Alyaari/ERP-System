@@ -1,0 +1,31 @@
+// Layout shell — defines the grid that wraps sidebar + main area
+$sidebar-w:           260px;
+$sidebar-w-collapsed: 68px;
+$header-h:            60px;
+$transition:          0.28s cubic-bezier(0.4, 0, 0.2, 1);
+
+.shell {
+  display: grid;
+  grid-template-columns: $sidebar-w 1fr;
+  grid-template-rows: 1fr;
+  min-height: 100vh;
+  transition: grid-template-columns $transition;
+
+  &.sidebar-collapsed {
+    grid-template-columns: $sidebar-w-collapsed 1fr;
+  }
+
+  &__main {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+
+  &__content {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+    background: var(--bg-page);
+  }
+}

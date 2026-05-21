@@ -1,0 +1,167 @@
+<p-toast position="top-right" />
+<p-confirmDialog />
+
+<div class="animate-fade-in">
+
+  <!-- Toolbar -->
+  <p-toolbar styleClass="mb-4 erp-toolbar">
+    <ng-template #start>
+      <div>
+        <h2 class="page-title">تصنيفات المخزون</h2>
+        <p class="page-subtitle">إدارة تصنيفات الأصناف والمنتجات</p>
+      </div>
+    </ng-template>
+    <ng-template #end>
+      <p-button
+        label="إضافة تصنيف"
+        icon="pi pi-plus"
+        (onClick)="openAddDialog()"
+        severity="primary"
+      />
+    </ng-template>
+  </p-toolbar>
+
+  <!-- DataTable -->
+  <p-table
+    #dt
+    [value]="categories"
+    [loading]="isLoading"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    [globalFilterFields]="['nameAr', 'nameEn']"
+    dataKey="id"
+    styleClass="p-datatable-gridlines p-datatable-striped erp-table-prime"
+    [tableStyle]="{ 'min-width': '40rem' }"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="عرض {first} إلى {last} من أصل {totalRecords} تصنيف"
+  >
+    <ng-template #caption>
+      <div class="table-caption">
+        <span class="p-input-icon-left">
+          <i class="pi pi-search"></i>
+          <input
+            pInputText
+            type="text"
+            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+            placeholder="بحث..."
+            class="table-search"
+          />
+        </span>
+        <span class="table-count">إجمالي: {{ categories.length }} تصنيف</span>
+      </div>
+    </ng-template>
+
+    <ng-template #header>
+      <tr>
+        <th pSortableColumn="nameAr" style="min-width:220px">
+          الاسم (عربي) <p-sortIcon field="nameAr" />
+        </th>
+        <th pSortableColumn="nameEn" style="min-width:220px">
+          الاسم (إنجليزي) <p-sortIcon field="nameEn" />
+        </th>
+        <th style="width:130px; text-align:center">الإجراءات</th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-cat>
+      <tr>
+        <td>{{ cat.nameAr }}</td>
+        <td>{{ cat.nameEn }}</td>
+        <td style="text-align:center">
+          <div class="action-btns">
+            <p-button
+              icon="pi pi-pencil"
+              [rounded]="true"
+              [text]="true"
+              severity="info"
+              pTooltip="تعديل"
+              tooltipPosition="top"
+              (onClick)="openEditDialog(cat)"
+            />
+            <p-button
+              icon="pi pi-trash"
+              [rounded]="true"
+              [text]="true"
+              severity="danger"
+              pTooltip="حذف"
+              tooltipPosition="top"
+              (onClick)="confirmDelete(cat)"
+            />
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="3" class="empty-state">
+          <i class="pi pi-inbox"></i>
+          <p>لا توجد تصنيفات مضافة حالياً</p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+</div>
+
+<!-- Add / Edit Dialog -->
+<p-dialog
+  [(visible)]="dialogVisible"
+  [header]="isEditMode ? 'تعديل التصنيف' : 'إضافة تصنيف جديد'"
+  [modal]="true"
+  [style]="{ width: '420px' }"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="erp-dialog"
+>
+  <form (ngSubmit)="saveCategory()" #catForm="ngForm" class="dialog-form">
+
+    <div class="form-field">
+      <label for="nameAr" class="form-label">
+        الاسم (عربي) <span class="required">*</span>
+      </label>
+      <input
+        pInputText
+        id="nameAr"
+        name="nameAr"
+        [(ngModel)]="currentCategory.nameAr"
+        required
+        placeholder="مثال: إلكترونيات"
+        class="w-full"
+      />
+    </div>
+
+    <div class="form-field">
+      <label for="nameEn" class="form-label">
+        الاسم (إنجليزي) <span class="required">*</span>
+      </label>
+      <input
+        pInputText
+        id="nameEn"
+        name="nameEn"
+        [(ngModel)]="currentCategory.nameEn"
+        required
+        placeholder="e.g. Electronics"
+        class="w-full"
+      />
+    </div>
+
+    <div class="dialog-footer">
+      <p-button
+        type="button"
+        label="إلغاء"
+        severity="secondary"
+        [outlined]="true"
+        (onClick)="closeDialog()"
+      />
+      <p-button
+        type="submit"
+        label="حفظ"
+        icon="pi pi-check"
+        [disabled]="!catForm.form.valid"
+      />
+    </div>
+
+  </form>
+</p-dialog>

@@ -1,0 +1,42 @@
+# Root .gitignore for ERP System (Backend and FrontEnd)
+
+## Build and Output Directories
+Backend/**/bin/
+Backend/**/obj/
+FrontEnd/dist/
+FrontEnd/tmp/
+FrontEnd/out-tsc/
+FrontEnd/bazel-out/
+[Dd]ebug/
+[Rr]elease/
+
+## IDE and Editor files
+.vs/
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.user
+*.suo
+*.sln.docstates
+
+## Dependency Directories
+FrontEnd/node_modules/
+node_modules/
+npm-debug.log
+yarn-error.log
+
+## Caches and temporary files
+FrontEnd/.angular/
+.angular/
+.sass-cache/
+.history/
+coverage/
+testem.log
+/libpeerconnection.log
+
+## System files
+.DS_Store
+Thumbs.db

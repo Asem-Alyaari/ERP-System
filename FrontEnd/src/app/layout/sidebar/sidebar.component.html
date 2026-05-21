@@ -1,0 +1,31 @@
+<aside class="sidebar" [class.collapsed]="collapsed">
+  
+  <div class="sidebar__brand">
+    <div class="brand-icon">
+      <i class="pi pi-chart-line"></i>
+    </div>
+    <span class="brand-name" *ngIf="!collapsed">ERP System</span>
+  </div>
+
+  <nav class="sidebar__nav">
+    <ul class="nav-list">
+      <li class="nav-item" *ngFor="let item of menuItems">
+        <a [routerLink]="item.route" 
+           routerLinkActive="active"
+           [routerLinkActiveOptions]="{exact: item.route === '/'}"
+           class="nav-link"
+           [title]="collapsed ? item.label : ''">
+          <i [class]="item.icon"></i>
+          <span class="label" *ngIf="!collapsed">{{ item.label }}</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="sidebar__footer">
+    <button class="toggle-btn" (click)="toggleCollapse.emit()">
+      <i [class]="collapsed ? 'pi pi-angle-double-left' : 'pi pi-angle-double-right'"></i>
+    </button>
+  </div>
+
+</aside>
