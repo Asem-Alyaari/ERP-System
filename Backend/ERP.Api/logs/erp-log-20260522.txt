@@ -201,3 +201,339 @@ FROM [Currencies] AS [c]
 2026-05-22 00:08:32.568 +03:00 [INF] Executed action ERP.Api.Controllers.CurrenciesController.GetAll (ERP.Api) in 54.3509ms
 2026-05-22 00:08:32.570 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.CurrenciesController.GetAll (ERP.Api)'
 2026-05-22 00:08:32.571 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/Currencies?PageNumber=1&PageSize=100 - 200 null application/json; charset=utf-8 93.0019ms
+2026-05-22 00:08:45.856 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/CurrencyExchangeRates - null null
+2026-05-22 00:08:45.861 +03:00 [INF] CORS policy execution successful.
+2026-05-22 00:08:45.863 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/CurrencyExchangeRates - 204 null null 6.4148ms
+2026-05-22 00:08:45.872 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7172/api/CurrencyExchangeRates - application/json 107
+2026-05-22 00:08:45.875 +03:00 [INF] CORS policy execution successful.
+2026-05-22 00:08:45.876 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-05-22 00:08:45.881 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-05-22 00:08:45.883 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.CurrencyExchangeRatesController.Create (ERP.Api)'
+2026-05-22 00:08:45.888 +03:00 [INF] Route matched with {action = "Create", controller = "CurrencyExchangeRates"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Guid]] Create(ERP.Application.Features.Accounting.CurrencyExchangeRates.Commands.Create.CreateCurrencyExchangeRateCommand) on controller ERP.Api.Controllers.CurrencyExchangeRatesController (ERP.Api).
+2026-05-22 00:08:45.943 +03:00 [INF] Executed DbCommand (4ms) [Parameters=[@__p_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [c].[Id], [c].[Code], [c].[IsLocal], [c].[Name], [c].[Symbol]
+FROM [Currencies] AS [c]
+WHERE [c].[Id] = @__p_0
+2026-05-22 00:08:46.269 +03:00 [INF] Executed DbCommand (154ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = Guid), @p2='?' (DbType = DateTime2), @p3='?' (Precision = 18) (Scale = 6) (DbType = Decimal)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+INSERT INTO [CurrencyExchangeRates] ([Id], [CurrencyId], [EffectiveDate], [Rate])
+VALUES (@p0, @p1, @p2, @p3);
+2026-05-22 00:08:46.283 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Guid'.
+2026-05-22 00:08:46.287 +03:00 [INF] Executed action ERP.Api.Controllers.CurrencyExchangeRatesController.Create (ERP.Api) in 395.3641ms
+2026-05-22 00:08:46.290 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.CurrencyExchangeRatesController.Create (ERP.Api)'
+2026-05-22 00:08:46.292 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7172/api/CurrencyExchangeRates - 200 null application/json; charset=utf-8 419.5304ms
+2026-05-22 00:08:46.297 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/CurrencyExchangeRates?PageNumber=1&PageSize=1000 - null null
+2026-05-22 00:08:46.300 +03:00 [INF] CORS policy execution successful.
+2026-05-22 00:08:46.301 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/CurrencyExchangeRates?PageNumber=1&PageSize=1000 - 204 null null 4.4525ms
+2026-05-22 00:08:46.306 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/CurrencyExchangeRates?PageNumber=1&PageSize=1000 - null null
+2026-05-22 00:08:46.311 +03:00 [INF] CORS policy execution successful.
+2026-05-22 00:08:46.313 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-05-22 00:08:46.319 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-05-22 00:08:46.322 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.CurrencyExchangeRatesController.GetAll (ERP.Api)'
+2026-05-22 00:08:46.323 +03:00 [INF] Route matched with {action = "GetAll", controller = "CurrencyExchangeRates"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[ERP.Application.Features.Accounting.CurrencyExchangeRates.Queries.GetCurrencyExchangeRatesWithPagination.CurrencyExchangeRatesPagedResponse]] GetAll(ERP.Application.Features.Accounting.CurrencyExchangeRates.Queries.GetCurrencyExchangeRatesWithPagination.GetCurrencyExchangeRatesWithPaginationQuery) on controller ERP.Api.Controllers.CurrencyExchangeRatesController (ERP.Api).
+2026-05-22 00:08:46.357 +03:00 [INF] Executed DbCommand (25ms) [Parameters=[@__p_0='?' (DbType = Int32), @__p_1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [c1].[Id], [c1].[CurrencyId], [c1].[EffectiveDate], [c1].[Rate], [c0].[Id], [c0].[Code], [c0].[IsLocal], [c0].[Name], [c0].[Symbol]
+FROM (
+    SELECT [c].[Id], [c].[CurrencyId], [c].[EffectiveDate], [c].[Rate]
+    FROM [CurrencyExchangeRates] AS [c]
+    ORDER BY [c].[EffectiveDate] DESC
+    OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY
+) AS [c1]
+INNER JOIN [Currencies] AS [c0] ON [c1].[CurrencyId] = [c0].[Id]
+ORDER BY [c1].[EffectiveDate] DESC
+2026-05-22 00:08:46.365 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [CurrencyExchangeRates] AS [c]
+2026-05-22 00:08:46.369 +03:00 [INF] Executing OkObjectResult, writing value of type 'ERP.Application.Features.Accounting.CurrencyExchangeRates.Queries.GetCurrencyExchangeRatesWithPagination.CurrencyExchangeRatesPagedResponse'.
+2026-05-22 00:08:46.376 +03:00 [INF] Executed action ERP.Api.Controllers.CurrencyExchangeRatesController.GetAll (ERP.Api) in 49.8277ms
+2026-05-22 00:08:46.378 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.CurrencyExchangeRatesController.GetAll (ERP.Api)'
+2026-05-22 00:08:46.380 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/CurrencyExchangeRates?PageNumber=1&PageSize=1000 - 200 null application/json; charset=utf-8 73.9017ms
+2026-05-22 00:09:11.349 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/CurrencyExchangeRates/597d70a1-2a87-4655-a84f-51fb5ff2fd52 - null null
+2026-05-22 00:09:11.356 +03:00 [INF] CORS policy execution successful.
+2026-05-22 00:09:11.364 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/CurrencyExchangeRates/597d70a1-2a87-4655-a84f-51fb5ff2fd52 - 204 null null 14.843ms
+2026-05-22 00:09:11.369 +03:00 [INF] Request starting HTTP/2 PUT https://localhost:7172/api/CurrencyExchangeRates/597d70a1-2a87-4655-a84f-51fb5ff2fd52 - application/json 199
+2026-05-22 00:09:11.390 +03:00 [INF] CORS policy execution successful.
+2026-05-22 00:09:11.392 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-05-22 00:09:11.401 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-05-22 00:09:11.404 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.CurrencyExchangeRatesController.Update (ERP.Api)'
+2026-05-22 00:09:11.412 +03:00 [INF] Route matched with {action = "Update", controller = "CurrencyExchangeRates"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult] Update(System.Guid, ERP.Application.Features.Accounting.CurrencyExchangeRates.Commands.Update.UpdateCurrencyExchangeRateCommand) on controller ERP.Api.Controllers.CurrencyExchangeRatesController (ERP.Api).
+2026-05-22 00:09:11.452 +03:00 [INF] Executed DbCommand (4ms) [Parameters=[@__p_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [c].[Id], [c].[CurrencyId], [c].[EffectiveDate], [c].[Rate]
+FROM [CurrencyExchangeRates] AS [c]
+WHERE [c].[Id] = @__p_0
+2026-05-22 00:09:11.458 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__p_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [c].[Id], [c].[Code], [c].[IsLocal], [c].[Name], [c].[Symbol]
+FROM [Currencies] AS [c]
+WHERE [c].[Id] = @__p_0
+2026-05-22 00:09:11.684 +03:00 [INF] Executed DbCommand (203ms) [Parameters=[@p3='?' (DbType = Guid), @p0='?' (DbType = Guid), @p1='?' (DbType = DateTime2), @p2='?' (Precision = 18) (Scale = 6) (DbType = Decimal)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+UPDATE [CurrencyExchangeRates] SET [CurrencyId] = @p0, [EffectiveDate] = @p1, [Rate] = @p2
+OUTPUT 1
+WHERE [Id] = @p3;
+2026-05-22 00:09:11.698 +03:00 [INF] Executing StatusCodeResult, setting HTTP status code 204
+2026-05-22 00:09:11.699 +03:00 [INF] Executed action ERP.Api.Controllers.CurrencyExchangeRatesController.Update (ERP.Api) in 283.6094ms
+2026-05-22 00:09:11.701 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.CurrencyExchangeRatesController.Update (ERP.Api)'
+2026-05-22 00:09:11.702 +03:00 [INF] Request finished HTTP/2 PUT https://localhost:7172/api/CurrencyExchangeRates/597d70a1-2a87-4655-a84f-51fb5ff2fd52 - 204 null null 332.6878ms
+2026-05-22 00:09:11.708 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/CurrencyExchangeRates?PageNumber=1&PageSize=1000 - null null
+2026-05-22 00:09:11.712 +03:00 [INF] CORS policy execution successful.
+2026-05-22 00:09:11.713 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/CurrencyExchangeRates?PageNumber=1&PageSize=1000 - 204 null null 4.266ms
+2026-05-22 00:09:11.717 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/CurrencyExchangeRates?PageNumber=1&PageSize=1000 - null null
+2026-05-22 00:09:11.720 +03:00 [INF] CORS policy execution successful.
+2026-05-22 00:09:11.722 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-05-22 00:09:11.728 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-05-22 00:09:11.731 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.CurrencyExchangeRatesController.GetAll (ERP.Api)'
+2026-05-22 00:09:11.732 +03:00 [INF] Route matched with {action = "GetAll", controller = "CurrencyExchangeRates"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[ERP.Application.Features.Accounting.CurrencyExchangeRates.Queries.GetCurrencyExchangeRatesWithPagination.CurrencyExchangeRatesPagedResponse]] GetAll(ERP.Application.Features.Accounting.CurrencyExchangeRates.Queries.GetCurrencyExchangeRatesWithPagination.GetCurrencyExchangeRatesWithPaginationQuery) on controller ERP.Api.Controllers.CurrencyExchangeRatesController (ERP.Api).
+2026-05-22 00:09:11.744 +03:00 [INF] Executed DbCommand (5ms) [Parameters=[@__p_0='?' (DbType = Int32), @__p_1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [c1].[Id], [c1].[CurrencyId], [c1].[EffectiveDate], [c1].[Rate], [c0].[Id], [c0].[Code], [c0].[IsLocal], [c0].[Name], [c0].[Symbol]
+FROM (
+    SELECT [c].[Id], [c].[CurrencyId], [c].[EffectiveDate], [c].[Rate]
+    FROM [CurrencyExchangeRates] AS [c]
+    ORDER BY [c].[EffectiveDate] DESC
+    OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY
+) AS [c1]
+INNER JOIN [Currencies] AS [c0] ON [c1].[CurrencyId] = [c0].[Id]
+ORDER BY [c1].[EffectiveDate] DESC
+2026-05-22 00:09:11.750 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [CurrencyExchangeRates] AS [c]
+2026-05-22 00:09:11.752 +03:00 [INF] Executing OkObjectResult, writing value of type 'ERP.Application.Features.Accounting.CurrencyExchangeRates.Queries.GetCurrencyExchangeRatesWithPagination.CurrencyExchangeRatesPagedResponse'.
+2026-05-22 00:09:11.754 +03:00 [INF] Executed action ERP.Api.Controllers.CurrencyExchangeRatesController.GetAll (ERP.Api) in 18.6935ms
+2026-05-22 00:09:11.756 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.CurrencyExchangeRatesController.GetAll (ERP.Api)'
+2026-05-22 00:09:11.757 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/CurrencyExchangeRates?PageNumber=1&PageSize=1000 - 200 null application/json; charset=utf-8 40.652ms
+2026-05-22 00:09:19.107 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/Currencies?PageNumber=1&PageSize=100 - null null
+2026-05-22 00:09:19.111 +03:00 [INF] CORS policy execution successful.
+2026-05-22 00:09:19.113 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/Currencies?PageNumber=1&PageSize=100 - 204 null null 5.5575ms
+2026-05-22 00:09:19.117 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/Currencies?PageNumber=1&PageSize=100 - null null
+2026-05-22 00:09:19.121 +03:00 [INF] CORS policy execution successful.
+2026-05-22 00:09:19.122 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-05-22 00:09:19.127 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-05-22 00:09:19.129 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.CurrenciesController.GetAll (ERP.Api)'
+2026-05-22 00:09:19.130 +03:00 [INF] Route matched with {action = "GetAll", controller = "Currencies"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[ERP.Application.Features.Accounting.Currencies.Queries.GetCurrenciesWithPagination.CurrenciesPagedResponse]] GetAll(ERP.Application.Features.Accounting.Currencies.Queries.GetCurrenciesWithPagination.GetCurrenciesWithPaginationQuery) on controller ERP.Api.Controllers.CurrenciesController (ERP.Api).
+2026-05-22 00:09:19.138 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[@__p_0='?' (DbType = Int32), @__p_1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [c].[Id], [c].[Code], [c].[IsLocal], [c].[Name], [c].[Symbol]
+FROM [Currencies] AS [c]
+ORDER BY (SELECT 1)
+OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY
+2026-05-22 00:09:19.142 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Currencies] AS [c]
+2026-05-22 00:09:19.145 +03:00 [INF] Executing OkObjectResult, writing value of type 'ERP.Application.Features.Accounting.Currencies.Queries.GetCurrenciesWithPagination.CurrenciesPagedResponse'.
+2026-05-22 00:09:19.147 +03:00 [INF] Executed action ERP.Api.Controllers.CurrenciesController.GetAll (ERP.Api) in 13.6026ms
+2026-05-22 00:09:19.148 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.CurrenciesController.GetAll (ERP.Api)'
+2026-05-22 00:09:19.149 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/Currencies?PageNumber=1&PageSize=100 - 200 null application/json; charset=utf-8 32.0903ms
+2026-05-22 00:09:33.513 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/Currencies/75ade934-37a8-4fbe-83fe-7a635c076c5c - null null
+2026-05-22 00:09:33.517 +03:00 [INF] CORS policy execution successful.
+2026-05-22 00:09:33.517 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/Currencies/75ade934-37a8-4fbe-83fe-7a635c076c5c - 204 null null 4.262ms
+2026-05-22 00:09:33.521 +03:00 [INF] Request starting HTTP/2 PUT https://localhost:7172/api/Currencies/75ade934-37a8-4fbe-83fe-7a635c076c5c - application/json 108
+2026-05-22 00:09:33.525 +03:00 [INF] CORS policy execution successful.
+2026-05-22 00:09:33.526 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-05-22 00:09:33.531 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-05-22 00:09:33.533 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.CurrenciesController.Update (ERP.Api)'
+2026-05-22 00:09:33.538 +03:00 [INF] Route matched with {action = "Update", controller = "Currencies"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult] Update(System.Guid, ERP.Application.Features.Accounting.Currencies.Commands.Update.UpdateCurrencyCommand) on controller ERP.Api.Controllers.CurrenciesController (ERP.Api).
+2026-05-22 00:09:33.555 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[@__p_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [c].[Id], [c].[Code], [c].[IsLocal], [c].[Name], [c].[Symbol]
+FROM [Currencies] AS [c]
+WHERE [c].[Id] = @__p_0
+2026-05-22 00:09:33.594 +03:00 [INF] Executed DbCommand (33ms) [Parameters=[@p4='?' (DbType = Guid), @p0='?' (Size = 10), @p1='?' (DbType = Boolean), @p2='?' (Size = 100), @p3='?' (Size = 10)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+UPDATE [Currencies] SET [Code] = @p0, [IsLocal] = @p1, [Name] = @p2, [Symbol] = @p3
+OUTPUT 1
+WHERE [Id] = @p4;
+2026-05-22 00:09:33.598 +03:00 [INF] Executing StatusCodeResult, setting HTTP status code 204
+2026-05-22 00:09:33.599 +03:00 [INF] Executed action ERP.Api.Controllers.CurrenciesController.Update (ERP.Api) in 57.3906ms
+2026-05-22 00:09:33.600 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.CurrenciesController.Update (ERP.Api)'
+2026-05-22 00:09:33.601 +03:00 [INF] Request finished HTTP/2 PUT https://localhost:7172/api/Currencies/75ade934-37a8-4fbe-83fe-7a635c076c5c - 204 null null 80.3537ms
+2026-05-22 00:09:33.608 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/Currencies?PageNumber=1&PageSize=100 - null null
+2026-05-22 00:09:33.611 +03:00 [INF] CORS policy execution successful.
+2026-05-22 00:09:33.612 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/Currencies?PageNumber=1&PageSize=100 - 204 null null 4.3191ms
+2026-05-22 00:09:33.616 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/Currencies?PageNumber=1&PageSize=100 - null null
+2026-05-22 00:09:33.620 +03:00 [INF] CORS policy execution successful.
+2026-05-22 00:09:33.621 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-05-22 00:09:33.626 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-05-22 00:09:33.628 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.CurrenciesController.GetAll (ERP.Api)'
+2026-05-22 00:09:33.630 +03:00 [INF] Route matched with {action = "GetAll", controller = "Currencies"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[ERP.Application.Features.Accounting.Currencies.Queries.GetCurrenciesWithPagination.CurrenciesPagedResponse]] GetAll(ERP.Application.Features.Accounting.Currencies.Queries.GetCurrenciesWithPagination.GetCurrenciesWithPaginationQuery) on controller ERP.Api.Controllers.CurrenciesController (ERP.Api).
+2026-05-22 00:09:33.638 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__p_0='?' (DbType = Int32), @__p_1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [c].[Id], [c].[Code], [c].[IsLocal], [c].[Name], [c].[Symbol]
+FROM [Currencies] AS [c]
+ORDER BY (SELECT 1)
+OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY
+2026-05-22 00:09:33.643 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Currencies] AS [c]
+2026-05-22 00:09:33.647 +03:00 [INF] Executing OkObjectResult, writing value of type 'ERP.Application.Features.Accounting.Currencies.Queries.GetCurrenciesWithPagination.CurrenciesPagedResponse'.
+2026-05-22 00:09:33.649 +03:00 [INF] Executed action ERP.Api.Controllers.CurrenciesController.GetAll (ERP.Api) in 16.08ms
+2026-05-22 00:09:33.651 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.CurrenciesController.GetAll (ERP.Api)'
+2026-05-22 00:09:33.653 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/Currencies?PageNumber=1&PageSize=100 - 200 null application/json; charset=utf-8 37.2073ms
+2026-05-22 00:09:36.561 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/CurrencyExchangeRates?PageNumber=1&PageSize=1000 - null null
+2026-05-22 00:09:36.563 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/Currencies?PageNumber=1&PageSize=100 - null null
+2026-05-22 00:09:36.565 +03:00 [INF] CORS policy execution successful.
+2026-05-22 00:09:36.569 +03:00 [INF] CORS policy execution successful.
+2026-05-22 00:09:36.570 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/CurrencyExchangeRates?PageNumber=1&PageSize=1000 - 204 null null 9.3048ms
+2026-05-22 00:09:36.572 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-05-22 00:09:36.576 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/CurrencyExchangeRates?PageNumber=1&PageSize=1000 - null null
+2026-05-22 00:09:36.583 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-05-22 00:09:36.587 +03:00 [INF] CORS policy execution successful.
+2026-05-22 00:09:36.589 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.CurrenciesController.GetAll (ERP.Api)'
+2026-05-22 00:09:36.590 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-05-22 00:09:36.591 +03:00 [INF] Route matched with {action = "GetAll", controller = "Currencies"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[ERP.Application.Features.Accounting.Currencies.Queries.GetCurrenciesWithPagination.CurrenciesPagedResponse]] GetAll(ERP.Application.Features.Accounting.Currencies.Queries.GetCurrenciesWithPagination.GetCurrenciesWithPaginationQuery) on controller ERP.Api.Controllers.CurrenciesController (ERP.Api).
+2026-05-22 00:09:36.597 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-05-22 00:09:36.602 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.CurrencyExchangeRatesController.GetAll (ERP.Api)'
+2026-05-22 00:09:36.603 +03:00 [INF] Route matched with {action = "GetAll", controller = "CurrencyExchangeRates"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[ERP.Application.Features.Accounting.CurrencyExchangeRates.Queries.GetCurrencyExchangeRatesWithPagination.CurrencyExchangeRatesPagedResponse]] GetAll(ERP.Application.Features.Accounting.CurrencyExchangeRates.Queries.GetCurrencyExchangeRatesWithPagination.GetCurrencyExchangeRatesWithPaginationQuery) on controller ERP.Api.Controllers.CurrencyExchangeRatesController (ERP.Api).
+2026-05-22 00:09:36.604 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__p_0='?' (DbType = Int32), @__p_1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [c].[Id], [c].[Code], [c].[IsLocal], [c].[Name], [c].[Symbol]
+FROM [Currencies] AS [c]
+ORDER BY (SELECT 1)
+OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY
+2026-05-22 00:09:36.611 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Currencies] AS [c]
+2026-05-22 00:09:36.611 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[@__p_0='?' (DbType = Int32), @__p_1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [c1].[Id], [c1].[CurrencyId], [c1].[EffectiveDate], [c1].[Rate], [c0].[Id], [c0].[Code], [c0].[IsLocal], [c0].[Name], [c0].[Symbol]
+FROM (
+    SELECT [c].[Id], [c].[CurrencyId], [c].[EffectiveDate], [c].[Rate]
+    FROM [CurrencyExchangeRates] AS [c]
+    ORDER BY [c].[EffectiveDate] DESC
+    OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY
+) AS [c1]
+INNER JOIN [Currencies] AS [c0] ON [c1].[CurrencyId] = [c0].[Id]
+ORDER BY [c1].[EffectiveDate] DESC
+2026-05-22 00:09:36.614 +03:00 [INF] Executing OkObjectResult, writing value of type 'ERP.Application.Features.Accounting.Currencies.Queries.GetCurrenciesWithPagination.CurrenciesPagedResponse'.
+2026-05-22 00:09:36.619 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [CurrencyExchangeRates] AS [c]
+2026-05-22 00:09:36.619 +03:00 [INF] Executed action ERP.Api.Controllers.CurrenciesController.GetAll (ERP.Api) in 19.4929ms
+2026-05-22 00:09:36.623 +03:00 [INF] Executing OkObjectResult, writing value of type 'ERP.Application.Features.Accounting.CurrencyExchangeRates.Queries.GetCurrencyExchangeRatesWithPagination.CurrencyExchangeRatesPagedResponse'.
+2026-05-22 00:09:36.624 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.CurrenciesController.GetAll (ERP.Api)'
+2026-05-22 00:09:36.626 +03:00 [INF] Executed action ERP.Api.Controllers.CurrencyExchangeRatesController.GetAll (ERP.Api) in 20.724ms
+2026-05-22 00:09:36.628 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/Currencies?PageNumber=1&PageSize=100 - 200 null application/json; charset=utf-8 64.4397ms
+2026-05-22 00:09:36.630 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.CurrencyExchangeRatesController.GetAll (ERP.Api)'
+2026-05-22 00:09:36.636 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/CurrencyExchangeRates?PageNumber=1&PageSize=1000 - 200 null application/json; charset=utf-8 60.4281ms
