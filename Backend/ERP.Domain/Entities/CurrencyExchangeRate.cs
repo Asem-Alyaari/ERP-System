@@ -21,4 +21,12 @@ public class CurrencyExchangeRate : Entity
         Rate = rate;
         EffectiveDate = effectiveDate;
     }
+
+    public void Update(Guid currencyId, decimal rate, DateTime effectiveDate)
+    {
+        CurrencyId = currencyId;
+        Rate = rate;
+        EffectiveDate = effectiveDate;
+    }
 }
+
