@@ -1,0 +1,203 @@
+2026-05-22 00:08:28.181 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/StockGroups/list - null null
+2026-05-22 00:08:28.181 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/StockGroups?PageNumber=1&PageSize=100 - null null
+2026-05-22 00:08:28.214 +03:00 [INF] CORS policy execution successful.
+2026-05-22 00:08:28.215 +03:00 [INF] CORS policy execution successful.
+2026-05-22 00:08:28.218 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/StockGroups/list - 204 null null 37.6643ms
+2026-05-22 00:08:28.218 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/StockGroups?PageNumber=1&PageSize=100 - 204 null null 37.5718ms
+2026-05-22 00:08:28.225 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/StockGroups?PageNumber=1&PageSize=100 - null null
+2026-05-22 00:08:28.226 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/StockGroups/list - null null
+2026-05-22 00:08:28.234 +03:00 [INF] CORS policy execution successful.
+2026-05-22 00:08:28.236 +03:00 [INF] CORS policy execution successful.
+2026-05-22 00:08:28.469 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-05-22 00:08:28.469 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-05-22 00:08:28.476 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-05-22 00:08:28.483 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-05-22 00:08:28.486 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.StockGroupsController.GetAll (ERP.Api)'
+2026-05-22 00:08:28.488 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.StockGroupsController.GetList (ERP.Api)'
+2026-05-22 00:08:28.496 +03:00 [INF] Route matched with {action = "GetList", controller = "StockGroups"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.List`1[ERP.Application.Features.Inventory.StockGroups.StockGroupDto]]] GetList() on controller ERP.Api.Controllers.StockGroupsController (ERP.Api).
+2026-05-22 00:08:28.497 +03:00 [INF] Route matched with {action = "GetAll", controller = "StockGroups"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[ERP.Application.Features.Inventory.StockGroups.Queries.GetStockGroupsWithPagination.StockGroupsPagedResponse]] GetAll(ERP.Application.Features.Inventory.StockGroups.Queries.GetStockGroupsWithPagination.GetStockGroupsWithPaginationQuery) on controller ERP.Api.Controllers.StockGroupsController (ERP.Api).
+2026-05-22 00:08:28.567 +03:00 [WRN] The query uses a row limiting operator ('Skip'/'Take') without an 'OrderBy' operator. This may lead to unpredictable results. If the 'Distinct' operator is used after 'OrderBy', then make sure to use the 'OrderBy' operator after 'Distinct' as the ordering would otherwise get erased.
+2026-05-22 00:08:28.569 +03:00 [WRN] The query uses a row limiting operator ('Skip'/'Take') without an 'OrderBy' operator. This may lead to unpredictable results. If the 'Distinct' operator is used after 'OrderBy', then make sure to use the 'OrderBy' operator after 'Distinct' as the ordering would otherwise get erased.
+2026-05-22 00:08:28.591 +03:00 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [s].[Id], [s].[CostOfGoodsSoldAccountId], [s].[GroupCode], [s].[GroupNameAr], [s].[GroupNameEn], [s].[InventoryAccountId], [s].[IsDetail], [s].[ParentGroupId], [s].[SalesAccountId]
+FROM [StockGroups] AS [s]
+2026-05-22 00:08:28.591 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__p_0='?' (DbType = Int32), @__p_1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [s].[Id], [s].[CostOfGoodsSoldAccountId], [s].[GroupCode], [s].[GroupNameAr], [s].[GroupNameEn], [s].[InventoryAccountId], [s].[IsDetail], [s].[ParentGroupId], [s].[SalesAccountId]
+FROM [StockGroups] AS [s]
+ORDER BY (SELECT 1)
+OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY
+2026-05-22 00:08:28.698 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[ERP.Application.Features.Inventory.StockGroups.StockGroupDto, ERP.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-05-22 00:08:28.704 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [StockGroups] AS [s]
+2026-05-22 00:08:28.710 +03:00 [INF] Executing OkObjectResult, writing value of type 'ERP.Application.Features.Inventory.StockGroups.Queries.GetStockGroupsWithPagination.StockGroupsPagedResponse'.
+2026-05-22 00:08:28.716 +03:00 [INF] Executed action ERP.Api.Controllers.StockGroupsController.GetList (ERP.Api) in 215.8959ms
+2026-05-22 00:08:28.716 +03:00 [INF] Executed action ERP.Api.Controllers.StockGroupsController.GetAll (ERP.Api) in 212.5688ms
+2026-05-22 00:08:28.720 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.StockGroupsController.GetAll (ERP.Api)'
+2026-05-22 00:08:28.718 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.StockGroupsController.GetList (ERP.Api)'
+2026-05-22 00:08:28.722 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/StockGroups?PageNumber=1&PageSize=100 - 200 null application/json; charset=utf-8 497.167ms
+2026-05-22 00:08:28.724 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/StockGroups/list - 200 null application/json; charset=utf-8 497.7381ms
+2026-05-22 00:08:29.574 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/StockGroups?PageNumber=1&PageSize=100 - null null
+2026-05-22 00:08:29.574 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/StockGroups/list - null null
+2026-05-22 00:08:29.577 +03:00 [INF] CORS policy execution successful.
+2026-05-22 00:08:29.580 +03:00 [INF] CORS policy execution successful.
+2026-05-22 00:08:29.582 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-05-22 00:08:29.583 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-05-22 00:08:29.590 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-05-22 00:08:29.604 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-05-22 00:08:29.607 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.StockGroupsController.GetAll (ERP.Api)'
+2026-05-22 00:08:29.609 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.StockGroupsController.GetList (ERP.Api)'
+2026-05-22 00:08:29.611 +03:00 [INF] Route matched with {action = "GetAll", controller = "StockGroups"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[ERP.Application.Features.Inventory.StockGroups.Queries.GetStockGroupsWithPagination.StockGroupsPagedResponse]] GetAll(ERP.Application.Features.Inventory.StockGroups.Queries.GetStockGroupsWithPagination.GetStockGroupsWithPaginationQuery) on controller ERP.Api.Controllers.StockGroupsController (ERP.Api).
+2026-05-22 00:08:29.612 +03:00 [INF] Route matched with {action = "GetList", controller = "StockGroups"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.List`1[ERP.Application.Features.Inventory.StockGroups.StockGroupDto]]] GetList() on controller ERP.Api.Controllers.StockGroupsController (ERP.Api).
+2026-05-22 00:08:29.630 +03:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [s].[Id], [s].[CostOfGoodsSoldAccountId], [s].[GroupCode], [s].[GroupNameAr], [s].[GroupNameEn], [s].[InventoryAccountId], [s].[IsDetail], [s].[ParentGroupId], [s].[SalesAccountId]
+FROM [StockGroups] AS [s]
+2026-05-22 00:08:29.633 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[@__p_0='?' (DbType = Int32), @__p_1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [s].[Id], [s].[CostOfGoodsSoldAccountId], [s].[GroupCode], [s].[GroupNameAr], [s].[GroupNameEn], [s].[InventoryAccountId], [s].[IsDetail], [s].[ParentGroupId], [s].[SalesAccountId]
+FROM [StockGroups] AS [s]
+ORDER BY (SELECT 1)
+OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY
+2026-05-22 00:08:29.638 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[ERP.Application.Features.Inventory.StockGroups.StockGroupDto, ERP.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-05-22 00:08:29.642 +03:00 [INF] Executed action ERP.Api.Controllers.StockGroupsController.GetList (ERP.Api) in 19.7963ms
+2026-05-22 00:08:29.644 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [StockGroups] AS [s]
+2026-05-22 00:08:29.645 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.StockGroupsController.GetList (ERP.Api)'
+2026-05-22 00:08:29.648 +03:00 [INF] Executing OkObjectResult, writing value of type 'ERP.Application.Features.Inventory.StockGroups.Queries.GetStockGroupsWithPagination.StockGroupsPagedResponse'.
+2026-05-22 00:08:29.651 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/StockGroups/list - 200 null application/json; charset=utf-8 76.8281ms
+2026-05-22 00:08:29.654 +03:00 [INF] Executed action ERP.Api.Controllers.StockGroupsController.GetAll (ERP.Api) in 37.6341ms
+2026-05-22 00:08:29.659 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.StockGroupsController.GetAll (ERP.Api)'
+2026-05-22 00:08:29.661 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/StockGroups?PageNumber=1&PageSize=100 - 200 null application/json; charset=utf-8 86.8686ms
+2026-05-22 00:08:32.464 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/CurrencyExchangeRates?PageNumber=1&PageSize=1000 - null null
+2026-05-22 00:08:32.466 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/Currencies?PageNumber=1&PageSize=100 - null null
+2026-05-22 00:08:32.468 +03:00 [INF] CORS policy execution successful.
+2026-05-22 00:08:32.471 +03:00 [INF] CORS policy execution successful.
+2026-05-22 00:08:32.472 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/CurrencyExchangeRates?PageNumber=1&PageSize=1000 - 204 null null 7.9266ms
+2026-05-22 00:08:32.474 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/Currencies?PageNumber=1&PageSize=100 - 204 null null 8.0268ms
+2026-05-22 00:08:32.478 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/CurrencyExchangeRates?PageNumber=1&PageSize=1000 - null null
+2026-05-22 00:08:32.478 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/Currencies?PageNumber=1&PageSize=100 - null null
+2026-05-22 00:08:32.486 +03:00 [INF] CORS policy execution successful.
+2026-05-22 00:08:32.489 +03:00 [INF] CORS policy execution successful.
+2026-05-22 00:08:32.490 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-05-22 00:08:32.491 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-05-22 00:08:32.496 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-05-22 00:08:32.501 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-05-22 00:08:32.503 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.CurrencyExchangeRatesController.GetAll (ERP.Api)'
+2026-05-22 00:08:32.505 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.CurrenciesController.GetAll (ERP.Api)'
+2026-05-22 00:08:32.506 +03:00 [INF] Route matched with {action = "GetAll", controller = "CurrencyExchangeRates"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[ERP.Application.Features.Accounting.CurrencyExchangeRates.Queries.GetCurrencyExchangeRatesWithPagination.CurrencyExchangeRatesPagedResponse]] GetAll(ERP.Application.Features.Accounting.CurrencyExchangeRates.Queries.GetCurrencyExchangeRatesWithPagination.GetCurrencyExchangeRatesWithPaginationQuery) on controller ERP.Api.Controllers.CurrencyExchangeRatesController (ERP.Api).
+2026-05-22 00:08:32.511 +03:00 [INF] Route matched with {action = "GetAll", controller = "Currencies"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[ERP.Application.Features.Accounting.Currencies.Queries.GetCurrenciesWithPagination.CurrenciesPagedResponse]] GetAll(ERP.Application.Features.Accounting.Currencies.Queries.GetCurrenciesWithPagination.GetCurrenciesWithPaginationQuery) on controller ERP.Api.Controllers.CurrenciesController (ERP.Api).
+2026-05-22 00:08:32.517 +03:00 [INF] Executed DbCommand (4ms) [Parameters=[@__p_0='?' (DbType = Int32), @__p_1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [c1].[Id], [c1].[CurrencyId], [c1].[EffectiveDate], [c1].[Rate], [c0].[Id], [c0].[Code], [c0].[IsLocal], [c0].[Name], [c0].[Symbol]
+FROM (
+    SELECT [c].[Id], [c].[CurrencyId], [c].[EffectiveDate], [c].[Rate]
+    FROM [CurrencyExchangeRates] AS [c]
+    ORDER BY [c].[EffectiveDate] DESC
+    OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY
+) AS [c1]
+INNER JOIN [Currencies] AS [c0] ON [c1].[CurrencyId] = [c0].[Id]
+ORDER BY [c1].[EffectiveDate] DESC
+2026-05-22 00:08:32.522 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [CurrencyExchangeRates] AS [c]
+2026-05-22 00:08:32.525 +03:00 [INF] Executing OkObjectResult, writing value of type 'ERP.Application.Features.Accounting.CurrencyExchangeRates.Queries.GetCurrencyExchangeRatesWithPagination.CurrencyExchangeRatesPagedResponse'.
+2026-05-22 00:08:32.526 +03:00 [INF] Executed action ERP.Api.Controllers.CurrencyExchangeRatesController.GetAll (ERP.Api) in 16.128ms
+2026-05-22 00:08:32.528 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.CurrencyExchangeRatesController.GetAll (ERP.Api)'
+2026-05-22 00:08:32.529 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/CurrencyExchangeRates?PageNumber=1&PageSize=1000 - 200 null application/json; charset=utf-8 51.1865ms
+2026-05-22 00:08:32.540 +03:00 [WRN] The query uses a row limiting operator ('Skip'/'Take') without an 'OrderBy' operator. This may lead to unpredictable results. If the 'Distinct' operator is used after 'OrderBy', then make sure to use the 'OrderBy' operator after 'Distinct' as the ordering would otherwise get erased.
+2026-05-22 00:08:32.541 +03:00 [WRN] The query uses a row limiting operator ('Skip'/'Take') without an 'OrderBy' operator. This may lead to unpredictable results. If the 'Distinct' operator is used after 'OrderBy', then make sure to use the 'OrderBy' operator after 'Distinct' as the ordering would otherwise get erased.
+2026-05-22 00:08:32.550 +03:00 [INF] Executed DbCommand (4ms) [Parameters=[@__p_0='?' (DbType = Int32), @__p_1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [c].[Id], [c].[Code], [c].[IsLocal], [c].[Name], [c].[Symbol]
+FROM [Currencies] AS [c]
+ORDER BY (SELECT 1)
+OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY
+2026-05-22 00:08:32.558 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Currencies] AS [c]
+2026-05-22 00:08:32.563 +03:00 [INF] Executing OkObjectResult, writing value of type 'ERP.Application.Features.Accounting.Currencies.Queries.GetCurrenciesWithPagination.CurrenciesPagedResponse'.
+2026-05-22 00:08:32.568 +03:00 [INF] Executed action ERP.Api.Controllers.CurrenciesController.GetAll (ERP.Api) in 54.3509ms
+2026-05-22 00:08:32.570 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.CurrenciesController.GetAll (ERP.Api)'
+2026-05-22 00:08:32.571 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/Currencies?PageNumber=1&PageSize=100 - 200 null application/json; charset=utf-8 93.0019ms

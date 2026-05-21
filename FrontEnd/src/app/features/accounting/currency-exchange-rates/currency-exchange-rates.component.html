@@ -1,0 +1,211 @@
+<p-toast position="top-right" />
+<p-confirmDialog />
+
+<div class="animate-fade-in">
+
+  <!-- Toolbar -->
+  <p-toolbar styleClass="mb-4 erp-toolbar">
+    <ng-template #start>
+      <div>
+        <h2 class="page-title">أسعار صرف العملات</h2>
+        <p class="page-subtitle">إدارة وتحديث أسعار صرف العملات الأجنبية مقابل العملة المحلية</p>
+      </div>
+    </ng-template>
+    <ng-template #end>
+      <p-button
+        label="إضافة سعر صرف"
+        icon="pi pi-plus"
+        (onClick)="openAddDialog()"
+        severity="primary"
+      />
+    </ng-template>
+  </p-toolbar>
+
+  <!-- DataTable -->
+  <p-table
+    #dt
+    [value]="exchangeRates"
+    [loading]="isLoading"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    [globalFilterFields]="['currencyCode', 'currencyName']"
+    dataKey="id"
+    styleClass="p-datatable-gridlines p-datatable-striped erp-table-prime"
+    [tableStyle]="{ 'min-width': '50rem' }"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="عرض {first} إلى {last} من أصل {totalRecords} سعر صرف"
+  >
+    <ng-template #caption>
+      <div class="table-caption">
+        <span class="p-input-icon-left">
+          <i class="pi pi-search"></i>
+          <input
+            pInputText
+            type="text"
+            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+            placeholder="بحث بالرمز أو اسم العملة..."
+            class="table-search"
+          />
+        </span>
+        <span class="table-count">إجمالي: {{ exchangeRates.length }} سجل</span>
+      </div>
+    </ng-template>
+
+    <ng-template #header>
+      <tr>
+        <th pSortableColumn="currencyCode" style="width:180px">
+          كود العملة <p-sortIcon field="currencyCode" />
+        </th>
+        <th pSortableColumn="currencyName" style="min-width:200px">
+          اسم العملة <p-sortIcon field="currencyName" />
+        </th>
+        <th pSortableColumn="rate" style="width:180px; text-align:center">
+          سعر الصرف <p-sortIcon field="rate" />
+        </th>
+        <th pSortableColumn="effectiveDate" style="width:200px; text-align:center">
+          تاريخ السريان <p-sortIcon field="effectiveDate" />
+        </th>
+        <th style="width:130px; text-align:center">الإجراءات</th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-rate>
+      <tr>
+        <td>
+          <span class="font-mono font-bold text-gray-700">{{ rate.currencyCode }}</span>
+        </td>
+        <td>{{ rate.currencyName }}</td>
+        <td style="text-align:center" class="font-mono font-bold text-primary-dark">
+          {{ rate.rate | number:'1.2-6' }}
+        </td>
+        <td style="text-align:center">
+          <span class="font-mono">{{ rate.effectiveDate | date:'yyyy-MM-dd' }}</span>
+        </td>
+        <td style="text-align:center">
+          <div class="action-btns">
+            <p-button
+              icon="pi pi-pencil"
+              [rounded]="true"
+              [text]="true"
+              severity="info"
+              pTooltip="تعديل"
+              tooltipPosition="top"
+              (onClick)="openEditDialog(rate)"
+            />
+            <p-button
+              icon="pi pi-trash"
+              [rounded]="true"
+              [text]="true"
+              severity="danger"
+              pTooltip="حذف"
+              tooltipPosition="top"
+              (onClick)="confirmDelete(rate)"
+            />
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="5" class="empty-state">
+          <i class="pi pi-sync"></i>
+          <p>لا توجد أسعار صرف مضافة حالياً</p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+</div>
+
+<!-- Add / Edit Dialog -->
+<p-dialog
+  [(visible)]="dialogVisible"
+  [header]="isEditMode ? 'تعديل سعر الصرف' : 'إضافة سعر صرف جديد'"
+  [modal]="true"
+  [style]="{ width: '420px' }"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="erp-dialog"
+>
+  <form (ngSubmit)="saveExchangeRate()" #rateForm="ngForm" class="dialog-form">
+
+    <div class="form-field">
+      <label for="currencyId" class="form-label">
+        العملة <span class="required">*</span>
+      </label>
+      <p-select
+        id="currencyId"
+        name="currencyId"
+        [options]="currencies"
+        [(ngModel)]="currentRate.currencyId"
+        optionLabel="name"
+        optionValue="id"
+        [filter]="true"
+        filterPlaceholder="بحث عن عملة..."
+        placeholder="اختر العملة"
+        class="w-full font-bold"
+        required
+        [disabled]="isEditMode"
+      >
+        <ng-template let-currency #item>
+          <div class="flex justify-between items-center w-full">
+            <span>{{ currency.name }}</span>
+            <span class="font-mono text-gray-500 font-bold">[{{ currency.code }}]</span>
+          </div>
+        </ng-template>
+      </p-select>
+    </div>
+
+    <div class="form-field">
+      <label for="rate" class="form-label">
+        سعر الصرف <span class="required">*</span>
+      </label>
+      <p-inputNumber
+        id="rate"
+        name="rate"
+        [(ngModel)]="currentRate.rate"
+        required
+        placeholder="سعر صرف العملة مقابل العملة المحلية"
+        [min]="0.000001"
+        [maxFractionDigits]="6"
+        class="w-full font-mono text-lg"
+        styleClass="w-full"
+      />
+      <small class="text-gray-400 mt-1 block">ملاحظة: بالنسبة للعملة المحلية الأساسية، يجب أن يكون سعر الصرف دائماً 1</small>
+    </div>
+
+    <div class="form-field">
+      <label for="effectiveDate" class="form-label">
+        تاريخ السريان <span class="required">*</span>
+      </label>
+      <input
+        pInputText
+        type="date"
+        id="effectiveDate"
+        name="effectiveDate"
+        [(ngModel)]="currentRate.effectiveDate"
+        required
+        class="w-full font-mono"
+      />
+    </div>
+
+    <div class="dialog-footer mt-4">
+      <p-button
+        type="button"
+        label="إلغاء"
+        severity="secondary"
+        [outlined]="true"
+        (onClick)="closeDialog()"
+      />
+      <p-button
+        type="submit"
+        label="حفظ"
+        icon="pi pi-check"
+        [disabled]="!rateForm.form.valid"
+      />
+    </div>
+
+  </form>
+</p-dialog>

@@ -22,6 +22,7 @@ export class SidebarComponent {
     { label: 'العملاء', icon: 'pi pi-user-plus', route: '/sales/customers' },
     { label: 'الموردين', icon: 'pi pi-users', route: '/purchases/vendors' },
     { label: 'الحسابات', icon: 'pi pi-wallet', route: '/accounting' },
+    { label: 'أسعار الصرف', icon: 'pi pi-sync', route: '/accounting/exchange-rates' },
     { label: 'التقارير', icon: 'pi pi-chart-bar', route: '/reports' },
     { label: 'الإعدادات', icon: 'pi pi-cog', route: '/settings' }
   ];
