@@ -51,4 +51,10 @@ public class Account : Entity
         AccountNameEn = nameEn;
         IsDetail = isDetail;
     }
+
+    public void UpdateDetails(string nameAr, string nameEn, bool isDetail, Guid currencyId)
+    {
+        UpdateDetails(nameAr, nameEn, isDetail);
+        CurrencyId = currencyId;
+    }
 }

@@ -2,6 +2,10 @@ import { Routes } from '@angular/router';
 
 export const ACCOUNTING_ROUTES: Routes = [
   {
+    path: 'chart-of-accounts',
+    loadComponent: () => import('./chart-of-accounts/chart-of-accounts.component').then(m => m.ChartOfAccountsComponent)
+  },
+  {
     path: 'currencies',
     loadComponent: () => import('./currencies/currencies.component').then(m => m.CurrenciesComponent)
   },
@@ -11,7 +15,7 @@ export const ACCOUNTING_ROUTES: Routes = [
   },
   {
     path: '',
-    redirectTo: 'currencies',
+    redirectTo: 'chart-of-accounts',
     pathMatch: 'full'
   }
 ];
