@@ -1,0 +1,61 @@
+/* ============================================================
+   Fiscal Periods SCSS - Custom Sleek Design
+   ============================================================ */
+
+.erp-workspace {
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.glass-card {
+  background: var(--bg-surface, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: var(--radius-lg, 12px);
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.05));
+  overflow: hidden;
+}
+
+.alert {
+  border-radius: var(--radius-md, 8px);
+  font-family: 'Cairo', sans-serif;
+  line-height: 1.6;
+}
+
+/* Custom Table Row styling for closed periods */
+.closed-period-row {
+  background-color: rgba(239, 68, 68, 0.02) !important;
+  color: var(--text-muted, #6b7280) !important;
+  opacity: 0.9;
+  transition: all 0.2s ease;
+
+  td {
+    color: var(--text-muted, #6b7280) !important;
+  }
+
+  span.font-bold {
+    color: var(--text-muted, #9ca3af) !important;
+  }
+}
+
+/* Form Dialog inputs */
+.dialog-form {
+  input {
+    padding: 0.7rem 0.9rem;
+    border-radius: var(--radius-md, 8px);
+    border: 1px solid var(--border-color, #e5e7eb);
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.2s ease-in-out;
+
+    &:focus {
+      border-color: var(--color-primary, #2563eb);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+  }
+
+  input[type="date"] {
+    cursor: pointer;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    font-size: 1rem;
+  }
+}

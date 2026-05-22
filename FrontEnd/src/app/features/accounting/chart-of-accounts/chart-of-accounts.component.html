@@ -184,7 +184,7 @@
   <div *ngIf="node.visible" class="tree-node-wrapper">
     <!-- Node Item -->
     <div 
-      class="tree-node-item flex align-items-center justify-between p-2 rounded cursor-pointer transition-all mb-1" 
+      class="tree-node-item cursor-pointer" 
       [class.selected]="selectedAccount?.id === node.account.id"
       [class.is-detail]="node.account.isDetail"
       (click)="selectAccount(node.account)"
@@ -194,7 +194,7 @@
         <button 
           *ngIf="!node.account.isDetail" 
           type="button" 
-          class="node-toggle-btn border-none bg-transparent cursor-pointer text-gray-400 p-1 rounded flex align-items-center justify-content-center"
+          class="node-toggle-btn"
           (click)="toggleNode(node, $event)"
         >
           <i class="pi" [class.pi-chevron-down]="node.expanded" [class.pi-chevron-left]="!node.expanded"></i>
@@ -253,7 +253,7 @@
     </div>
 
     <!-- Children Container -->
-    <div *ngIf="!node.account.isDetail && node.expanded" class="tree-node-children pr-4 border-r-2 border-gray-100 border-dashed mr-4">
+    <div *ngIf="!node.account.isDetail && node.expanded" class="tree-node-children">
       <ng-container *ngFor="let child of node.children">
         <ng-container *ngTemplateOutlet="nodeTemplate; context:{ $implicit: child }"></ng-container>
       </ng-container>

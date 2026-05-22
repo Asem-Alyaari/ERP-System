@@ -21,7 +21,8 @@ export class SidebarComponent {
     { label: 'الوحدات', icon: 'pi pi-percentage', route: '/inventory/units' },
     { label: 'العملاء', icon: 'pi pi-user-plus', route: '/sales/customers' },
     { label: 'الموردين', icon: 'pi pi-users', route: '/purchases/vendors' },
-    { label: 'الحسابات', icon: 'pi pi-wallet', route: '/accounting' },
+    { label: 'دليل الحسابات', icon: 'pi pi-sitemap', route: '/accounting' },
+    { label: 'الفترات المالية', icon: 'pi pi-calendar', route: '/accounting/fiscal-periods' },
     { label: 'أسعار الصرف', icon: 'pi pi-sync', route: '/accounting/exchange-rates' },
     { label: 'التقارير', icon: 'pi pi-chart-bar', route: '/reports' },
     { label: 'الإعدادات', icon: 'pi pi-cog', route: '/settings' }
