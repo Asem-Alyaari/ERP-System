@@ -6,6 +6,10 @@ export const ACCOUNTING_ROUTES: Routes = [
     loadComponent: () => import('./chart-of-accounts/chart-of-accounts.component').then(m => m.ChartOfAccountsComponent)
   },
   {
+    path: 'journal-entries',
+    loadComponent: () => import('./journal-entries/journal-entries.component').then(m => m.JournalEntriesComponent)
+  },
+  {
     path: 'fiscal-periods',
     loadComponent: () => import('./fiscal-periods/fiscal-periods.component').then(m => m.FiscalPeriodsComponent)
   },

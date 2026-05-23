@@ -1,0 +1,608 @@
+<!-- Toast & Confirm Dialog -->
+<p-toast position="top-right" />
+<p-confirmDialog />
+
+<div class="animate-fade-in erp-workspace">
+
+  <!-- ═══════════════════════════════════════════════════════════
+       TOOLBAR
+  ════════════════════════════════════════════════════════════ -->
+  <p-toolbar styleClass="mb-4 erp-toolbar">
+    <ng-template #start>
+      <div>
+        <h2 class="page-title">
+          <i class="pi pi-book"></i>
+          القيود اليومية
+        </h2>
+        <p class="page-subtitle">إدارة وترحيل قيود اليومية المحاسبية</p>
+      </div>
+    </ng-template>
+    <ng-template #end>
+      <p-button
+        label="قيد يومي جديد"
+        icon="pi pi-plus"
+        severity="primary"
+        (onClick)="openCreateDialog()"
+      />
+    </ng-template>
+  </p-toolbar>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       FILTER BAR
+  ════════════════════════════════════════════════════════════ -->
+  <div class="je-filter-bar mb-4">
+    <div class="je-filter-row">
+
+      <!-- Search -->
+      <div class="je-filter-field je-filter-search">
+        <label class="je-filter-label"><i class="pi pi-search"></i> بحث</label>
+        <input
+          pInputText
+          type="text"
+          [(ngModel)]="searchTerm"
+          placeholder="رقم القيد أو البيان..."
+          (keyup.enter)="onSearch()"
+          class="w-full"
+        />
+      </div>
+
+      <!-- Status Filter -->
+      <div class="je-filter-field">
+        <label class="je-filter-label"><i class="pi pi-filter"></i> الحالة</label>
+        <p-select
+          [options]="statusOptions"
+          [(ngModel)]="filterStatus"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="كل الحالات"
+          (onChange)="onSearch()"
+          styleClass="w-full"
+        />
+      </div>
+
+      <!-- Fiscal Period Filter -->
+      <div class="je-filter-field">
+        <label class="je-filter-label"><i class="pi pi-calendar"></i> الفترة المالية</label>
+        <p-select
+          [options]="fiscalPeriods"
+          [(ngModel)]="filterFiscalPeriodId"
+          optionLabel="yearName"
+          optionValue="id"
+          placeholder="كل الفترات"
+          [showClear]="true"
+          (onChange)="onSearch()"
+          styleClass="w-full"
+        />
+      </div>
+
+      <!-- Date From -->
+      <div class="je-filter-field">
+        <label class="je-filter-label"><i class="pi pi-calendar-plus"></i> من تاريخ</label>
+        <p-datepicker
+          [(ngModel)]="filterStartDate"
+          dateFormat="yy-mm-dd"
+          placeholder="من..."
+          [showButtonBar]="true"
+          [showClear]="true"
+          (onSelect)="onSearch()"
+          (onClearClick)="onSearch()"
+          styleClass="w-full"
+        />
+      </div>
+
+      <!-- Date To -->
+      <div class="je-filter-field">
+        <label class="je-filter-label"><i class="pi pi-calendar-minus"></i> إلى تاريخ</label>
+        <p-datepicker
+          [(ngModel)]="filterEndDate"
+          dateFormat="yy-mm-dd"
+          placeholder="إلى..."
+          [showButtonBar]="true"
+          [showClear]="true"
+          (onSelect)="onSearch()"
+          (onClearClick)="onSearch()"
+          styleClass="w-full"
+        />
+      </div>
+
+      <!-- Actions -->
+      <div class="je-filter-actions">
+        <p-button icon="pi pi-search" label="بحث" (onClick)="onSearch()" severity="primary" />
+        <p-button icon="pi pi-refresh" label="إعادة ضبط" (onClick)="resetFilters()" severity="secondary" [outlined]="true" />
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       ENTRIES TABLE
+  ════════════════════════════════════════════════════════════ -->
+  <div class="je-table-card">
+
+    <!-- Loading -->
+    <div *ngIf="isLoading" class="je-loading-state">
+      <p-progressSpinner styleClass="w-3rem h-3rem" strokeWidth="4" />
+      <span>جاري تحميل القيود...</span>
+    </div>
+
+    <!-- Empty -->
+    <div *ngIf="!isLoading && entries.length === 0" class="empty-state">
+      <i class="pi pi-book"></i>
+      <h3>لا توجد قيود يومية</h3>
+      <p>اضغط على "قيد يومي جديد" لإنشاء أول قيد محاسبي</p>
+    </div>
+
+    <!-- Table -->
+    <p-table
+      *ngIf="!isLoading && entries.length > 0"
+      [value]="entries"
+      styleClass="erp-table-prime"
+      [responsiveLayout]="'scroll'"
+    >
+      <ng-template #header>
+        <tr>
+          <th style="width:50px">#</th>
+          <th>رقم القيد</th>
+          <th>التاريخ</th>
+          <th>البيان</th>
+          <th>الفترة المالية</th>
+          <th class="text-center">إجمالي المدين</th>
+          <th class="text-center">إجمالي الدائن</th>
+          <th class="text-center">الحالة</th>
+          <th class="text-center" style="width:180px">العمليات</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-entry let-i="rowIndex">
+        <tr class="je-row" [class.je-row--posted]="entry.status === JournalEntryStatus.Posted">
+          <td class="text-muted font-sm">{{ (pageNumber - 1) * pageSize + i + 1 }}</td>
+          <td>
+            <span class="je-voucher-num">{{ entry.voucherNumber }}</span>
+          </td>
+          <td class="font-mono text-sm">{{ entry.transactionDate | date:'yyyy-MM-dd' }}</td>
+          <td>
+            <span class="je-description" [title]="entry.description || ''">
+              {{ entry.description || '—' }}
+            </span>
+          </td>
+          <td>
+            <span class="je-period-badge">{{ entry.fiscalPeriodName }}</span>
+          </td>
+          <td class="text-center je-amount-debit">{{ entry.totalDebit | number:'1.2-2' }}</td>
+          <td class="text-center je-amount-credit">{{ entry.totalCredit | number:'1.2-2' }}</td>
+          <td class="text-center">
+            <p-tag
+              [value]="getStatusLabel(entry.status)"
+              [severity]="getStatusSeverity(entry.status)"
+              [rounded]="true"
+            />
+          </td>
+          <td class="text-center">
+            <div class="action-btns">
+              <!-- View Detail -->
+              <p-button
+                icon="pi pi-eye"
+                severity="info"
+                [outlined]="true"
+                size="small"
+                pTooltip="عرض التفاصيل"
+                tooltipPosition="top"
+                (onClick)="openDetail(entry)"
+              />
+              <!-- Post -->
+              <p-button
+                *ngIf="entry.status === JournalEntryStatus.Draft"
+                icon="pi pi-send"
+                severity="success"
+                [outlined]="true"
+                size="small"
+                pTooltip="ترحيل القيد"
+                tooltipPosition="top"
+                (onClick)="confirmPost(entry)"
+              />
+              <!-- Unpost -->
+              <p-button
+                *ngIf="entry.status === JournalEntryStatus.Posted"
+                icon="pi pi-undo"
+                severity="warn"
+                [outlined]="true"
+                size="small"
+                pTooltip="إلغاء الترحيل"
+                tooltipPosition="top"
+                (onClick)="confirmUnpost(entry)"
+              />
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    <!-- Paginator -->
+    <div *ngIf="totalCount > pageSize" class="je-paginator">
+      <p-paginator
+        [rows]="pageSize"
+        [totalRecords]="totalCount"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        (onPageChange)="onPageChange($event)"
+        [first]="(pageNumber - 1) * pageSize"
+      />
+    </div>
+
+    <!-- Count -->
+    <div *ngIf="!isLoading && entries.length > 0" class="je-count">
+      <i class="pi pi-list"></i>
+      عدد النتائج: <strong>{{ totalCount }}</strong> قيد
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════════
+     CREATE JOURNAL ENTRY DIALOG
+═══════════════════════════════════════════════════════════════════ -->
+<p-dialog
+  [(visible)]="createDialogVisible"
+  header="إنشاء قيد يومي جديد"
+  [modal]="true"
+  [style]="{ width: '95vw', maxWidth: '1100px' }"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="erp-dialog je-create-dialog"
+>
+
+  <!-- Header Info Row -->
+  <div class="je-dialog-header-grid">
+
+    <div class="form-field">
+      <label class="form-label"><i class="pi pi-hashtag"></i> رقم القيد <span class="required">*</span></label>
+      <input
+        pInputText
+        [(ngModel)]="newEntry.voucherNumber"
+        placeholder="JV-20260101-0001"
+        class="w-full font-mono"
+        id="je-voucher-num"
+      />
+    </div>
+
+    <div class="form-field">
+      <label class="form-label"><i class="pi pi-calendar"></i> تاريخ القيد <span class="required">*</span></label>
+      <p-datepicker
+        [(ngModel)]="entryDate"
+        dateFormat="yy-mm-dd"
+        [showButtonBar]="true"
+        styleClass="w-full"
+        id="je-date"
+      />
+    </div>
+
+    <div class="form-field">
+      <label class="form-label"><i class="pi pi-calendar"></i> الفترة المالية <span class="required">*</span></label>
+      <p-select
+        [options]="fiscalPeriods"
+        [(ngModel)]="newEntry.fiscalPeriodId"
+        optionLabel="yearName"
+        optionValue="id"
+        placeholder="اختر الفترة..."
+        styleClass="w-full"
+        id="je-period"
+      />
+    </div>
+
+    <div class="form-field je-description-field">
+      <label class="form-label"><i class="pi pi-align-left"></i> البيان العام</label>
+      <input
+        pInputText
+        [(ngModel)]="newEntry.description"
+        placeholder="وصف القيد اليومي..."
+        class="w-full"
+        id="je-desc"
+      />
+    </div>
+
+  </div>
+
+  <p-divider />
+
+  <!-- Lines Section -->
+  <div class="je-lines-section">
+    <div class="je-lines-header">
+      <h3><i class="pi pi-list"></i> أسطر القيد</h3>
+      <p-button
+        label="إضافة سطر"
+        icon="pi pi-plus"
+        severity="secondary"
+        [outlined]="true"
+        size="small"
+        (onClick)="addLine()"
+      />
+    </div>
+
+    <!-- Lines Table -->
+    <div class="je-lines-table-wrap">
+      <table class="je-lines-table">
+        <thead>
+          <tr>
+            <th style="width:36px">#</th>
+            <th style="min-width:220px">الحساب <span class="required">*</span></th>
+            <th style="min-width:120px">مدين</th>
+            <th style="min-width:120px">دائن</th>
+            <th style="min-width:130px">العملة</th>
+            <th style="min-width:100px">سعر الصرف</th>
+            <th style="min-width:160px">البيان</th>
+            <th style="width:44px"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let line of lines; let i = index" class="je-line-row">
+            <td class="text-muted font-sm text-center">{{ i + 1 }}</td>
+            <td>
+              <p-select
+                [options]="accounts"
+                [(ngModel)]="line.accountId"
+                optionLabel="accountNameAr"
+                optionValue="id"
+                [filter]="true"
+                filterBy="accountCode,accountNameAr"
+                placeholder="اختر حساب..."
+                [showClear]="true"
+                styleClass="w-full"
+                [id]="'je-acc-' + i"
+                (onChange)="onAccountChange(line, line.accountId)"
+              >
+                <ng-template #item let-acc>
+                  <div class="je-acc-option">
+                    <span class="je-acc-code">{{ acc.accountCode }}</span>
+                    <span class="je-acc-name">{{ acc.accountNameAr }}</span>
+                  </div>
+                </ng-template>
+              </p-select>
+            </td>
+            <td>
+              <p-inputNumber
+                [(ngModel)]="line.debit"
+                [minFractionDigits]="2"
+                [maxFractionDigits]="2"
+                [min]="0"
+                mode="decimal"
+                styleClass="w-full"
+                [id]="'je-debit-' + i"
+                (onInput)="line.credit = line.debit > 0 ? 0 : line.credit"
+              />
+            </td>
+            <td>
+              <p-inputNumber
+                [(ngModel)]="line.credit"
+                [minFractionDigits]="2"
+                [maxFractionDigits]="2"
+                [min]="0"
+                mode="decimal"
+                styleClass="w-full"
+                [id]="'je-credit-' + i"
+                (onInput)="line.debit = line.credit > 0 ? 0 : line.debit"
+              />
+            </td>
+            <td>
+              <p-select
+                [options]="currencies"
+                [(ngModel)]="line.currencyId"
+                optionLabel="code"
+                optionValue="id"
+                styleClass="w-full"
+                [id]="'je-curr-' + i"
+                (onChange)="onCurrencyChange(line, line.currencyId)"
+              />
+            </td>
+            <td>
+              <p-inputNumber
+                [(ngModel)]="line.exchangeRate"
+                [minFractionDigits]="4"
+                [maxFractionDigits]="4"
+                [min]="0.0001"
+                mode="decimal"
+                styleClass="w-full"
+                [id]="'je-rate-' + i"
+              />
+            </td>
+            <td>
+              <input
+                pInputText
+                [(ngModel)]="line.memo"
+                placeholder="بيان السطر..."
+                class="w-full"
+                [id]="'je-memo-' + i"
+              />
+            </td>
+            <td class="text-center">
+              <button class="btn-icon je-remove-line" (click)="removeLine(i)" title="حذف السطر">
+                <i class="pi pi-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr class="je-totals-row" [class.je-totals--balanced]="isBalanced" [class.je-totals--unbalanced]="!isBalanced && totalDebit > 0">
+            <td colspan="2" class="je-totals-label">
+              <i class="pi" [ngClass]="isBalanced ? 'pi-check-circle' : 'pi-exclamation-triangle'"></i>
+              {{ isBalanced ? 'القيد متوازن ✓' : 'القيد غير متوازن !' }}
+            </td>
+            <td class="je-total-debit">{{ totalDebit | number:'1.2-2' }}</td>
+            <td class="je-total-credit">{{ totalCredit | number:'1.2-2' }}</td>
+            <td colspan="4"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <!-- Balance Hint -->
+    <div *ngIf="!isBalanced && totalDebit > 0" class="je-balance-alert">
+      <i class="pi pi-exclamation-triangle"></i>
+      الفرق: <strong>{{ (totalDebit - totalCredit) | number:'1.2-2' }}</strong>
+      — يجب أن يكون إجمالي المدين مساوياً لإجمالي الدائن
+    </div>
+
+  </div>
+
+  <!-- Dialog Footer -->
+  <ng-template #footer>
+    <div class="je-dialog-footer">
+      <p-button label="إلغاء" severity="secondary" [outlined]="true" (onClick)="createDialogVisible = false" />
+      <p-button
+        label="حفظ كمسودة"
+        icon="pi pi-save"
+        [loading]="isSaving"
+        [disabled]="!isBalanced || isSaving"
+        (onClick)="saveEntry()"
+      />
+    </div>
+  </ng-template>
+
+</p-dialog>
+
+
+<!-- ══════════════════════════════════════════════════════════════════
+     DETAIL DRAWER
+═══════════════════════════════════════════════════════════════════ -->
+<p-drawer
+  [(visible)]="detailDrawerVisible"
+  position="left"
+  [style]="{ width: '680px' }"
+  styleClass="je-detail-drawer"
+>
+  <ng-template #header>
+    <div class="je-drawer-header">
+      <i class="pi pi-book text-primary"></i>
+      <span>تفاصيل القيد اليومي</span>
+    </div>
+  </ng-template>
+
+  <!-- Loading -->
+  <div *ngIf="isLoadingDetail" class="je-loading-state">
+    <p-progressSpinner styleClass="w-3rem h-3rem" strokeWidth="4" />
+    <span>جاري تحميل التفاصيل...</span>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!isLoadingDetail && selectedEntry" class="je-detail-content">
+
+    <!-- Status Banner -->
+    <div class="je-status-banner" [attr.data-status]="selectedEntry.status">
+      <i class="pi"
+        [ngClass]="{
+          'pi-clock': selectedEntry.status === JournalEntryStatus.Draft,
+          'pi-check-circle': selectedEntry.status === JournalEntryStatus.Posted,
+          'pi-times-circle': selectedEntry.status === JournalEntryStatus.Cancelled
+        }">
+      </i>
+      <span>{{ getStatusLabel(selectedEntry.status) }}</span>
+
+      <!-- Action buttons inside banner -->
+      <div class="je-banner-actions">
+        <p-button
+          *ngIf="selectedEntry.status === JournalEntryStatus.Draft"
+          label="ترحيل القيد"
+          icon="pi pi-send"
+          severity="success"
+          size="small"
+          (onClick)="confirmPostSelected()"
+        />
+        <p-button
+          *ngIf="selectedEntry.status === JournalEntryStatus.Posted"
+          label="إلغاء الترحيل"
+          icon="pi pi-undo"
+          severity="warn"
+          size="small"
+          (onClick)="confirmUnpostSelected()"
+        />
+      </div>
+    </div>
+
+    <!-- Meta Info Grid -->
+    <div class="je-meta-grid">
+      <div class="je-meta-item">
+        <span class="je-meta-label">رقم القيد</span>
+        <span class="je-meta-value font-mono">{{ selectedEntry.voucherNumber }}</span>
+      </div>
+      <div class="je-meta-item">
+        <span class="je-meta-label">تاريخ القيد</span>
+        <span class="je-meta-value">{{ selectedEntry.transactionDate | date:'yyyy-MM-dd' }}</span>
+      </div>
+      <div class="je-meta-item">
+        <span class="je-meta-label">الفترة المالية</span>
+        <span class="je-meta-value">{{ selectedEntry.fiscalPeriodName }}</span>
+      </div>
+      <div class="je-meta-item">
+        <span class="je-meta-label">أُنشئ بواسطة</span>
+        <span class="je-meta-value">{{ selectedEntry.createdBy }}</span>
+      </div>
+      <div class="je-meta-item">
+        <span class="je-meta-label">تاريخ الإنشاء</span>
+        <span class="je-meta-value">{{ selectedEntry.createdAt | date:'yyyy-MM-dd HH:mm' }}</span>
+      </div>
+      <div *ngIf="selectedEntry.postedBy" class="je-meta-item">
+        <span class="je-meta-label">رُحِّل بواسطة</span>
+        <span class="je-meta-value">{{ selectedEntry.postedBy }}</span>
+      </div>
+      <div *ngIf="selectedEntry.postedAt" class="je-meta-item">
+        <span class="je-meta-label">تاريخ الترحيل</span>
+        <span class="je-meta-value">{{ selectedEntry.postedAt | date:'yyyy-MM-dd HH:mm' }}</span>
+      </div>
+      <div *ngIf="selectedEntry.description" class="je-meta-item je-meta-full">
+        <span class="je-meta-label">البيان</span>
+        <span class="je-meta-value">{{ selectedEntry.description }}</span>
+      </div>
+    </div>
+
+    <p-divider />
+
+    <!-- Lines Table -->
+    <h4 class="je-lines-title"><i class="pi pi-list"></i> أسطر القيد</h4>
+
+    <div class="je-detail-lines-wrap">
+      <table class="je-detail-lines-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>الحساب</th>
+            <th class="text-center">مدين</th>
+            <th class="text-center">دائن</th>
+            <th class="text-center">العملة</th>
+            <th>البيان</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let line of selectedEntry.lines; let i = index">
+            <td class="text-muted">{{ i + 1 }}</td>
+            <td>
+              <div class="je-detail-acc">
+                <span class="je-acc-code">{{ line.accountCode }}</span>
+                <span class="je-acc-name">{{ line.accountNameAr }}</span>
+              </div>
+            </td>
+            <td class="text-center je-amount-debit">
+              {{ line.debit > 0 ? (line.debit | number:'1.2-2') : '—' }}
+            </td>
+            <td class="text-center je-amount-credit">
+              {{ line.credit > 0 ? (line.credit | number:'1.2-2') : '—' }}
+            </td>
+            <td class="text-center">
+              <span class="je-period-badge">{{ line.currencyCode }}</span>
+            </td>
+            <td class="text-muted font-sm">{{ line.memo || '—' }}</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr class="je-totals-row je-totals--balanced">
+            <td colspan="2" class="je-totals-label">
+              <i class="pi pi-sigma"></i> الإجمالي
+            </td>
+            <td class="je-total-debit">{{ getDetailTotalDebit(selectedEntry) | number:'1.2-2' }}</td>
+            <td class="je-total-credit">{{ getDetailTotalCredit(selectedEntry) | number:'1.2-2' }}</td>
+            <td colspan="2"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+  </div>
+
+</p-drawer>

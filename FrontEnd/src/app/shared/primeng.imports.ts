@@ -38,6 +38,7 @@ import { DataViewModule }        from 'primeng/dataview';
 import { ChipModule }            from 'primeng/chip';
 import { StepsModule }           from 'primeng/steps';
 import { TabsModule }            from 'primeng/tabs';
+import { TreeModule }            from 'primeng/tree';           // for StockGroups tree view
 
 export const PRIMENG_IMPORTS = [
   // Data Display
@@ -87,4 +88,5 @@ export const PRIMENG_IMPORTS = [
 
   // Misc
   TooltipModule,
+  TreeModule,
 ] as const;

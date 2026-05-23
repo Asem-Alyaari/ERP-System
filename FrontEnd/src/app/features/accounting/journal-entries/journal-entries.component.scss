@@ -1,0 +1,465 @@
+// ============================================================
+// Journal Entries Component Styles
+// ============================================================
+
+// ── Filter Bar ───────────────────────────────────────────────
+.je-filter-bar {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-6);
+  box-shadow: var(--shadow-sm);
+}
+
+.je-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: flex-end;
+}
+
+.je-filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1 1 160px;
+  min-width: 140px;
+
+  &.je-filter-search {
+    flex: 2 1 220px;
+  }
+}
+
+.je-filter-label {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+
+  i { font-size: 0.75rem; }
+}
+
+.je-filter-actions {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+// ── Table Card ───────────────────────────────────────────────
+.je-table-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+// ── Loading State ─────────────────────────────────────────────
+.je-loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  gap: var(--space-3);
+  color: var(--text-muted);
+}
+
+// ── Table Rows ───────────────────────────────────────────────
+.je-row {
+  &--posted {
+    background: rgba(16, 185, 129, 0.03) !important;
+  }
+}
+
+.je-voucher-num {
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--color-primary);
+  background: rgba(37, 99, 235, 0.06);
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.02em;
+}
+
+.je-description {
+  max-width: 220px;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.je-period-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(14, 165, 233, 0.1);
+  color: #0369a1;
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--radius-full);
+}
+
+.je-amount-debit {
+  color: #dc2626;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+}
+
+.je-amount-credit {
+  color: #059669;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+}
+
+// ── Paginator & Count ─────────────────────────────────────────
+.je-paginator {
+  border-top: 1px solid var(--border-color);
+}
+
+.je-count {
+  padding: var(--space-3) var(--space-6);
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  border-top: 1px solid var(--border-color);
+
+  strong { color: var(--text-primary); }
+}
+
+// ── Create Dialog ─────────────────────────────────────────────
+.je-dialog-header-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-2);
+
+  .je-description-field {
+    grid-column: span 2;
+  }
+}
+
+// ── Lines Section ─────────────────────────────────────────────
+.je-lines-section {
+  margin-top: var(--space-2);
+}
+
+.je-lines-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+
+  h3 {
+    font-size: var(--font-size-md);
+    font-weight: 700;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+
+    i { color: var(--color-primary); }
+  }
+}
+
+.je-lines-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+}
+
+.je-lines-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--font-size-sm);
+
+  thead tr {
+    background: #f8fafc;
+
+    th {
+      padding: 0.65rem 0.75rem;
+      color: var(--text-secondary);
+      font-weight: 700;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-bottom: 2px solid var(--border-color);
+      white-space: nowrap;
+      text-align: right;
+    }
+  }
+
+  tbody tr {
+    &:hover { background: #fafbfc; }
+
+    td {
+      padding: 0.5rem 0.6rem;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+    }
+
+    &:last-child td { border-bottom: none; }
+  }
+}
+
+// ── Lines totals footer ───────────────────────────────────────
+.je-totals-row {
+  td { padding: 0.65rem 0.75rem !important; }
+
+  .je-totals-label {
+    font-weight: 700;
+    font-size: var(--font-size-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .je-total-debit {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-align: center;
+    color: #dc2626;
+  }
+
+  .je-total-credit {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-align: center;
+    color: #059669;
+  }
+
+  &--balanced {
+    background: rgba(16, 185, 129, 0.06) !important;
+    border-top: 2px solid #10b981;
+
+    .je-totals-label { color: #059669; }
+    td { border-bottom: none; }
+  }
+
+  &--unbalanced {
+    background: rgba(239, 68, 68, 0.05) !important;
+    border-top: 2px solid #ef4444;
+
+    .je-totals-label { color: #dc2626; }
+  }
+}
+
+// ── Account option inside select ──────────────────────────────
+.je-acc-option {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.je-acc-code {
+  font-family: 'Courier New', monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  min-width: 70px;
+  flex-shrink: 0;
+}
+
+.je-acc-name {
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+}
+
+// ── Remove line button ────────────────────────────────────────
+.je-remove-line {
+  color: var(--color-danger) !important;
+  &:hover {
+    background: rgba(239, 68, 68, 0.1) !important;
+    color: var(--color-danger) !important;
+  }
+}
+
+// ── Balance alert ─────────────────────────────────────────────
+.je-balance-alert {
+  margin-top: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.6rem 1rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+
+  i { color: var(--color-danger); }
+  strong { font-weight: 700; }
+}
+
+// ── Dialog Footer ─────────────────────────────────────────────
+.je-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-6);
+}
+
+// ── Detail Drawer ─────────────────────────────────────────────
+.je-drawer-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.je-detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-2);
+}
+
+// ── Status Banner ─────────────────────────────────────────────
+.je-status-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: var(--font-size-sm);
+
+  i { font-size: 1.1rem; }
+
+  .je-banner-actions { margin-right: auto; }
+
+  &[data-status="1"] {
+    background: #fef3c7;
+    border: 1px solid #fde68a;
+    color: #92400e;
+  }
+  &[data-status="2"] {
+    background: #d1fae5;
+    border: 1px solid #a7f3d0;
+    color: #065f46;
+  }
+  &[data-status="3"] {
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+  }
+}
+
+// ── Meta Grid ────────────────────────────────────────────────
+.je-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.je-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+
+  &.je-meta-full {
+    grid-column: 1 / -1;
+  }
+}
+
+.je-meta-label {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.je-meta-value {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+// ── Detail Lines ──────────────────────────────────────────────
+.je-lines-title {
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+
+  i { color: var(--color-primary); }
+}
+
+.je-detail-lines-wrap {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.je-detail-lines-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--font-size-sm);
+
+  thead tr {
+    background: #f8fafc;
+
+    th {
+      padding: 0.6rem 0.8rem;
+      color: var(--text-secondary);
+      font-weight: 700;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-bottom: 2px solid var(--border-color);
+      text-align: right;
+    }
+  }
+
+  tbody tr {
+    &:hover { background: #fafbfc; }
+
+    td {
+      padding: 0.65rem 0.8rem;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+    }
+
+    &:last-child td { border-bottom: none; }
+  }
+}
+
+.je-detail-acc {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+
+  .je-acc-code {
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-primary);
+  }
+
+  .je-acc-name {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+  }
+}

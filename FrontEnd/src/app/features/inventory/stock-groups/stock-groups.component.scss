@@ -1,0 +1,108 @@
+/* ============================================================
+   Stock Groups — Tree View Dashboard SCSS
+   ============================================================ */
+
+.sg-workspace {
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+// ── Tree Panel ─────────────────────────────────────────────
+.tree-panel {
+  background: var(--bg-surface, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: var(--radius-lg, 12px);
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,.05));
+  overflow: hidden;
+
+  // Parent node (non-detail)
+  ::ng-deep .tree-node-parent > .p-treenode-content {
+    font-weight: 700;
+    color: var(--text-primary, #111827);
+    background: rgba(99, 102, 241, .04);
+    border-radius: 8px;
+
+    .p-treenode-icon { color: #6366f1; }
+  }
+
+  // Detail (leaf) node
+  ::ng-deep .tree-node-detail > .p-treenode-content {
+    font-weight: 500;
+    color: var(--text-secondary, #374151);
+
+    .p-treenode-icon { color: #10b981; }
+  }
+
+  ::ng-deep .p-treenode-content:hover {
+    background: rgba(99, 102, 241, .06) !important;
+    border-radius: 8px;
+    transition: background 0.18s ease;
+  }
+
+  ::ng-deep .p-tree {
+    border: none !important;
+    padding: 0.5rem 0;
+  }
+}
+
+// ── Node action buttons ────────────────────────────────────
+.node-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  margin-inline-start: auto;
+}
+
+::ng-deep .p-treenode-content:hover .node-actions {
+  opacity: 1;
+}
+
+// ── Badge ──────────────────────────────────────────────────
+.badge-detail  { background: #d1fae5; color: #065f46; }
+.badge-parent  { background: #e0e7ff; color: #3730a3; }
+
+.group-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+}
+
+// ── Auto-generate toggle section ───────────────────────────
+.auto-generate-section {
+  background: linear-gradient(135deg, rgba(99,102,241,.06) 0%, rgba(16,185,129,.06) 100%);
+  border: 1px solid rgba(99, 102, 241, .2);
+  border-radius: 10px;
+  padding: 1rem;
+
+  .auto-generate-label {
+    font-weight: 600;
+    color: #3730a3;
+    font-size: 0.92rem;
+  }
+
+  .auto-generate-hint {
+    font-size: 0.78rem;
+    color: var(--text-muted, #6b7280);
+    margin-top: 2px;
+    line-height: 1.5;
+  }
+}
+
+// ── Dialog form overrides ──────────────────────────────────
+.dialog-form {
+  .form-section-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted, #9ca3af);
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color, #e5e7eb);
+    margin-bottom: 0.75rem;
+  }
+}

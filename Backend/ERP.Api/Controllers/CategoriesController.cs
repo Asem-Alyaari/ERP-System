@@ -3,6 +3,7 @@ using ERP.Application.Features.Inventory.Categories.Commands.Create;
 using ERP.Application.Features.Inventory.Categories.Commands.Update;
 using ERP.Application.Features.Inventory.Categories.Commands.Delete;
 using ERP.Application.Features.Inventory.Categories.Queries.GetAllCategories;
+using ERP.Application.Features.Inventory.Categories.Queries.GetCategoriesDropdown;
 using ERP.Application.Features.Inventory.Categories.Queries.GetCategoryById;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +15,17 @@ public class CategoriesController : ApiControllerBase
     public async Task<ActionResult<ERP.Application.Features.Inventory.Categories.Queries.GetCategoriesWithPagination.CategoriesPagedResponse>> GetAll([FromQuery] ERP.Application.Features.Inventory.Categories.Queries.GetCategoriesWithPagination.GetCategoriesWithPaginationQuery query)
     {
         return Ok(await Mediator.Send(query));
+    }
+
+    /// <summary>
+    /// قائمة التصنيفات المنسدلة — مخصصة لشاشة إنشاء/تعديل الأصناف.
+    /// تُعيد جميع التصنيفات مرتبة تصاعدياً حسب الاسم العربي.
+    /// </summary>
+    [HttpGet("dropdown")]
+    public async Task<ActionResult<List<CategoryDto>>> GetDropdown()
+    {
+        var result = await Mediator.Send(new GetCategoriesDropdownQuery());
+        return Ok(result);
     }
 
     [HttpGet("{id}")]

@@ -623,6 +623,12 @@ textarea {
 }
 
 .required { color: var(--color-danger); margin-right: 2px; }
+.field-optional {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-right: 4px;
+}
 
 // ── 18. ITEM DIALOG ──────────────────────────────────────────
 

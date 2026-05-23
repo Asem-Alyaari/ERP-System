@@ -1,6 +1,8 @@
 using ERP.Application.Features.Accounting.JournalEntries.Commands.Create;
 using ERP.Application.Features.Accounting.JournalEntries.Commands.Post;
 using ERP.Application.Features.Accounting.JournalEntries.Commands.Unpost;
+using ERP.Application.Features.Accounting.JournalEntries.Queries.GetJournalEntriesWithPagination;
+using ERP.Application.Features.Accounting.JournalEntries.Queries.GetJournalEntryById;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ERP.Api.Controllers;
@@ -8,13 +10,33 @@ namespace ERP.Api.Controllers;
 public class JournalEntriesController : ApiControllerBase
 {
     /// <summary>
+    /// الحصول على قائمة القيود اليومية مع الصفحات والفلاتر
+    /// </summary>
+    [HttpGet]
+    public async Task<ActionResult<JournalEntriesPagedResponse>> GetAll([FromQuery] GetJournalEntriesWithPaginationQuery query)
+    {
+        return Ok(await Mediator.Send(query));
+    }
+
+    /// <summary>
+    /// الحصول على تفاصيل قيد يومية محدد
+    /// </summary>
+    [HttpGet("{id}")]
+    public async Task<ActionResult<JournalEntryDetailDto>> GetById(Guid id)
+    {
+        var result = await Mediator.Send(new GetJournalEntryByIdQuery(id));
+        if (result == null) return NotFound();
+        return Ok(result);
+    }
+
+    /// <summary>
     /// إنشاء قيد يومية جديد (مسودة)
     /// </summary>
     [HttpPost]
     public async Task<IActionResult> Create(CreateJournalEntryCommand command)
     {
         var result = await Mediator.Send(command);
-        return CreatedAtAction(nameof(Create), new { id = result }, result);
+        return CreatedAtAction(nameof(GetById), new { id = result }, result);
     }
 
     /// <summary>
@@ -37,3 +59,4 @@ public class JournalEntriesController : ApiControllerBase
         return Ok(result);
     }
 }
+

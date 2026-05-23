@@ -17,6 +17,11 @@ public class Account : Entity
     
     public AccountType AccountType { get; private set; }
     public bool IsDetail { get; private set; }
+
+    /// <summary>
+    /// يحدد قاعدة مركز التكلفة على هذا الحساب أثناء ترحيل القيود.
+    /// </summary>
+    public CostCenterStatus CostCenterStatus { get; private set; }
     
     public Guid CurrencyId { get; private set; }
     public virtual Currency? Currency { get; private set; }
@@ -34,7 +39,8 @@ public class Account : Entity
         AccountType accountType, 
         bool isDetail, 
         Guid currencyId, 
-        Guid? parentAccountId = null) : base(id)
+        Guid? parentAccountId = null,
+        CostCenterStatus costCenterStatus = CostCenterStatus.Optional) : base(id)
     {
         AccountCode = accountCode;
         AccountNameAr = accountNameAr;
@@ -43,6 +49,7 @@ public class Account : Entity
         IsDetail = isDetail;
         CurrencyId = currencyId;
         ParentAccountId = parentAccountId;
+        CostCenterStatus = costCenterStatus;
     }
 
     public void UpdateDetails(string nameAr, string nameEn, bool isDetail)
@@ -56,5 +63,16 @@ public class Account : Entity
     {
         UpdateDetails(nameAr, nameEn, isDetail);
         CurrencyId = currencyId;
+    }
+
+    public void UpdateDetails(string nameAr, string nameEn, bool isDetail, Guid currencyId, CostCenterStatus costCenterStatus)
+    {
+        UpdateDetails(nameAr, nameEn, isDetail, currencyId);
+        CostCenterStatus = costCenterStatus;
+    }
+
+    public void SetCostCenterStatus(CostCenterStatus status)
+    {
+        CostCenterStatus = status;
     }
 }

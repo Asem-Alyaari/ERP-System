@@ -16,6 +16,10 @@ export interface StockGroup {
   costOfGoodsSoldAccountId?: string;
 }
 
+export interface StockGroupTreeDto extends StockGroup {
+  subGroups: StockGroupTreeDto[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -38,6 +42,18 @@ export class StockGroupService {
 
   getList(): Observable<StockGroup[]> {
     return this.http.get<StockGroup[]>(`${this.apiUrl}/list`);
+  }
+
+  /** يجلب المجموعات التفصيلية فقط (IsDetail == true) للـ Dropdown */
+  getDetailList(): Observable<StockGroup[]> {
+    return this.http.get<StockGroup[]>(`${this.apiUrl}/list`, {
+      params: { onlyDetails: 'true' }
+    });
+  }
+
+  /** يجلب الهيكل الشجري الكامل لشاشة تهيئة النظام */
+  getTree(): Observable<StockGroupTreeDto[]> {
+    return this.http.get<StockGroupTreeDto[]>(`${this.apiUrl}/tree`);
   }
 
   getById(id: string): Observable<StockGroup> {

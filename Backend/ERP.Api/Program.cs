@@ -54,6 +54,9 @@ using (var scope = app.Services.CreateScope())
 
         var context = services.GetRequiredService<ApplicationDbContext>();
         await DbInitializer.SeedCurrenciesAndAccounts(context);
+
+        // تصحيح شجرة الحسابات الحالية لدعم مجموعات الأصناف (Idempotent - آمن للتكرار)
+        await DbInitializer.PatchChartOfAccountsForStockGroups(context);
     }
     catch (Exception ex)
     {

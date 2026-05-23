@@ -67,10 +67,10 @@ export class ItemsComponent implements OnInit {
   }
 
   loadDropdowns() {
-    // 1. Load Detail Stock Groups
-    this.groupService.getList().subscribe({
+    // 1. Load Detail Stock Groups only (IsDetail == true) — via dedicated API endpoint
+    this.groupService.getDetailList().subscribe({
       next: (res) => {
-        this.stockGroups = (res || []).filter(g => g.isDetail);
+        this.stockGroups = res || [];
       }
     });
 

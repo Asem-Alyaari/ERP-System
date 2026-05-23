@@ -31,6 +31,11 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
         builder.Property(x => x.AccountType)
             .IsRequired();
 
+        builder.Property(x => x.CostCenterStatus)
+            .IsRequired()
+            .HasDefaultValue(ERP.Domain.Enums.CostCenterStatus.Optional)
+            .HasConversion<int>();
+
         builder.Property(x => x.IsDetail)
             .IsRequired()
             .HasDefaultValue(true);

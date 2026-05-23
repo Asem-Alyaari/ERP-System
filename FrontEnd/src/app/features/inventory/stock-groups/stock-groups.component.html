@@ -1,14 +1,19 @@
 <p-toast position="top-right" />
 <p-confirmDialog />
 
-<div class="animate-fade-in">
+<div class="sg-workspace">
 
-  <!-- Toolbar -->
+  <!-- ════════════════════════════════════════════════════
+       Toolbar
+  ════════════════════════════════════════════════════ -->
   <p-toolbar styleClass="mb-4 erp-toolbar">
     <ng-template #start>
       <div>
         <h2 class="page-title">مجموعات الأصناف</h2>
-        <p class="page-subtitle">إدارة شجرة المجموعات المخزنية والربط المحاسبي</p>
+        <p class="page-subtitle">
+          <i class="pi pi-sitemap me-1"></i>
+          الهيكل الشجري للمجموعات المخزنية مع الربط المحاسبي التلقائي
+        </p>
       </div>
     </ng-template>
     <ng-template #end>
@@ -21,154 +26,135 @@
     </ng-template>
   </p-toolbar>
 
-  <!-- DataTable -->
-  <p-table
-    #dt
-    [value]="groups"
-    [loading]="isLoading"
-    [paginator]="true"
-    [rows]="10"
-    [rowsPerPageOptions]="[10, 25, 50]"
-    [globalFilterFields]="['groupCode', 'groupNameAr', 'groupNameEn']"
-    dataKey="id"
-    styleClass="p-datatable-gridlines p-datatable-striped erp-table-prime"
-    [tableStyle]="{ 'min-width': '60rem' }"
-    [showCurrentPageReport]="true"
-    currentPageReportTemplate="عرض {first} إلى {last} من أصل {totalRecords} مجموعة"
-  >
-    <ng-template #caption>
-      <div class="table-caption">
-        <span class="p-input-icon-left">
-          <i class="pi pi-search"></i>
-          <input
-            pInputText
-            type="text"
-            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
-            placeholder="بحث..."
-            class="table-search"
-          />
-        </span>
-        <span class="table-count">إجمالي: {{ groups.length }} مجموعة</span>
-      </div>
-    </ng-template>
+  <!-- ════════════════════════════════════════════════════
+       Legend
+  ════════════════════════════════════════════════════ -->
+  <div class="flex gap-3 mb-4 flex-wrap">
+    <span class="group-badge badge-parent">
+      <i class="pi pi-folder text-xs"></i> مجموعة رئيسية (تنظيمية)
+    </span>
+    <span class="group-badge badge-detail">
+      <i class="pi pi-tag text-xs"></i> مجموعة تفصيلية (ترتبط بها الأصناف والحسابات)
+    </span>
+  </div>
 
-    <ng-template #header>
-      <tr>
-        <th pSortableColumn="groupCode" style="width:140px">
-          كود المجموعة <p-sortIcon field="groupCode" />
-        </th>
-        <th pSortableColumn="groupNameAr" style="min-width:200px">
-          الاسم (عربي) <p-sortIcon field="groupNameAr" />
-        </th>
-        <th pSortableColumn="groupNameEn" style="min-width:200px">
-          الاسم (إنجليزي) <p-sortIcon field="groupNameEn" />
-        </th>
-        <th style="min-width:180px">المجموعة الأب</th>
-        <th pSortableColumn="isDetail" style="width:150px; text-align:center">
-          نوع المجموعة <p-sortIcon field="isDetail" />
-        </th>
-        <th style="width:130px; text-align:center">الإجراءات</th>
-      </tr>
-    </ng-template>
+  <!-- ════════════════════════════════════════════════════
+       Tree Panel
+  ════════════════════════════════════════════════════ -->
+  <div class="tree-panel p-3">
 
-    <ng-template #body let-group>
-      <tr>
-        <td>
-          <span class="font-mono font-bold text-gray-700">{{ group.groupCode }}</span>
-        </td>
-        <td>{{ group.groupNameAr }}</td>
-        <td>{{ group.groupNameEn }}</td>
-        <td>
-          <span class="text-gray-500" *ngIf="group.parentGroupId">
-            {{ getParentGroupName(group.parentGroupId) }}
+    <p-tree
+      [value]="treeNodes"
+      [loading]="isLoading"
+      styleClass="w-full"
+      selectionMode="single"
+    >
+      <!-- ── Custom Node Template ── -->
+      <ng-template let-node pTemplate="default">
+        <div class="flex align-items-center gap-2 w-full py-1">
+
+          <!-- Icon -->
+          <i [class]="node.icon + ' text-sm'"></i>
+
+          <!-- Code Badge -->
+          <span class="font-mono text-xs font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded">
+            {{ node.data.groupCode }}
           </span>
-          <span class="text-gray-400 italic" *ngIf="!group.parentGroupId">
-            — مجموعة رئيسية —
+
+          <!-- Name -->
+          <span class="flex-1">{{ node.data.groupNameAr }}</span>
+          <span class="text-gray-400 text-xs hidden md:block">{{ node.data.groupNameEn }}</span>
+
+          <!-- Type Badge -->
+          <span
+            class="group-badge ms-2"
+            [ngClass]="node.data.isDetail ? 'badge-detail' : 'badge-parent'"
+          >
+            {{ node.data.isDetail ? 'تفصيلية' : 'رئيسية' }}
           </span>
-        </td>
-        <td style="text-align:center">
-          <p-tag
-            [value]="group.isDetail ? 'مجموعة تفصيلية' : 'مجموعة رئيسية'"
-            [severity]="group.isDetail ? 'success' : 'warn'"
-          />
-        </td>
-        <td style="text-align:center">
-          <div class="action-btns">
+
+          <!-- Accounting indicator -->
+          <i
+            *ngIf="node.data.isDetail && node.data.inventoryAccountId"
+            class="pi pi-link text-emerald-500 text-xs"
+            pTooltip="مرتبطة بحسابات مالية"
+            tooltipPosition="top"
+          ></i>
+
+          <!-- Action Buttons -->
+          <div class="node-actions">
             <p-button
               icon="pi pi-pencil"
-              [rounded]="true"
-              [text]="true"
-              severity="info"
-              pTooltip="تعديل"
-              tooltipPosition="top"
-              (onClick)="openEditDialog(group)"
+              [rounded]="true" [text]="true"
+              severity="info" size="small"
+              pTooltip="تعديل" tooltipPosition="top"
+              (onClick)="openEditDialog(node.data)"
             />
             <p-button
               icon="pi pi-trash"
-              [rounded]="true"
-              [text]="true"
-              severity="danger"
-              pTooltip="حذف"
-              tooltipPosition="top"
-              (onClick)="confirmDelete(group)"
+              [rounded]="true" [text]="true"
+              severity="danger" size="small"
+              pTooltip="حذف" tooltipPosition="top"
+              (onClick)="confirmDelete(node.data)"
             />
           </div>
-        </td>
-      </tr>
-    </ng-template>
 
-    <ng-template #emptymessage>
-      <tr>
-        <td colspan="6" class="empty-state">
-          <i class="pi pi-folder-open"></i>
-          <p>لا توجد مجموعات أصناف مضافة حالياً</p>
-        </td>
-      </tr>
-    </ng-template>
-  </p-table>
+        </div>
+      </ng-template>
+
+      <!-- ── Empty State ── -->
+      <ng-template pTemplate="empty">
+        <div class="empty-state">
+          <i class="pi pi-sitemap"></i>
+          <p>لا توجد مجموعات أصناف بعد. ابدأ بإضافة مجموعتك الأولى.</p>
+        </div>
+      </ng-template>
+
+    </p-tree>
+  </div>
 
 </div>
 
-<!-- Add / Edit Dialog -->
+<!-- ════════════════════════════════════════════════════
+     Add / Edit Dialog
+════════════════════════════════════════════════════ -->
 <p-dialog
   [(visible)]="dialogVisible"
-  [header]="isEditMode ? 'تعديل المجموعة المخزنية' : 'إضافة مجموعة جديدة'"
+  [header]="isEditMode ? 'تعديل المجموعة المخزنية' : 'إضافة مجموعة مخزنية جديدة'"
   [modal]="true"
-  [style]="{ width: '480px' }"
+  [style]="{ width: '520px' }"
   [draggable]="false"
   [resizable]="false"
   styleClass="erp-dialog"
 >
-  <form (ngSubmit)="saveGroup()" #groupForm="ngForm" class="dialog-form">
+  <form (ngSubmit)="saveGroup()" #groupForm="ngForm" class="dialog-form flex flex-column gap-4">
 
-    <div class="form-field">
-      <label for="groupCode" class="form-label">
-        كود المجموعة <span class="required">*</span>
-      </label>
-      <input
-        pInputText
-        id="groupCode"
-        name="groupCode"
-        [(ngModel)]="currentGroup.groupCode"
-        required
-        placeholder="مثال: 101"
-        class="w-full"
-      />
-    </div>
+    <!-- ── القسم 1: المعرّفات ── -->
+    <div class="form-section-title">بيانات المجموعة</div>
 
-    <div class="form-field">
-      <label for="groupNameAr" class="form-label">
-        الاسم (عربي) <span class="required">*</span>
-      </label>
-      <input
-        pInputText
-        id="groupNameAr"
-        name="groupNameAr"
-        [(ngModel)]="currentGroup.groupNameAr"
-        required
-        placeholder="مثال: مستلزمات الحاسب"
-        class="w-full"
-      />
+    <div class="grid grid-cols-3 gap-3">
+      <div class="form-field col-span-1">
+        <label for="groupCode" class="form-label">
+          الكود <span class="required">*</span>
+        </label>
+        <input
+          pInputText id="groupCode" name="groupCode"
+          [(ngModel)]="currentGroup.groupCode"
+          required placeholder="مثال: G-101"
+          class="w-full font-mono"
+        />
+      </div>
+      <div class="form-field col-span-2">
+        <label for="groupNameAr" class="form-label">
+          الاسم (عربي) <span class="required">*</span>
+        </label>
+        <input
+          pInputText id="groupNameAr" name="groupNameAr"
+          [(ngModel)]="currentGroup.groupNameAr"
+          required placeholder="مثال: مستلزمات الحاسب"
+          class="w-full"
+        />
+      </div>
     </div>
 
     <div class="form-field">
@@ -176,56 +162,81 @@
         الاسم (إنجليزي) <span class="required">*</span>
       </label>
       <input
-        pInputText
-        id="groupNameEn"
-        name="groupNameEn"
+        pInputText id="groupNameEn" name="groupNameEn"
         [(ngModel)]="currentGroup.groupNameEn"
-        required
-        placeholder="e.g. Computer Supplies"
+        required placeholder="e.g. Computer Supplies"
         class="w-full"
       />
     </div>
+
+    <!-- ── القسم 2: الهيكل ── -->
+    <div class="form-section-title">الهيكل الشجري</div>
 
     <div class="form-field">
-      <label for="parentGroupId" class="form-label">المجموعة الأب (إن وجد)</label>
+      <label for="parentGroupId" class="form-label">المجموعة الأب (اختياري)</label>
       <p-select
-        id="parentGroupId"
-        name="parentGroupId"
+        id="parentGroupId" name="parentGroupId"
         [options]="flatGroups"
         [(ngModel)]="currentGroup.parentGroupId"
-        optionLabel="groupNameAr"
-        optionValue="id"
-        [filter]="true"
-        filterPlaceholder="بحث..."
-        placeholder="اختر المجموعة الأب"
-        class="w-full"
-        [showClear]="true"
+        optionLabel="groupNameAr" optionValue="id"
+        [filter]="true" filterPlaceholder="بحث في المجموعات..."
+        placeholder="— مجموعة رئيسية بدون أب —"
+        class="w-full" [showClear]="true"
       />
     </div>
 
-    <div class="form-field flex align-items-center gap-2 py-2">
-      <p-toggleSwitch
-        id="isDetail"
-        name="isDetail"
-        [(ngModel)]="currentGroup.isDetail"
-      />
-      <label for="isDetail" class="form-label mb-0 cursor-pointer">
-        مجموعة تفصيلية (يمكن ربط أصناف بها مباشرة)
-      </label>
+    <div class="form-field flex align-items-center gap-3 py-1">
+      <p-toggleSwitch id="isDetail" name="isDetail" [(ngModel)]="currentGroup.isDetail" />
+      <div>
+        <label for="isDetail" class="form-label mb-0 cursor-pointer font-semibold">
+          مجموعة تفصيلية
+        </label>
+        <p class="text-xs text-gray-500 mt-0.5">
+          تُمكّن ربط الأصناف المباشرة وإنشاء الحسابات المحاسبية
+        </p>
+      </div>
     </div>
 
-    <div class="dialog-footer mt-4">
+    <!-- ── القسم 3: الربط المحاسبي (لمجموعات IsDetail فقط) ── -->
+    <div *ngIf="currentGroup.isDetail">
+      <div class="form-section-title">الربط المحاسبي</div>
+
+      <!-- Auto-generate Toggle -->
+      <div class="auto-generate-section mb-3">
+        <div class="flex align-items-center gap-3">
+          <p-toggleSwitch
+            id="autoGenerateAccounts"
+            name="autoGenerateAccounts"
+            [(ngModel)]="currentGroup.autoGenerateAccounts"
+          />
+          <div>
+            <div class="auto-generate-label">توليد الحسابات المالية تلقائياً</div>
+            <div class="auto-generate-hint">
+              سيُنشئ النظام تلقائياً حسابات (مخزن + مبيعات + تكلفة) تحت الأقسام الجذرية
+              في شجرة الحسابات عند الحفظ
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hint when auto-generate is ON -->
+      <div *ngIf="currentGroup.autoGenerateAccounts" class="p-3 bg-indigo-50 border border-indigo-200 rounded-lg text-sm text-indigo-800">
+        <i class="pi pi-info-circle me-1"></i>
+        سيتم توليد الحسابات الثلاثة تلقائياً عند الحفظ:
+        <ul class="list-disc list-inside mt-1 space-y-1 text-xs">
+          <li>مخزن {{ currentGroup.groupNameAr || '...' }} (تحت 1103)</li>
+          <li>مبيعات {{ currentGroup.groupNameAr || '...' }} (تحت 4101)</li>
+          <li>تكلفة مبيعات {{ currentGroup.groupNameAr || '...' }} (تحت 5101)</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- ── Footer ── -->
+    <div class="dialog-footer mt-2">
+      <p-button type="button" label="إلغاء" severity="secondary" [outlined]="true" (onClick)="closeDialog()" />
       <p-button
-        type="button"
-        label="إلغاء"
-        severity="secondary"
-        [outlined]="true"
-        (onClick)="closeDialog()"
-      />
-      <p-button
-        type="submit"
-        label="حفظ"
-        icon="pi pi-check"
+        type="submit" label="حفظ المجموعة" icon="pi pi-check"
         [disabled]="!groupForm.form.valid"
       />
     </div>

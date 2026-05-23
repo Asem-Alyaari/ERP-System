@@ -74,5 +74,21 @@ public class StockGroup : Entity
         SalesAccountId = salesAccountId;
         CostOfGoodsSoldAccountId = cogsAccountId;
     }
+
+    /// <summary>
+    /// يطبّق وراثة الحسابات المالية من المجموعة الأب.
+    /// لا يُطبّق إلا على الحسابات التي لم يتم تخصيصها يدوياً (Null).
+    /// </summary>
+    public void ApplyDefaultAccountsFromParent(StockGroup parentGroup)
+    {
+        if (!InventoryAccountId.HasValue)
+            InventoryAccountId = parentGroup.InventoryAccountId;
+
+        if (!SalesAccountId.HasValue)
+            SalesAccountId = parentGroup.SalesAccountId;
+
+        if (!CostOfGoodsSoldAccountId.HasValue)
+            CostOfGoodsSoldAccountId = parentGroup.CostOfGoodsSoldAccountId;
+    }
 }
 

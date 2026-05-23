@@ -256,8 +256,10 @@
         </div>
       </div>
 
-      <!-- Row 3: المجموعة + التصنيف -->
+      <!-- Row 3: المجموعة المخزنية + التصنيف التسويقي -->
       <div class="form-row">
+
+        <!-- ── المجموعة المخزنية: تفصيلية فقط ── -->
         <div class="form-group" style="flex: 1">
           <label class="field-label">
             <i class="pi pi-sitemap"></i>
@@ -272,17 +274,24 @@
             optionLabel="groupNameAr"
             optionValue="id"
             [filter]="true"
-            filterPlaceholder="بحث..."
-            placeholder="اختر المجموعة"
+            filterPlaceholder="بحث في المجموعات التفصيلية..."
+            placeholder="اختر المجموعة المخزنية"
             class="w-full"
             required
           />
+          <!-- تنبيه: فقط المجموعات التفصيلية المرتبطة بحسابات -->
+          <small class="field-hint" style="color: #6366f1; font-weight: 500;">
+            <i class="pi pi-info-circle"></i>
+            تعرض المجموعات التفصيلية فقط (IsDetail) المرتبطة بحسابات مالية
+          </small>
         </div>
 
+        <!-- ── التصنيف التسويقي: معزول تماماً عن المحاسبة ── -->
         <div class="form-group" style="flex: 1">
           <label class="field-label">
-            <i class="pi pi-tag"></i>
+            <i class="pi pi-tags"></i>
             التصنيف التسويقي
+            <span class="field-optional">(اختياري)</span>
           </label>
           <p-select
             id="categoryId"
@@ -292,12 +301,18 @@
             optionLabel="nameAr"
             optionValue="id"
             [filter]="true"
-            filterPlaceholder="بحث..."
-            placeholder="اختر التصنيف (اختياري)"
+            filterPlaceholder="بحث في التصنيفات..."
+            placeholder="— بدون تصنيف —"
             class="w-full"
             [showClear]="true"
           />
+          <!-- تنبيه: التصنيف مستقل عن المحاسبة -->
+          <small class="field-hint" style="color: #10b981; font-weight: 500;">
+            <i class="pi pi-tag"></i>
+            للتصنيف التسويقي وتقارير المبيعات — لا علاقة له بالحسابات
+          </small>
         </div>
+
       </div>
 
       <!-- Row 4: سعر الشراء + سعر البيع -->
