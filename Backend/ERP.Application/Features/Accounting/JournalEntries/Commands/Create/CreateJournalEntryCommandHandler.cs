@@ -47,8 +47,8 @@ public class CreateJournalEntryCommandHandler : IRequestHandler<CreateJournalEnt
             switch (account.CostCenterStatus)
             {
                 case CostCenterStatus.Required:
-                    // مركز التكلفة إلزامي - يجب أن يكون CostCenterId غير null
-                    if (!lineDto.CostCenterId.HasValue)
+                    // مركز التكلفة إلزامي - يجب أن يكون CostCenterId غير null وغير Guid.Empty
+                    if (!lineDto.CostCenterId.HasValue || lineDto.CostCenterId.Value == Guid.Empty)
                         throw new BusinessException(
                             $"الحساب '{account.AccountNameAr}' ({account.AccountCode}) يتطلب مركز تكلفة إلزامياً. " +
                             $"يرجى تحديد مركز تكلفة لهذا السطر.");

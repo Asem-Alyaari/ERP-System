@@ -58,11 +58,20 @@ using (var scope = app.Services.CreateScope())
         // تصحيح شجرة الحسابات الحالية لدعم مجموعات الأصناف (Idempotent - آمن للتكرار)
         await DbInitializer.PatchChartOfAccountsForStockGroups(context);
 
+        // تحديث حالة مركز التكلفة للحسابات المصروفية لتكون Required (Idempotent - آمن للتكرار)
+        await DbInitializer.PatchExpenseAccountsCostCenterStatus(context);
+
         // زرع بيانات Lookup الأساسية
         await DbInitializer.SeedUnits(context);
         await DbInitializer.SeedCategories(context);
         await DbInitializer.SeedCostCenters(context);
         await DbInitializer.SeedStockGroups(context);
+        
+        // زرع الفترة المالية
+        await DbInitializer.SeedFiscalPeriod(context);
+        
+        // زرع قيود يومية تجريبية
+        await DbInitializer.SeedSampleJournalEntries(context);
     }
     catch (Exception ex)
     {

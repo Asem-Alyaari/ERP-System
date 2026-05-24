@@ -115,8 +115,14 @@ export class JournalEntriesComponent implements OnInit {
         this.currencies = currencies || [];
         this.costCenters = costCenters || [];
         this.localCurrency = currencies.find(c => c.isLocal) ?? currencies[0] ?? null;
+
+        // تحذير إذا لم تكن هناك مراكز تكلفة
+        if (!this.costCenters || this.costCenters.length === 0) {
+          console.warn('No cost centers loaded');
+        }
       },
-      error: () => {
+      error: (err) => {
+        console.error('Failed to load lookups:', err);
         this.messageService.add({ severity: 'error', summary: 'خطأ', detail: 'فشل تحميل البيانات الأساسية' });
       }
     });
@@ -240,7 +246,11 @@ export class JournalEntriesComponent implements OnInit {
     const acc = this.accounts.find(a => a.id === accountId);
     line.accountDisplay = acc ? `${acc.accountCode} - ${acc.accountNameAr}` : '';
     // تحديث حالة مركز التكلفة بناءً على الحساب المختار
-    line.costCenterStatus = acc?.costCenterStatus || 'Optional';
+    // التأكد من أن القيمة من النوع الصحيح
+    const status = acc?.costCenterStatus || 'Optional';
+    line.costCenterStatus = (status === 'Required' || status === 'Optional' || status === 'Disabled')
+      ? status
+      : 'Optional';
     // إذا كان مركز التكلفة معطل، مسح القيمة المختارة
     if (line.costCenterStatus === 'Disabled') {
       line.costCenterId = null;
@@ -281,7 +291,7 @@ export class JournalEntriesComponent implements OnInit {
 
     // التحقق من مراكز التكلفة الإلزامية
     const missingRequiredCostCenters = this.lines.filter(
-      l => l.costCenterStatus === 'Required' && !l.costCenterId
+      l => l.costCenterStatus === 'Required' && (!l.costCenterId || l.costCenterId === '')
     );
     if (missingRequiredCostCenters.length > 0) {
       const accNames = missingRequiredCostCenters
@@ -310,7 +320,7 @@ export class JournalEntriesComponent implements OnInit {
         exchangeRate: l.exchangeRate || 1,
         foreignDebit: l.foreignDebit ?? undefined,
         foreignCredit: l.foreignCredit ?? undefined,
-        costCenterId: l.costCenterId ?? undefined,
+        costCenterId: (l.costCenterId && l.costCenterId !== '') ? l.costCenterId : undefined,
         memo: l.memo || undefined
       } as JournalEntryLineDto))
     };

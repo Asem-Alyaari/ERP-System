@@ -27,8 +27,11 @@ public class PostJournalEntryCommandHandler : IRequestHandler<PostJournalEntryCo
             throw new BusinessException("قيد اليومية غير موجود.");
 
         // ب- التحقق من حالة القيد (يجب أن يكون مسودة)
-        if (entry.Status != JournalEntryStatus.Draft)
-            throw new BusinessException($"لا يمكن ترحيل القيد لأنه بحالة: {entry.Status}");
+        if (entry.Status == JournalEntryStatus.Posted)
+            throw new BusinessException("هذا القيد مرحل مسبقاً ولا يمكن ترحيله مرة أخرى");
+
+        if (entry.Status == JournalEntryStatus.Cancelled)
+            throw new BusinessException("لا يمكن ترحيل قيد ملغي.");
 
         // ج- التحقق من الفترة المالية (هل ما زالت مفتوحة؟)
         if (entry.FiscalPeriod == null)

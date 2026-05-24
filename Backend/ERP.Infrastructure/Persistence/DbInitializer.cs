@@ -28,6 +28,23 @@ public static class DbInitializer
     
     // Stock Groups
     private static readonly Guid StockGroupMainInventoryId = Guid.Parse("44444444-4444-4444-4444-444444444401");
+    
+    // Fiscal Period
+    private static readonly Guid FiscalPeriod2026Id = Guid.Parse("55555555-5555-5555-5555-555555555501");
+    
+    // Journal Entries
+    private static readonly Guid JournalEntryPostedId = Guid.Parse("66666666-6666-6666-6666-666666666601");
+    private static readonly Guid JournalEntryDraftId = Guid.Parse("66666666-6666-6666-6666-666666666602");
+    
+    // Journal Entry Lines
+    private static readonly Guid JournalEntryLine1Id = Guid.Parse("77777777-7777-7777-7777-777777777701");
+    private static readonly Guid JournalEntryLine2Id = Guid.Parse("77777777-7777-7777-7777-777777777702");
+    private static readonly Guid JournalEntryLine3Id = Guid.Parse("77777777-7777-7777-7777-777777777703");
+    private static readonly Guid JournalEntryLine4Id = Guid.Parse("77777777-7777-7777-7777-777777777704");
+    
+    // Expense Accounts
+    private static readonly Guid TelephoneExpenseId = Guid.Parse("88888888-8888-8888-8888-888888888801");
+    private static readonly Guid ElectricityExpenseId = Guid.Parse("88888888-8888-8888-8888-888888888802");
     public static async Task SeedAdminUser(
         UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager)
@@ -124,10 +141,13 @@ public static class DbInitializer
             var generalSalesRev  = new Account(Guid.NewGuid(), "410101", "إيرادات المبيعات العامة", "General Sales Revenues",             AccountType.Revenue,  true, currencyId, salesRevGroup.Id);
             var generalCogs      = new Account(Guid.NewGuid(), "510101", "تكلفة البضاعة المباعة العامة", "General Cost of Goods Sold",    AccountType.Expense,  true, currencyId, cogsGroup.Id);
             var adminExp         = new Account(Guid.NewGuid(), "5102",   "المصروفات العمومية والإدارية", "General & Administrative Expenses", AccountType.Expense, true, currencyId, expenses.Id);
+            // Expense accounts with CostCenterStatus.Required for UI validation testing
+            var telephoneExpense = new Account(TelephoneExpenseId, "51010101", "مصروف الهاتف", "Telephone Expense", AccountType.Expense, true, currencyId, adminExp.Id, CostCenterStatus.Required);
+            var electricityExpense = new Account(ElectricityExpenseId, "51010102", "مصروف الكهرباء", "Electricity Expense", AccountType.Expense, true, currencyId, adminExp.Id, CostCenterStatus.Required);
 
             context.Accounts.AddRange(
                 mainCash, bankRajhi, generalCustomer, generalSupplier, capital,
-                generalInventory, generalSalesRev, generalCogs, adminExp);
+                generalInventory, generalSalesRev, generalCogs, adminExp, telephoneExpense, electricityExpense);
             await context.SaveChangesAsync();
         }
     }
@@ -338,5 +358,135 @@ public static class DbInitializer
             context.StockGroups.Add(mainInventoryGroup);
             await context.SaveChangesAsync();
         }
+    }
+
+    /// <summary>
+    /// زرع الفترة المالية الافتراضية
+    /// </summary>
+    public static async Task SeedFiscalPeriod(ApplicationDbContext context)
+    {
+        if (!await context.FiscalPeriods.AnyAsync())
+        {
+            var fiscalPeriod = new FiscalPeriod(
+                FiscalPeriod2026Id,
+                "2026",
+                new DateTime(2026, 1, 1),
+                new DateTime(2026, 12, 31));
+
+            context.FiscalPeriods.Add(fiscalPeriod);
+            await context.SaveChangesAsync();
+        }
+    }
+
+    /// <summary>
+    /// تحديث حالة مركز التكلفة للحسابات المصروفية لتكون Required
+    /// هذه الميثود آمنة للتكرار وتُشغَّل بعد SeedCurrenciesAndAccounts
+    /// </summary>
+    public static async Task PatchExpenseAccountsCostCenterStatus(ApplicationDbContext context)
+    {
+        // تحديث جميع الحسابات التي تبدأ بـ 5101 (مصروفات) لتكون CostCenterStatus.Required
+        await context.Database.ExecuteSqlRawAsync(@"
+            UPDATE Accounts
+            SET CostCenterStatus = 1
+            WHERE  AccountCode LIKE '5101%'
+              AND  IsDetail = 1
+              AND  CostCenterStatus <> 1;
+        ");
+    }
+
+    /// <summary>
+    /// زرع قيود يومية تجريبية متزنة (Debit = Credit)
+    /// </summary>
+    public static async Task SeedSampleJournalEntries(ApplicationDbContext context)
+    {
+        // التحقق من عدم وجود القيود مسبقاً (idempotent safeguard)
+        if (await context.JournalEntryMasters.AnyAsync(je => je.Id == JournalEntryPostedId || je.Id == JournalEntryDraftId))
+        {
+            return;
+        }
+
+        // جلب الحسابات والعملة اللازمة
+        var mainCashAccount = await context.Accounts.FirstOrDefaultAsync(a => a.AccountCode == "110101");
+        var electricityExpenseAccount = await context.Accounts.FirstOrDefaultAsync(a => a.AccountCode == "51010102");
+        var telephoneExpenseAccount = await context.Accounts.FirstOrDefaultAsync(a => a.AccountCode == "51010101");
+        var localCurrency = await context.Currencies.FirstOrDefaultAsync(c => c.IsLocal);
+        var fiscalPeriod = await context.FiscalPeriods.FirstOrDefaultAsync();
+
+        if (mainCashAccount == null || electricityExpenseAccount == null || telephoneExpenseAccount == null || 
+            localCurrency == null || fiscalPeriod == null)
+        {
+            return; // Skip if required data is missing
+        }
+
+        // ── القيد الأول: مرحل (Posted) - دفع فاتورة كهرباء لفرع صنعاء ───────────────
+        var postedEntry = new JournalEntryMaster(
+            JournalEntryPostedId,
+            "JV-2026-001",
+            new DateTime(2026, 1, 15),
+            "دفع فاتورة كهرباء - فرع صنعاء",
+            fiscalPeriod.Id,
+            "System");
+
+        postedEntry.Post("System"); // Set status to Posted immediately
+
+        var postedLine1 = new JournalEntryLine(
+            JournalEntryLine1Id,
+            JournalEntryPostedId,
+            electricityExpenseAccount.Id,
+            debit: 5000m,
+            credit: 0m,
+            localCurrency.Id,
+            exchangeRate: 1m,
+            costCenterId: CostCenterSanaaBranchId, // Assigned to Sanaa Branch (Code 2001)
+            memo: "فاتورة كهرباء يناير 2026");
+
+        var postedLine2 = new JournalEntryLine(
+            JournalEntryLine2Id,
+            JournalEntryPostedId,
+            mainCashAccount.Id,
+            debit: 0m,
+            credit: 5000m,
+            localCurrency.Id,
+            exchangeRate: 1m,
+            memo: "دفع نقداً");
+
+        context.JournalEntryMasters.Add(postedEntry);
+        context.JournalEntryLines.AddRange(postedLine1, postedLine2);
+        await context.SaveChangesAsync();
+
+        // ── القيد الثاني: مسودة (Draft) - فاتورة هاتف معلقة ───────────────────────────
+        var draftEntry = new JournalEntryMaster(
+            JournalEntryDraftId,
+            "JV-2026-002",
+            new DateTime(2026, 1, 20),
+            "فاتورة هاتف - قيد مسودة للاختبار",
+            fiscalPeriod.Id,
+            "System");
+        // Status remains Draft (default)
+
+        var draftLine1 = new JournalEntryLine(
+            JournalEntryLine3Id,
+            JournalEntryDraftId,
+            telephoneExpenseAccount.Id,
+            debit: 1500m,
+            credit: 0m,
+            localCurrency.Id,
+            exchangeRate: 1m,
+            costCenterId: CostCenterSanaaBranchId,
+            memo: "فاتورة هاتف فبراير 2026");
+
+        var draftLine2 = new JournalEntryLine(
+            JournalEntryLine4Id,
+            JournalEntryDraftId,
+            mainCashAccount.Id,
+            debit: 0m,
+            credit: 1500m,
+            localCurrency.Id,
+            exchangeRate: 1m,
+            memo: "دفع نقداً");
+
+        context.JournalEntryMasters.Add(draftEntry);
+        context.JournalEntryLines.AddRange(draftLine1, draftLine2);
+        await context.SaveChangesAsync();
     }
 }

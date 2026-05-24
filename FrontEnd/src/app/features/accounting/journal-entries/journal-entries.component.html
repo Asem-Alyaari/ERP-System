@@ -244,7 +244,7 @@
   [(visible)]="createDialogVisible"
   header="إنشاء قيد يومي جديد"
   [modal]="true"
-  [style]="{ width: '95vw', maxWidth: '1100px' }"
+  [style]="{ width: '98vw', maxWidth: '1400px' }"
   [draggable]="false"
   [resizable]="false"
   styleClass="erp-dialog je-create-dialog"
@@ -305,6 +305,12 @@
 
   <!-- Lines Section -->
   <div class="je-lines-section">
+    <!-- Cost Centers Warning -->
+    <div *ngIf="!costCenters || costCenters.length === 0" class="je-balance-alert" style="margin-bottom: 1rem; background: #fffbeb; border-color: #fcd34d; color: #92400e;">
+      <i class="pi pi-exclamation-triangle" style="color: #f59e0b;"></i>
+      <span>لا توجد مراكز تكلفة في النظام. يرجى إنشاء مراكز تكلفة أولاً من إعدادات مراكز التكلفة.</span>
+    </div>
+
     <div class="je-lines-header">
       <h3><i class="pi pi-list"></i> أسطر القيد</h3>
       <p-button
@@ -319,18 +325,18 @@
 
     <!-- Lines Table -->
     <div class="je-lines-table-wrap">
-      <table class="je-lines-table">
+      <table class="je-lines-table" style="min-width: 100%;">
         <thead>
           <tr>
-            <th style="width:36px">#</th>
-            <th style="min-width:220px">الحساب <span class="required">*</span></th>
-            <th style="min-width:120px">مدين</th>
-            <th style="min-width:120px">دائن</th>
-            <th style="min-width:130px">العملة</th>
-            <th style="min-width:100px">سعر الصرف</th>
-            <th style="min-width:180px">مركز التكلفة</th>
-            <th style="min-width:160px">البيان</th>
-            <th style="width:44px"></th>
+            <th style="width:35px">#</th>
+            <th style="width:22%">الحساب <span class="required">*</span></th>
+            <th style="width:11%">مدين</th>
+            <th style="width:11%">دائن</th>
+            <th style="width:9%">العملة</th>
+            <th style="width:8%">سعر الصرف</th>
+            <th style="width:18%"><i class="pi pi-sitemap"></i> مركز التكلفة</th>
+            <th style="width:16%">البيان</th>
+            <th style="width:40px"></th>
           </tr>
         </thead>
         <tbody>
@@ -405,7 +411,7 @@
               />
             </td>
             <td>
-              <div class="je-cost-center-cell" [ngClass]="getCostCenterStatusClass(line.costCenterStatus || 'Optional')">
+              <div class="je-cost-center-cell" [class]="getCostCenterStatusClass(line.costCenterStatus || 'Optional')">
                 <!-- Status Indicator -->
                 <div class="cc-status-indicator" [title]="getCostCenterStatusLabel(line.costCenterStatus || 'Optional')">
                   <i class="pi" [ngClass]="{
