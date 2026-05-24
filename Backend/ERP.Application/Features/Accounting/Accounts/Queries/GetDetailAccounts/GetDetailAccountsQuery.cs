@@ -1,4 +1,5 @@
 using ERP.Domain.Entities;
+using ERP.Domain.Enums;
 using ERP.Domain.Repositories;
 using MediatR;
 using System;
@@ -17,6 +18,7 @@ public class AccountLookupDto
     public string AccountCode { get; set; } = string.Empty;
     public string AccountNameAr { get; set; } = string.Empty;
     public string AccountNameEn { get; set; } = string.Empty;
+    public string CostCenterStatus { get; set; } = "Optional";
 }
 
 public class GetDetailAccountsQueryHandler : IRequestHandler<GetDetailAccountsQuery, List<AccountLookupDto>>
@@ -40,7 +42,8 @@ public class GetDetailAccountsQueryHandler : IRequestHandler<GetDetailAccountsQu
                 Id = a.Id,
                 AccountCode = a.AccountCode,
                 AccountNameAr = a.AccountNameAr,
-                AccountNameEn = a.AccountNameEn
+                AccountNameEn = a.AccountNameEn,
+                CostCenterStatus = a.CostCenterStatus.ToString()
             })
             .OrderBy(a => a.AccountCode)
             .ToList();

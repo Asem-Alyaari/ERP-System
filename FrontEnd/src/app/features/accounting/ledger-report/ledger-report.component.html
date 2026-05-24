@@ -1,0 +1,269 @@
+<!-- Toast -->
+<p-toast position="top-right" />
+
+<div class="animate-fade-in erp-workspace">
+
+  <!-- ═══════════════════════════════════════════════════════════
+       TOOLBAR
+  ════════════════════════════════════════════════════════════ -->
+  <p-toolbar styleClass="mb-4 erp-toolbar">
+    <ng-template #start>
+      <div>
+        <h2 class="page-title">
+          <i class="pi pi-book"></i>
+          كشف الحساب ودفتر الأستاذ العام
+        </h2>
+        <p class="page-subtitle">عرض حركة الحساب التفصيلية والأرصدة</p>
+      </div>
+    </ng-template>
+    <ng-template #end>
+      <p-button
+        label="تصدير"
+        icon="pi pi-file-pdf"
+        severity="secondary"
+        [loading]="isExporting"
+        [disabled]="!hasGeneratedReport"
+        (onClick)="exportReport()"
+      />
+    </ng-template>
+  </p-toolbar>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       FILTER PANEL
+  ════════════════════════════════════════════════════════════ -->
+  <div class="gl-filter-panel mb-4">
+    <div class="gl-filter-row">
+
+      <!-- Account Selection -->
+      <div class="gl-filter-field">
+        <label class="gl-filter-label"><i class="pi pi-wallet"></i> الحساب</label>
+        <p-select
+          [options]="accounts"
+          [(ngModel)]="selectedAccountId"
+          optionLabel="accountNameAr"
+          optionValue="id"
+          [filter]="true"
+          filterBy="accountCode,accountNameAr,accountNameEn"
+          placeholder="اختر الحساب..."
+          [showClear]="true"
+          styleClass="w-full"
+        />
+      </div>
+
+      <!-- Cost Center Selection (Optional) -->
+      <div class="gl-filter-field">
+        <label class="gl-filter-label"><i class="pi pi-sitemap"></i> مركز التكلفة <span class="field-optional">(اختياري)</span></label>
+        <p-select
+          [options]="costCenters"
+          [(ngModel)]="selectedCostCenterId"
+          optionLabel="costCenterNameAr"
+          optionValue="id"
+          [filter]="true"
+          filterBy="costCenterCode,costCenterNameAr,costCenterNameEn"
+          placeholder="كل المراكز..."
+          [showClear]="true"
+          styleClass="w-full"
+        />
+      </div>
+
+      <!-- From Date -->
+      <div class="gl-filter-field">
+        <label class="gl-filter-label"><i class="pi pi-calendar-plus"></i> من تاريخ</label>
+        <p-datepicker
+          [(ngModel)]="fromDate"
+          dateFormat="yy-mm-dd"
+          placeholder="من..."
+          [showButtonBar]="true"
+          [showClear]="true"
+          styleClass="w-full"
+        />
+      </div>
+
+      <!-- To Date -->
+      <div class="gl-filter-field">
+        <label class="gl-filter-label"><i class="pi pi-calendar-minus"></i> إلى تاريخ</label>
+        <p-datepicker
+          [(ngModel)]="toDate"
+          dateFormat="yy-mm-dd"
+          placeholder="إلى..."
+          [showButtonBar]="true"
+          [showClear]="true"
+          styleClass="w-full"
+        />
+      </div>
+
+      <!-- Actions -->
+      <div class="gl-filter-actions">
+        <p-button
+          label="عرض التقرير"
+          icon="pi pi-search"
+          severity="primary"
+          [loading]="isLoadingReport"
+          (onClick)="generateReport()"
+        />
+        <p-button
+          icon="pi pi-refresh"
+          severity="secondary"
+          outlined
+          (onClick)="resetFilters()"
+          pTooltip="إعادة تعيين"
+        />
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       FINANCIAL SUMMARY CARDS
+  ════════════════════════════════════════════════════════════ -->
+  <div *ngIf="hasGeneratedReport && report" class="gl-summary-grid mb-4">
+    <div *ngFor="let card of summaryCards" 
+         class="gl-summary-card {{ getSummaryCardClass(card.color) }}">
+      <div class="gl-card-icon">
+        <i [class]="card.icon"></i>
+      </div>
+      <div class="gl-card-content">
+        <div class="gl-card-label">{{ card.label }}</div>
+        <div class="gl-card-value">{{ formatCurrency(card.value) }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       REPORT HEADER INFO
+  ════════════════════════════════════════════════════════════ -->
+  <div *ngIf="hasGeneratedReport && report" class="gl-report-header mb-4">
+    <div class="gl-header-row">
+      <div class="gl-header-item">
+        <span class="gl-header-label">الحساب:</span>
+        <span class="gl-header-value">{{ report.accountCode }} - {{ report.accountNameAr }}</span>
+      </div>
+      <div class="gl-header-item" *ngIf="report.costCenterName">
+        <span class="gl-header-label">مركز التكلفة:</span>
+        <span class="gl-header-value">{{ report.costCenterName }}</span>
+      </div>
+    </div>
+    <div class="gl-header-row">
+      <div class="gl-header-item">
+        <span class="gl-header-label">الفترة:</span>
+        <span class="gl-header-value">{{ report.fromDate }} إلى {{ report.toDate }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       LEDGER TRANSACTIONS TABLE
+  ════════════════════════════════════════════════════════════ -->
+  <div *ngIf="hasGeneratedReport && report" class="gl-table-card">
+    <p-table
+      [value]="report.transactions"
+      [paginator]="true"
+      [rows]="15"
+      [rowsPerPageOptions]="[10, 15, 25, 50]"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="عرض {first} إلى {last} من أصل {totalRecords} حركة"
+      styleClass="erp-table-prime p-datatable-striped"
+      [scrollable]="true"
+      scrollHeight="flex"
+    >
+      <!-- Date Column -->
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 120px;">التاريخ</th>
+          <th style="width: 140px;">رقم القيد</th>
+          <th style="width: 120px;">المرجع</th>
+          <th>البيان</th>
+          <th style="width: 140px; text-align: left;">مدين</th>
+          <th style="width: 140px; text-align: left;">دائن</th>
+          <th style="width: 160px; text-align: left;">الرصيد المتحرك</th>
+          <th style="width: 150px;">مركز التكلفة</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-transaction>
+        <tr>
+          <!-- Date -->
+          <td>
+            <span class="gl-date">{{ transaction.date }}</span>
+          </td>
+
+          <!-- Voucher Number -->
+          <td>
+            <span class="gl-voucher-num">{{ transaction.voucherNumber }}</span>
+          </td>
+
+          <!-- Reference -->
+          <td>
+            <span class="gl-reference">{{ transaction.reference || '-' }}</span>
+          </td>
+
+          <!-- Description -->
+          <td>
+            <span class="gl-description">{{ transaction.description }}</span>
+          </td>
+
+          <!-- Debit -->
+          <td class="gl-amount-cell">
+            <span *ngIf="transaction.debit > 0" class="gl-amount-debit">
+              {{ formatCurrency(transaction.debit) }}
+            </span>
+            <span *ngIf="transaction.debit === 0">-</span>
+          </td>
+
+          <!-- Credit -->
+          <td class="gl-amount-cell">
+            <span *ngIf="transaction.credit > 0" class="gl-amount-credit">
+              {{ formatCurrency(transaction.credit) }}
+            </span>
+            <span *ngIf="transaction.credit === 0">-</span>
+          </td>
+
+          <!-- Running Balance -->
+          <td class="gl-amount-cell">
+            <span [ngClass]="transaction.runningBalance >= 0 ? 'gl-balance-positive' : 'gl-balance-negative'">
+              {{ formatCurrency(transaction.runningBalance) }}
+            </span>
+          </td>
+
+          <!-- Cost Center -->
+          <td>
+            <span *ngIf="transaction.costCenterName" class="gl-cost-center">
+              {{ transaction.costCenterName }}
+            </span>
+            <span *ngIf="!transaction.costCenterName">-</span>
+          </td>
+        </tr>
+      </ng-template>
+
+      <!-- Empty State -->
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="8" class="empty-state">
+            <i class="pi pi-inbox"></i>
+            <p>لا توجد حركات للفترة المحددة</p>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       EMPTY STATE (No Report Generated)
+  ════════════════════════════════════════════════════════════ -->
+  <div *ngIf="!hasGeneratedReport && !isLoadingReport" class="gl-empty-state">
+    <div class="gl-empty-content">
+      <i class="pi pi-file-text"></i>
+      <h3>كشف الحساب ودفتر الأستاذ العام</h3>
+      <p>اختر الحساب والفترة الزمنية لعرض حركة الحساب التفصيلية</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       LOADING STATE
+  ════════════════════════════════════════════════════════════ -->
+  <div *ngIf="isLoadingReport" class="gl-loading-state">
+    <p-progressSpinner styleClass="gl-spinner" strokeWidth="4" />
+    <p>جاري تحميل التقرير...</p>
+  </div>
+
+</div>

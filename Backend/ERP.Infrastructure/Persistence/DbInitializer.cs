@@ -9,6 +9,25 @@ namespace ERP.Infrastructure.Persistence;
 
 public static class DbInitializer
 {
+    // ── Hardcoded GUID Constants for Stable References ────────────────────────
+    
+    // Units
+    private static readonly Guid UnitPcsId = Guid.Parse("11111111-1111-1111-1111-111111111101");
+    private static readonly Guid UnitBoxId = Guid.Parse("11111111-1111-1111-1111-111111111102");
+    private static readonly Guid UnitPkgId = Guid.Parse("11111111-1111-1111-1111-111111111103");
+    
+    // Categories
+    private static readonly Guid CategoryGeneralItemsId = Guid.Parse("22222222-2222-2222-2222-222222222201");
+    private static readonly Guid CategoryFastMovingId = Guid.Parse("22222222-2222-2222-2222-222222222202");
+    
+    // Cost Centers
+    private static readonly Guid CostCenterGeneralAdminId = Guid.Parse("33333333-3333-3333-3333-333333333301");
+    private static readonly Guid CostCenterBranchesParentId = Guid.Parse("33333333-3333-3333-3333-333333333302");
+    private static readonly Guid CostCenterSanaaBranchId = Guid.Parse("33333333-3333-3333-3333-333333333303");
+    private static readonly Guid CostCenterAdenBranchId = Guid.Parse("33333333-3333-3333-3333-333333333304");
+    
+    // Stock Groups
+    private static readonly Guid StockGroupMainInventoryId = Guid.Parse("44444444-4444-4444-4444-444444444401");
     public static async Task SeedAdminUser(
         UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager)
@@ -204,5 +223,120 @@ public static class DbInitializer
                             5, 1, @Ccy3, @CogsParentId);
             END
         ");
+    }
+
+    /// <summary>
+    /// زرع الوحدات الأساسية (حبة، كرتون، طرد)
+    /// </summary>
+    public static async Task SeedUnits(ApplicationDbContext context)
+    {
+        if (!await context.Units.AnyAsync())
+        {
+            var units = new[]
+            {
+                new Unit(UnitPcsId, "حبة", "Piece", "PCS"),
+                new Unit(UnitBoxId, "كرتون", "Box", "BOX"),
+                new Unit(UnitPkgId, "طرد", "Package", "PKG")
+            };
+
+            context.Units.AddRange(units);
+            await context.SaveChangesAsync();
+        }
+    }
+
+    /// <summary>
+    /// زرع التصنيفات الأساسية (أصناف عامة، أصناف سريعة الحركة)
+    /// </summary>
+    public static async Task SeedCategories(ApplicationDbContext context)
+    {
+        if (!await context.Categories.AnyAsync())
+        {
+            var categories = new[]
+            {
+                new Category(CategoryGeneralItemsId, "أصناف عامة", "General Items"),
+                new Category(CategoryFastMovingId, "أصناف سريعة الحركة", "Fast Moving Items")
+            };
+
+            context.Categories.AddRange(categories);
+            await context.SaveChangesAsync();
+        }
+    }
+
+    /// <summary>
+    /// زرع شجرة مراكز التكلفة (الإدارة العامة، الفروع، فرع صنعاء، فرع عدن)
+    /// </summary>
+    public static async Task SeedCostCenters(ApplicationDbContext context)
+    {
+        if (!await context.CostCenters.AnyAsync())
+        {
+            // المستوى 1: الآباء (ليست تفصيلية)
+            var generalAdmin = new CostCenter(
+                CostCenterGeneralAdminId,
+                "1000",
+                "الإدارة العامة",
+                "General Administration",
+                isDetail: false);
+
+            var branchesParent = new CostCenter(
+                CostCenterBranchesParentId,
+                "2000",
+                "الفروع",
+                "Branches",
+                isDetail: false);
+
+            context.CostCenters.AddRange(generalAdmin, branchesParent);
+            await context.SaveChangesAsync();
+
+            // المستوى 2: الفروع التفصيلية (تحت الفروع)
+            var sanaaBranch = new CostCenter(
+                CostCenterSanaaBranchId,
+                "2001",
+                "فرع صنعاء",
+                "Sanaa Branch",
+                isDetail: true,
+                CostCenterBranchesParentId);
+
+            var adenBranch = new CostCenter(
+                CostCenterAdenBranchId,
+                "2002",
+                "فرع عدن",
+                "Aden Branch",
+                isDetail: true,
+                CostCenterBranchesParentId);
+
+            context.CostCenters.AddRange(sanaaBranch, adenBranch);
+            await context.SaveChangesAsync();
+        }
+    }
+
+    /// <summary>
+    /// زرع مجموعة المخازن الرئيسية مع ربطها بالحسابات المحاسبية الافتراضية
+    /// </summary>
+    public static async Task SeedStockGroups(ApplicationDbContext context)
+    {
+        if (!await context.StockGroups.AnyAsync())
+        {
+            // جلب الحسابات الجذرية للربط المحاسبي
+            var inventoryAccount = await context.Accounts
+                .FirstOrDefaultAsync(a => a.AccountCode == "1103"); // المخزون
+            var salesAccount = await context.Accounts
+                .FirstOrDefaultAsync(a => a.AccountCode == "4101"); // إيرادات المبيعات
+            var cogsAccount = await context.Accounts
+                .FirstOrDefaultAsync(a => a.AccountCode == "5101"); // تكلفة البضاعة المباعة
+
+            var mainInventoryGroup = new StockGroup(
+                StockGroupMainInventoryId,
+                "SG001",
+                "مجموعة المخازن الرئيسية",
+                "Main Inventory Group",
+                isDetail: false,
+                parentGroupId: null,
+                inventoryAccountId: inventoryAccount?.Id,
+                salesAccountId: salesAccount?.Id,
+                cogsAccountId: cogsAccount?.Id);
+
+            context.StockGroups.Add(mainInventoryGroup);
+            await context.SaveChangesAsync();
+        }
     }
 }

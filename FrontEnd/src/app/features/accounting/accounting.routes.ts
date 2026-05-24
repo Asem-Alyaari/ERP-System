@@ -10,6 +10,14 @@ export const ACCOUNTING_ROUTES: Routes = [
     loadComponent: () => import('./journal-entries/journal-entries.component').then(m => m.JournalEntriesComponent)
   },
   {
+    path: 'ledger-report',
+    loadComponent: () => import('./ledger-report/ledger-report.component').then(m => m.LedgerReportComponent)
+  },
+  {
+    path: 'cost-centers',
+    loadComponent: () => import('./cost-centers/cost-centers.component').then(m => m.CostCentersComponent)
+  },
+  {
     path: 'fiscal-periods',
     loadComponent: () => import('./fiscal-periods/fiscal-periods.component').then(m => m.FiscalPeriodsComponent)
   },

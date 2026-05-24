@@ -328,6 +328,7 @@
             <th style="min-width:120px">دائن</th>
             <th style="min-width:130px">العملة</th>
             <th style="min-width:100px">سعر الصرف</th>
+            <th style="min-width:180px">مركز التكلفة</th>
             <th style="min-width:160px">البيان</th>
             <th style="width:44px"></th>
           </tr>
@@ -404,6 +405,44 @@
               />
             </td>
             <td>
+              <div class="je-cost-center-cell" [ngClass]="getCostCenterStatusClass(line.costCenterStatus || 'Optional')">
+                <!-- Status Indicator -->
+                <div class="cc-status-indicator" [title]="getCostCenterStatusLabel(line.costCenterStatus || 'Optional')">
+                  <i class="pi" [ngClass]="{
+                    'pi-exclamation-circle': line.costCenterStatus === 'Required',
+                    'pi-info-circle': line.costCenterStatus === 'Optional',
+                    'pi-ban': line.costCenterStatus === 'Disabled'
+                  }"></i>
+                </div>
+                <!-- Cost Center Select -->
+                <p-select
+                  *ngIf="!isCostCenterDisabled(line.costCenterStatus || 'Optional')"
+                  [options]="costCenters"
+                  [(ngModel)]="line.costCenterId"
+                  optionLabel="costCenterNameAr"
+                  optionValue="id"
+                  [filter]="true"
+                  filterBy="costCenterCode,costCenterNameAr"
+                  [placeholder]="isCostCenterRequired(line.costCenterStatus || 'Optional') ? 'اختر مركز التكلفة *' : 'اختر مركز التكلفة'"
+                  [showClear]="!isCostCenterRequired(line.costCenterStatus || 'Optional')"
+                  styleClass="w-full"
+                  [id]="'je-cc-' + i"
+                  [class.cc-select-required]="isCostCenterRequired(line.costCenterStatus || 'Optional')"
+                >
+                  <ng-template #item let-cc>
+                    <div class="je-cc-option">
+                      <span class="je-cc-code">{{ cc.costCenterCode }}</span>
+                      <span class="je-cc-name">{{ cc.costCenterNameAr }}</span>
+                    </div>
+                  </ng-template>
+                </p-select>
+                <!-- Disabled State -->
+                <div *ngIf="isCostCenterDisabled(line.costCenterStatus || 'Optional')" class="cc-disabled-text">
+                  <span class="text-muted font-sm">معطل</span>
+                </div>
+              </div>
+            </td>
+            <td>
               <input
                 pInputText
                 [(ngModel)]="line.memo"
@@ -427,7 +466,7 @@
             </td>
             <td class="je-total-debit">{{ totalDebit | number:'1.2-2' }}</td>
             <td class="je-total-credit">{{ totalCredit | number:'1.2-2' }}</td>
-            <td colspan="4"></td>
+            <td colspan="5"></td>
           </tr>
         </tfoot>
       </table>
@@ -566,6 +605,7 @@
             <th class="text-center">مدين</th>
             <th class="text-center">دائن</th>
             <th class="text-center">العملة</th>
+            <th>مركز التكلفة</th>
             <th>البيان</th>
           </tr>
         </thead>
@@ -587,6 +627,13 @@
             <td class="text-center">
               <span class="je-period-badge">{{ line.currencyCode }}</span>
             </td>
+            <td>
+              <span *ngIf="line.costCenterNameAr" class="je-cc-badge">
+                <span class="je-cc-code-sm">{{ line.costCenterCode }}</span>
+                <span class="je-cc-name-sm">{{ line.costCenterNameAr }}</span>
+              </span>
+              <span *ngIf="!line.costCenterNameAr" class="text-muted font-sm">—</span>
+            </td>
             <td class="text-muted font-sm">{{ line.memo || '—' }}</td>
           </tr>
         </tbody>
@@ -597,7 +644,7 @@
             </td>
             <td class="je-total-debit">{{ getDetailTotalDebit(selectedEntry) | number:'1.2-2' }}</td>
             <td class="je-total-credit">{{ getDetailTotalCredit(selectedEntry) | number:'1.2-2' }}</td>
-            <td colspan="2"></td>
+            <td colspan="3"></td>
           </tr>
         </tfoot>
       </table>

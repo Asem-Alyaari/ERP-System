@@ -1,0 +1,278 @@
+<!-- Toast & Confirm Dialog -->
+<p-toast position="top-right" />
+<p-confirmDialog />
+
+<div class="animate-fade-in erp-workspace">
+
+  <!-- ═══════════════════════════════════════════════════════════
+       TOOLBAR
+  ════════════════════════════════════════════════════════════ -->
+  <p-toolbar styleClass="mb-4 erp-toolbar">
+    <ng-template #start>
+      <div>
+        <h2 class="page-title">
+          <i class="pi pi-sitemap"></i>
+          مراكز التكلفة
+        </h2>
+        <p class="page-subtitle">إدارة مراكز التكلفة والأقسام</p>
+      </div>
+    </ng-template>
+    <ng-template #end>
+      <p-button
+        label="مركز تكلفة جديد"
+        icon="pi pi-plus"
+        severity="primary"
+        (onClick)="openCreateDialog()"
+      />
+    </ng-template>
+  </p-toolbar>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       CONTENT GRID
+  ════════════════════════════════════════════════════════════ -->
+  <div class="cc-content-grid">
+    
+    <!-- Tree View Panel -->
+    <div class="cc-tree-panel">
+      <div class="cc-panel-header">
+        <h3><i class="pi pi-folder"></i> الهيكل التنظيمي</h3>
+      </div>
+      <div class="cc-panel-body">
+        <p-tree
+          [value]="treeData"
+          styleClass="cc-tree"
+          *ngIf="treeData.length > 0; else emptyTree"
+        />
+        <ng-template #emptyTree>
+          <div class="cc-empty-state">
+            <i class="pi pi-folder-open"></i>
+            <p>لا توجد مراكز تكلفة</p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+
+    <!-- List View Panel -->
+    <div class="cc-list-panel">
+      <div class="cc-panel-header">
+        <h3><i class="pi pi-list"></i> قائمة المراكز</h3>
+      </div>
+      <div class="cc-panel-body">
+        <p-table
+          [value]="costCenters"
+          [paginator]="true"
+          [rows]="10"
+          [rowsPerPageOptions]="[10, 25, 50]"
+          styleClass="erp-table-prime p-datatable-striped"
+          [scrollable]="true"
+          scrollHeight="flex"
+          *ngIf="!isLoading; else loading"
+        >
+          <!-- Code Column -->
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width: 120px;">الكود</th>
+              <th>الاسم (عربي)</th>
+              <th>الاسم (إنجليزي)</th>
+              <th style="width: 100px;">النوع</th>
+              <th style="width: 150px;">الأب</th>
+              <th style="width: 120px;">الإجراءات</th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-costCenter>
+            <tr>
+              <!-- Code -->
+              <td>
+                <span class="cc-code">{{ costCenter.costCenterCode }}</span>
+              </td>
+
+              <!-- Name Arabic -->
+              <td>
+                <span class="cc-name">{{ costCenter.costCenterNameAr }}</span>
+              </td>
+
+              <!-- Name English -->
+              <td>
+                <span class="cc-name-en">{{ costCenter.costCenterNameEn }}</span>
+              </td>
+
+              <!-- Type -->
+              <td>
+                <p-tag
+                  [value]="getDetailLabel(costCenter.isDetail)"
+                  [severity]="getDetailSeverity(costCenter.isDetail)"
+                  styleClass="cc-type-tag"
+                />
+              </td>
+
+              <!-- Parent -->
+              <td>
+                <span class="cc-parent">
+                  {{ getParentCode(costCenter.parentCostCenterId) }}
+                </span>
+              </td>
+
+              <!-- Actions -->
+              <td>
+                <div class="action-btns">
+                  <p-button
+                    icon="pi pi-pencil"
+                    size="small"
+                    text
+                    rounded
+                    pTooltip="تعديل"
+                    (onClick)="openEditDialog(costCenter)"
+                  />
+                  <p-button
+                    icon="pi pi-trash"
+                    size="small"
+                    text
+                    rounded
+                    severity="danger"
+                    pTooltip="حذف"
+                    (onClick)="confirmDelete(costCenter)"
+                  />
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+
+          <!-- Empty State -->
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="6" class="empty-state">
+                <i class="pi pi-inbox"></i>
+                <p>لا توجد مراكز تكلفة</p>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+
+        <ng-template #loading>
+          <div class="cc-loading-state">
+            <p-progressSpinner styleClass="cc-spinner" strokeWidth="4" />
+            <p>جاري التحميل...</p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       CREATE/EDIT DIALOG
+  ════════════════════════════════════════════════════════════ -->
+  <p-dialog
+    [(visible)]="dialogVisible"
+    [header]="isEditMode ? 'تعديل مركز التكلفة' : 'مركز تكلفة جديد'"
+    [modal]="true"
+    styleClass="erp-dialog"
+    [style]="{ width: '500px' }"
+  >
+    <div class="dialog-form">
+      
+      <!-- Code -->
+      <div class="form-group">
+        <label class="field-label">
+          <i class="pi pi-hashtag"></i>
+          الكود <span class="required">*</span>
+        </label>
+        <input
+          pInputText
+          type="text"
+          [(ngModel)]="editedCostCenter.costCenterCode"
+          placeholder="مثال: 1000"
+          class="w-full"
+        />
+      </div>
+
+      <!-- Name Arabic -->
+      <div class="form-group">
+        <label class="field-label">
+          <i class="pi pi-font"></i>
+          الاسم (عربي) <span class="required">*</span>
+        </label>
+        <input
+          pInputText
+          type="text"
+          [(ngModel)]="editedCostCenter.costCenterNameAr"
+          placeholder="مثال: الإدارة العامة"
+          class="w-full"
+        />
+      </div>
+
+      <!-- Name English -->
+      <div class="form-group">
+        <label class="field-label">
+          <i class="pi pi-font"></i>
+          الاسم (إنجليزي)
+        </label>
+        <input
+          pInputText
+          type="text"
+          [(ngModel)]="editedCostCenter.costCenterNameEn"
+          placeholder="مثال: General Administration"
+          class="w-full"
+        />
+      </div>
+
+      <!-- Type -->
+      <div class="form-group">
+        <label class="field-label">
+          <i class="pi pi-tag"></i>
+          النوع
+        </label>
+        <p-toggleButton
+          [(ngModel)]="editedCostCenter.isDetail"
+          onLabel="تفصيلي"
+          offLabel="رئيسي"
+          onIcon="pi-check"
+          offIcon="pi-times"
+          styleClass="w-full"
+        />
+      </div>
+
+      <!-- Parent -->
+      <div class="form-group">
+        <label class="field-label">
+          <i class="pi pi-sitemap"></i>
+          الأب <span class="field-optional">(اختياري)</span>
+        </label>
+        <p-select
+          [options]="getParentOptions()"
+          [(ngModel)]="editedCostCenter.parentCostCenterId"
+          optionLabel="costCenterNameAr"
+          optionValue="id"
+          placeholder="اختر الأب..."
+          [showClear]="true"
+          [filter]="true"
+          filterBy="costCenterCode,costCenterNameAr,costCenterNameEn"
+          styleClass="w-full"
+        />
+      </div>
+
+    </div>
+
+    <ng-template pTemplate="footer">
+      <div class="dialog-footer-bar">
+        <p-button
+          label="إلغاء"
+          icon="pi pi-times"
+          severity="secondary"
+          outlined
+          (onClick)="dialogVisible = false"
+        />
+        <p-button
+          label="حفظ"
+          icon="pi pi-check"
+          severity="primary"
+          [loading]="isSaving"
+          (onClick)="saveCostCenter()"
+        />
+      </div>
+    </ng-template>
+
+  </p-dialog>
+
+</div>

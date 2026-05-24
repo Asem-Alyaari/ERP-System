@@ -1,0 +1,168 @@
+// ============================================================
+// Cost Centers Component Styles
+// ============================================================
+
+// ── Content Grid ───────────────────────────────────────────────
+.cc-content-grid {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: var(--space-4);
+  min-height: 600px;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── Panel Styling ───────────────────────────────────────────────
+.cc-tree-panel,
+.cc-list-panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+
+.cc-panel-header {
+  background: var(--bg-surface-2);
+  border-bottom: 1px solid var(--border-color);
+  padding: var(--space-4) var(--space-6);
+
+  h3 {
+    font-size: var(--font-size-md);
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+
+    i {
+      color: var(--color-primary);
+      font-size: 1rem;
+    }
+  }
+}
+
+.cc-panel-body {
+  flex: 1;
+  padding: var(--space-4);
+  overflow: auto;
+}
+
+// ── Tree Styling ────────────────────────────────────────────────
+.cc-tree {
+  ::ng-deep .p-treenode {
+    padding: 0.25rem 0;
+  }
+
+  ::ng-deep .p-treenode-content {
+    border-radius: var(--radius-md);
+    padding: 0.5rem 0.75rem;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: var(--color-primary-alpha);
+    }
+  }
+
+  ::ng-deep .p-treenode-label {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+}
+
+.cc-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-10);
+  color: var(--text-muted);
+
+  i {
+    font-size: 3rem;
+    opacity: 0.3;
+    margin-bottom: var(--space-3);
+  }
+
+  p {
+    font-size: var(--font-size-sm);
+    margin: 0;
+  }
+}
+
+// ── Table Styling ───────────────────────────────────────────────
+.cc-code {
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--color-primary);
+  background: rgba(37, 99, 235, 0.06);
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.02em;
+}
+
+.cc-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.cc-name-en {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.cc-type-tag {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.cc-parent {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  background: var(--bg-surface-2);
+  padding: 0.15rem 0.4rem;
+  border-radius: var(--radius-sm);
+}
+
+.cc-no-parent {
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+}
+
+// ── Loading State ───────────────────────────────────────────────
+.cc-loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-10);
+  gap: var(--space-4);
+  color: var(--text-muted);
+
+  .cc-spinner {
+    width: 50px;
+    height: 50px;
+  }
+
+  p {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    margin: 0;
+  }
+}
+
+// ── Workspace Container ─────────────────────────────────────────
+.erp-workspace {
+  max-width: 100%;
+  margin: 0 auto;
+}

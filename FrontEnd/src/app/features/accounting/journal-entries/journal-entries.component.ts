@@ -13,6 +13,7 @@ import { FiscalPeriodService, FiscalPeriod } from '../../../core/services/fiscal
 import { AccountService, AccountLookup } from '../../../core/services/account.service';
 import { CurrencyService, Currency } from '../../../core/services/currency.service';
 import { forkJoin } from 'rxjs';
+import { CostCenterService, CostCenterLookup } from '../../../core/services/cost-center.service';
 
 export interface JournalLineForm {
   accountId: string;
@@ -23,7 +24,9 @@ export interface JournalLineForm {
   exchangeRate: number;
   foreignDebit: number | null;
   foreignCredit: number | null;
+  costCenterId: string | null;
   memo: string;
+  costCenterStatus?: 'Required' | 'Optional' | 'Disabled';
 }
 
 @Component({
@@ -63,6 +66,7 @@ export class JournalEntriesComponent implements OnInit {
   fiscalPeriods: FiscalPeriod[] = [];
   accounts: AccountLookup[] = [];
   currencies: Currency[] = [];
+  costCenters: CostCenterLookup[] = [];
   localCurrency: Currency | null = null;
 
   // ── Create Dialog ────────────────────────────────────────────
@@ -86,6 +90,7 @@ export class JournalEntriesComponent implements OnInit {
     private fiscalPeriodService: FiscalPeriodService,
     private accountService: AccountService,
     private currencyService: CurrencyService,
+    private costCenterService: CostCenterService,
     private messageService: MessageService,
     private confirmationService: ConfirmationService
   ) {}
@@ -101,12 +106,14 @@ export class JournalEntriesComponent implements OnInit {
     forkJoin({
       periods: this.fiscalPeriodService.getAll(),
       accounts: this.accountService.getDetailAccounts(),
-      currencies: this.currencyService.getList()
+      currencies: this.currencyService.getList(),
+      costCenters: this.costCenterService.getDetailCostCenters()
     }).subscribe({
-      next: ({ periods, accounts, currencies }) => {
+      next: ({ periods, accounts, currencies, costCenters }) => {
         this.fiscalPeriods = periods || [];
         this.accounts = accounts || [];
         this.currencies = currencies || [];
+        this.costCenters = costCenters || [];
         this.localCurrency = currencies.find(c => c.isLocal) ?? currencies[0] ?? null;
       },
       error: () => {
@@ -215,7 +222,9 @@ export class JournalEntriesComponent implements OnInit {
       exchangeRate: 1,
       foreignDebit: null,
       foreignCredit: null,
-      memo: ''
+      costCenterId: null,
+      memo: '',
+      costCenterStatus: 'Optional'
     });
   }
 
@@ -230,6 +239,12 @@ export class JournalEntriesComponent implements OnInit {
   onAccountChange(line: JournalLineForm, accountId: string): void {
     const acc = this.accounts.find(a => a.id === accountId);
     line.accountDisplay = acc ? `${acc.accountCode} - ${acc.accountNameAr}` : '';
+    // تحديث حالة مركز التكلفة بناءً على الحساب المختار
+    line.costCenterStatus = acc?.costCenterStatus || 'Optional';
+    // إذا كان مركز التكلفة معطل، مسح القيمة المختارة
+    if (line.costCenterStatus === 'Disabled') {
+      line.costCenterId = null;
+    }
   }
 
   onCurrencyChange(line: JournalLineForm, currencyId: string): void {
@@ -264,6 +279,23 @@ export class JournalEntriesComponent implements OnInit {
       return;
     }
 
+    // التحقق من مراكز التكلفة الإلزامية
+    const missingRequiredCostCenters = this.lines.filter(
+      l => l.costCenterStatus === 'Required' && !l.costCenterId
+    );
+    if (missingRequiredCostCenters.length > 0) {
+      const accNames = missingRequiredCostCenters
+        .map(l => l.accountDisplay)
+        .filter(name => name)
+        .join('، ');
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'مراكز تكلفة مفقودة',
+        detail: `يرجى تحديد مركز تكلفة للحسابات التالية: ${accNames}`
+      });
+      return;
+    }
+
     const command: CreateJournalEntryCommand = {
       voucherNumber: this.newEntry.voucherNumber!,
       transactionDate: this.formatDate(this.entryDate),
@@ -278,6 +310,7 @@ export class JournalEntriesComponent implements OnInit {
         exchangeRate: l.exchangeRate || 1,
         foreignDebit: l.foreignDebit ?? undefined,
         foreignCredit: l.foreignCredit ?? undefined,
+        costCenterId: l.costCenterId ?? undefined,
         memo: l.memo || undefined
       } as JournalEntryLineDto))
     };
@@ -385,5 +418,33 @@ export class JournalEntriesComponent implements OnInit {
 
   getDetailTotalCredit(entry: JournalEntryDetail): number {
     return entry.lines.reduce((s, l) => s + l.credit, 0);
+  }
+
+  // ── Cost Center Helpers ─────────────────────────────────────────
+
+  getCostCenterStatusClass(status: string): string {
+    switch (status) {
+      case 'Required': return 'cc-status-required';
+      case 'Optional': return 'cc-status-optional';
+      case 'Disabled': return 'cc-status-disabled';
+      default: return '';
+    }
+  }
+
+  getCostCenterStatusLabel(status: string): string {
+    switch (status) {
+      case 'Required': return 'إلزامي';
+      case 'Optional': return 'اختياري';
+      case 'Disabled': return 'معطل';
+      default: return '';
+    }
+  }
+
+  isCostCenterRequired(status: string): boolean {
+    return status === 'Required';
+  }
+
+  isCostCenterDisabled(status: string): boolean {
+    return status === 'Disabled';
   }
 }

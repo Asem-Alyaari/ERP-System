@@ -306,6 +306,130 @@
   strong { font-weight: 700; }
 }
 
+// ── Cost Center Cell ───────────────────────────────────────────
+.je-cost-center-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.25rem;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+  min-height: 38px;
+
+  // Required Status
+  &.cc-status-required {
+    background: rgba(239, 68, 68, 0.05);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+
+    .cc-status-indicator {
+      color: #dc2626;
+    }
+
+    ::ng-deep .p-select {
+      .p-select-label {
+        color: #991b1b;
+        font-weight: 500;
+      }
+    }
+  }
+
+  // Optional Status
+  &.cc-status-optional {
+    background: rgba(59, 130, 246, 0.03);
+    border: 1px solid rgba(59, 130, 246, 0.1);
+
+    .cc-status-indicator {
+      color: #3b82f6;
+    }
+  }
+
+  // Disabled Status
+  &.cc-status-disabled {
+    background: rgba(156, 163, 175, 0.05);
+    border: 1px solid rgba(156, 163, 175, 0.2);
+    opacity: 0.7;
+
+    .cc-status-indicator {
+      color: #9ca3af;
+    }
+  }
+}
+
+.cc-status-indicator {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  cursor: help;
+}
+
+.cc-disabled-text {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background: rgba(156, 163, 175, 0.1);
+  border-radius: var(--radius-sm);
+  font-style: italic;
+}
+
+.cc-select-required {
+  ::ng-deep .p-select {
+    .p-select-label {
+      color: #991b1b !important;
+    }
+  }
+}
+
+// ── Cost Center Option ─────────────────────────────────────────
+.je-cc-option {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.je-cc-code {
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  min-width: 70px;
+  flex-shrink: 0;
+}
+
+.je-cc-name {
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+}
+
+// ── Cost Center Badge (Detail View) ─────────────────────────────
+.je-cc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.2rem 0.5rem;
+  background: rgba(14, 165, 233, 0.08);
+  border: 1px solid rgba(14, 165, 233, 0.15);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+}
+
+.je-cc-code-sm {
+  font-family: 'Courier New', monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.je-cc-name-sm {
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+}
+
 // ── Dialog Footer ─────────────────────────────────────────────
 .je-dialog-footer {
   display: flex;

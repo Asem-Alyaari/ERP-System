@@ -8,6 +8,7 @@ export interface AccountLookup {
   accountCode: string;
   accountNameAr: string;
   accountNameEn: string;
+  costCenterStatus?: 'Required' | 'Optional' | 'Disabled';
 }
 
 export enum AccountType {

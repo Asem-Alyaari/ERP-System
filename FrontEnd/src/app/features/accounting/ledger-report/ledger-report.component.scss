@@ -1,0 +1,320 @@
+// ============================================================
+// Ledger Report Component Styles
+// ============================================================
+
+// ── Filter Panel ───────────────────────────────────────────────
+.gl-filter-panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-6);
+  box-shadow: var(--shadow-sm);
+}
+
+.gl-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: flex-end;
+}
+
+.gl-filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1 1 180px;
+  min-width: 160px;
+}
+
+.gl-filter-label {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+
+  i { font-size: 0.75rem; }
+}
+
+.gl-filter-actions {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+// ── Summary Cards Grid ───────────────────────────────────────────
+.gl-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-4);
+}
+
+.gl-summary-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  // Color Variants
+  &.gl-card-blue {
+    border-right: 4px solid var(--color-primary);
+    .gl-card-icon {
+      background: rgba(37, 99, 235, 0.1);
+      color: var(--color-primary);
+    }
+  }
+
+  &.gl-card-red {
+    border-right: 4px solid var(--color-danger);
+    .gl-card-icon {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--color-danger);
+    }
+  }
+
+  &.gl-card-green {
+    border-right: 4px solid var(--color-success);
+    .gl-card-icon {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--color-success);
+    }
+  }
+
+  &.gl-card-yellow {
+    border-right: 4px solid var(--color-warning);
+    .gl-card-icon {
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--color-warning);
+    }
+  }
+}
+
+.gl-card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.gl-card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.gl-card-label {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.gl-card-value {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  color: var(--text-primary);
+}
+
+// ── Report Header Info ───────────────────────────────────────────
+.gl-report-header {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-6);
+  box-shadow: var(--shadow-sm);
+}
+
+.gl-header-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+  margin-bottom: var(--space-2);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.gl-header-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.gl-header-label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.gl-header-value {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+// ── Table Card ───────────────────────────────────────────────────
+.gl-table-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+// ── Table Cell Styling ───────────────────────────────────────────
+.gl-date {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.gl-voucher-num {
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--color-primary);
+  background: rgba(37, 99, 235, 0.06);
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.02em;
+}
+
+.gl-reference {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.gl-description {
+  max-width: 280px;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.gl-amount-cell {
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-align: left !important;
+}
+
+.gl-amount-debit {
+  color: #dc2626;
+}
+
+.gl-amount-credit {
+  color: #059669;
+}
+
+.gl-balance-positive {
+  color: #059669;
+}
+
+.gl-balance-negative {
+  color: #dc2626;
+}
+
+.gl-cost-center {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  background: rgba(14, 165, 233, 0.1);
+  color: #0369a1;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+  display: inline-block;
+}
+
+// ── Empty State ─────────────────────────────────────────────────
+.gl-empty-state {
+  background: var(--bg-surface);
+  border: 2px dashed var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-10);
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.gl-empty-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+
+  i {
+    font-size: 4rem;
+    opacity: 0.3;
+    color: var(--color-primary);
+  }
+
+  h3 {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  p {
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+    margin: 0;
+  }
+}
+
+// ── Loading State ───────────────────────────────────────────────
+.gl-loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-10);
+  gap: var(--space-4);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  color: var(--text-muted);
+
+  .gl-spinner {
+    width: 50px;
+    height: 50px;
+  }
+
+  p {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    margin: 0;
+  }
+}
+
+// ── Workspace Container ─────────────────────────────────────────
+.erp-workspace {
+  max-width: 100%;
+  margin: 0 auto;
+}

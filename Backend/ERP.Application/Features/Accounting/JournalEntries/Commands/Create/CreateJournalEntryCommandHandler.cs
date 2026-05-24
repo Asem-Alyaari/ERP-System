@@ -1,4 +1,5 @@
 using ERP.Domain.Entities;
+using ERP.Domain.Enums;
 using ERP.Domain.Exceptions;
 using ERP.Domain.Repositories;
 using MediatR;
@@ -32,6 +33,7 @@ public class CreateJournalEntryCommandHandler : IRequestHandler<CreateJournalEnt
             throw new BusinessException($"القيد غير متوازن. إجمالي المدين: {totalDebit}، إجمالي الدائن: {totalCredit}");
 
         // 3. التحقق من أن الحسابات تحليلية (IsDetail == true)
+        // 4. التحقق من قواعد مراكز التكلفة بناءً على CostCenterStatus
         foreach (var lineDto in request.Lines)
         {
             var account = await _unitOfWork.Repository<Account>().GetByIdAsync(lineDto.AccountId);
@@ -40,9 +42,36 @@ public class CreateJournalEntryCommandHandler : IRequestHandler<CreateJournalEnt
 
             if (!account.IsDetail)
                 throw new BusinessException($"الحساب ({account.AccountNameAr}) ليس حساباً تحليلياً. لا يمكن استخدامه في القيود.");
+
+            // التحقق من قواعد مراكز التكلفة
+            switch (account.CostCenterStatus)
+            {
+                case CostCenterStatus.Required:
+                    // مركز التكلفة إلزامي - يجب أن يكون CostCenterId غير null
+                    if (!lineDto.CostCenterId.HasValue)
+                        throw new BusinessException(
+                            $"الحساب '{account.AccountNameAr}' ({account.AccountCode}) يتطلب مركز تكلفة إلزامياً. " +
+                            $"يرجى تحديد مركز تكلفة لهذا السطر.");
+                    break;
+
+                case CostCenterStatus.Disabled:
+                    // مركز التكلفة معطل - يجب أن يكون CostCenterId null
+                    if (lineDto.CostCenterId.HasValue)
+                        throw new BusinessException(
+                            $"الحساب '{account.AccountNameAr}' ({account.AccountCode}) لديه مراكز التكلفة معطلة. " +
+                            $"لا يمكن ربط مركز تكلفة بهذا السطر.");
+                    break;
+
+                case CostCenterStatus.Optional:
+                    // مركز التكلفة اختياري - قبول المعاملة سواء كان CostCenterId موجوداً أو null
+                    break;
+
+                default:
+                    throw new BusinessException($"حالة مركز التكلفة غير معروفة للحساب '{account.AccountNameAr}'.");
+            }
         }
 
-        // 4. إنشاء رأس القيد
+        // 5. إنشاء رأس القيد
         var entryMaster = new JournalEntryMaster(
             Guid.NewGuid(),
             request.VoucherNumber,
@@ -59,7 +88,7 @@ public class CreateJournalEntryCommandHandler : IRequestHandler<CreateJournalEnt
         {
             _unitOfWork.Repository<JournalEntryMaster>().Add(entryMaster);
 
-            // 5. إضافة أسطر القيد
+            // 6. إضافة أسطر القيد
             foreach (var lineDto in request.Lines)
             {
                 var line = new JournalEntryLine(

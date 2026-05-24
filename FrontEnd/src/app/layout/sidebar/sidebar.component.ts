@@ -23,6 +23,8 @@ export class SidebarComponent {
     { label: 'الموردين', icon: 'pi pi-users', route: '/purchases/vendors' },
     { label: 'دليل الحسابات', icon: 'pi pi-sitemap', route: '/accounting' },
     { label: 'القيود اليومية', icon: 'pi pi-book', route: '/accounting/journal-entries' },
+    { label: 'كشف الحساب', icon: 'pi pi-file-text', route: '/accounting/ledger-report' },
+    { label: 'مراكز التكلفة', icon: 'pi pi-sitemap', route: '/accounting/cost-centers' },
     { label: 'الفترات المالية', icon: 'pi pi-calendar', route: '/accounting/fiscal-periods' },
     { label: 'أسعار الصرف', icon: 'pi pi-sync', route: '/accounting/exchange-rates' },
     { label: 'التقارير', icon: 'pi pi-chart-bar', route: '/reports' },

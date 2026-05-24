@@ -57,6 +57,12 @@ using (var scope = app.Services.CreateScope())
 
         // تصحيح شجرة الحسابات الحالية لدعم مجموعات الأصناف (Idempotent - آمن للتكرار)
         await DbInitializer.PatchChartOfAccountsForStockGroups(context);
+
+        // زرع بيانات Lookup الأساسية
+        await DbInitializer.SeedUnits(context);
+        await DbInitializer.SeedCategories(context);
+        await DbInitializer.SeedCostCenters(context);
+        await DbInitializer.SeedStockGroups(context);
     }
     catch (Exception ex)
     {
