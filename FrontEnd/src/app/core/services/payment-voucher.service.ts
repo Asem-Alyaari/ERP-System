@@ -31,6 +31,7 @@ export interface CreatePaymentVoucherCommand {
   createdBy: string;
   notes?: string;
   vendorId?: string;
+  customerId?: string;
   destinationAccountId?: string;
   costCenterId?: string;
 }
@@ -46,6 +47,8 @@ export interface PaymentVoucherListItem {
   destinationType: VoucherPartnerType;
   vendorId?: string;
   vendorName?: string;
+  customerId?: string;
+  customerName?: string;
   destinationAccountId?: string;
   destinationAccountCode?: string;
   destinationAccountNameAr?: string;
@@ -73,5 +76,19 @@ export class PaymentVoucherService {
     return this.http.post<string>(`${this.apiUrl}/payment`, command);
   }
 
-  // Add more methods as needed (getAll, getById, post, etc.)
+  createReceipt(command: CreatePaymentVoucherCommand): Observable<string> {
+    return this.http.post<string>(`${this.apiUrl}/receipt`, command);
+  }
+
+  getAll(): Observable<PaymentVoucherListItem[]> {
+    return this.http.get<PaymentVoucherListItem[]>(`${this.apiUrl}/payment`);
+  }
+
+  getById(id: string): Observable<PaymentVoucherListItem> {
+    return this.http.get<PaymentVoucherListItem>(`${this.apiUrl}/payment/${id}`);
+  }
+
+  post(id: string, userId: string): Observable<boolean> {
+    return this.http.post<boolean>(`${this.apiUrl}/payment/${id}/post`, { userId });
+  }
 }

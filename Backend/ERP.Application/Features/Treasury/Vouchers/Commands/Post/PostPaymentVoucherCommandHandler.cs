@@ -40,6 +40,13 @@ public class PostPaymentVoucherCommandHandler : IRequestHandler<PostPaymentVouch
             if (fiscalPeriod == null)
                 throw new BusinessException("لا توجد فترة مالية مفتوحة لتوليد القيد المحاسبي.");
 
+            // الحصول على العملة المحلية
+            var currencies = await _unitOfWork.Repository<Currency>().ListAllAsync();
+            var localCurrency = currencies.FirstOrDefault(c => c.IsLocal);
+
+            if (localCurrency == null)
+                throw new BusinessException("العملة المحلية غير موجودة.");
+
             // توليد القيد المحاسبي
             var journalEntry = new JournalEntryMaster(
                 Guid.NewGuid(),
@@ -56,17 +63,56 @@ public class PostPaymentVoucherCommandHandler : IRequestHandler<PostPaymentVouch
             // 1. الطرف الدائن: الصندوق أو البنك (المصدر)
             var creditLine = new JournalEntryLine(
                 Guid.NewGuid(), journalEntry.Id, voucher.SourceAccountId,
-                0, voucher.Amount, Guid.Empty, 1, null, journalEntry.Description
+                0, voucher.Amount, localCurrency.Id, 1, null, journalEntry.Description
             );
             _unitOfWork.Repository<JournalEntryLine>().Add(creditLine);
-            await UpdateAccountBalance(creditLine, fiscalPeriod.Id);
+            await UpdateAccountBalance(creditLine, fiscalPeriod.Id, localCurrency.Id);
 
-            // 2. الطرف المدين: الوجهة (مورد أو حساب مباشر)
+            // 2. الطرف المدين: الوجهة (عميل أو مورد أو حساب مباشر)
             Guid debitAccountId;
-            if (voucher.DestinationType == VoucherPartnerType.Vendor)
+            if (voucher.DestinationType == VoucherPartnerType.Customer)
+            {
+                if (voucher.Customer == null) throw new BusinessException("يجب تحديد العميل في حال كان نوع الوجهة عميل.");
+                // استخدام حساب العميل إذا وجد، أو البحث عن حساب ذمم العملاء
+                if (voucher.Customer.AccountId != Guid.Empty)
+                {
+                    debitAccountId = voucher.Customer.AccountId;
+                }
+                else if (voucher.DestinationAccountId.HasValue)
+                {
+                    debitAccountId = voucher.DestinationAccountId.Value;
+                }
+                else
+                {
+                    // البحث عن حساب ذمم العملاء
+                    var accounts = await _unitOfWork.Repository<Account>().ListAllAsync();
+                    var customersReceivable = accounts.FirstOrDefault(a => a.AccountCode.StartsWith("11"));
+                    if (customersReceivable == null)
+                        throw new BusinessException("حساب ذمم العملاء غير موجود في دليل الحسابات. يرجى إنشاء حساب يبدأ بـ 11.");
+                    debitAccountId = customersReceivable.Id;
+                }
+            }
+            else if (voucher.DestinationType == VoucherPartnerType.Vendor)
             {
                 if (voucher.Vendor == null) throw new BusinessException("يجب تحديد المورد في حال كان نوع الوجهة مورد.");
-                debitAccountId = voucher.Vendor.AccountId;
+                // استخدام حساب المورد إذا وجد، أو البحث عن حساب ذمم الموردين
+                if (voucher.Vendor.AccountId != Guid.Empty)
+                {
+                    debitAccountId = voucher.Vendor.AccountId;
+                }
+                else if (voucher.DestinationAccountId.HasValue)
+                {
+                    debitAccountId = voucher.DestinationAccountId.Value;
+                }
+                else
+                {
+                    // البحث عن حساب ذمم الموردين
+                    var accounts = await _unitOfWork.Repository<Account>().ListAllAsync();
+                    var vendorsPayable = accounts.FirstOrDefault(a => a.AccountCode.StartsWith("21"));
+                    if (vendorsPayable == null)
+                        throw new BusinessException("حساب ذمم الموردين غير موجود في دليل الحسابات. يرجى إنشاء حساب يبدأ بـ 21.");
+                    debitAccountId = vendorsPayable.Id;
+                }
             }
             else
             {
@@ -76,10 +122,10 @@ public class PostPaymentVoucherCommandHandler : IRequestHandler<PostPaymentVouch
 
             var debitLine = new JournalEntryLine(
                 Guid.NewGuid(), journalEntry.Id, debitAccountId,
-                voucher.Amount, 0, Guid.Empty, 1, null, journalEntry.Description
+                voucher.Amount, 0, localCurrency.Id, 1, voucher.CostCenterId, journalEntry.Description
             );
             _unitOfWork.Repository<JournalEntryLine>().Add(debitLine);
-            await UpdateAccountBalance(debitLine, fiscalPeriod.Id);
+            await UpdateAccountBalance(debitLine, fiscalPeriod.Id, localCurrency.Id);
 
             // تحديث حالة السند
             voucher.Post(request.UserId);
@@ -97,17 +143,17 @@ public class PostPaymentVoucherCommandHandler : IRequestHandler<PostPaymentVouch
         }
     }
 
-    private async Task UpdateAccountBalance(JournalEntryLine line, Guid fiscalPeriodId)
+    private async Task UpdateAccountBalance(JournalEntryLine line, Guid fiscalPeriodId, Guid currencyId)
     {
         var balanceSpec = new AccountBalanceFilterSpecification(
-            fiscalPeriodId, line.AccountId, line.CostCenterId, line.CurrencyId
+            fiscalPeriodId, line.AccountId, line.CostCenterId, currencyId
         );
 
         var balance = await _unitOfWork.Repository<AccountBalance>().GetEntityWithSpec(balanceSpec);
 
         if (balance == null)
         {
-            balance = new AccountBalance(Guid.NewGuid(), fiscalPeriodId, line.AccountId, line.CurrencyId, line.CostCenterId);
+            balance = new AccountBalance(Guid.NewGuid(), fiscalPeriodId, line.AccountId, currencyId, line.CostCenterId);
             balance.AddTransaction(line.Debit, line.Credit);
             _unitOfWork.Repository<AccountBalance>().Add(balance);
         }

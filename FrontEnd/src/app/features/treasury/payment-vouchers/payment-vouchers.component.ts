@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SHARED_IMPORTS } from '../../../shared/shared.imports';
-import { MessageService } from 'primeng/api';
+import { MessageService, ConfirmationService } from 'primeng/api';
 import {
   PaymentVoucherService,
   PaymentMethod,
@@ -12,10 +12,11 @@ import {
 import { AccountService, AccountLookup } from '../../../core/services/account.service';
 import { CostCenterService, CostCenterLookup } from '../../../core/services/cost-center.service';
 import { VendorService, Vendor } from '../../../core/services/vendor.service';
+import { CustomerService, Customer } from '../../../core/services/customer.service';
 import { CurrencyService, Currency } from '../../../core/services/currency.service';
 import { forkJoin } from 'rxjs';
 
-export interface PaymentVoucherForm {
+export interface VoucherForm {
   voucherNumber: string;
   voucherDate: Date;
   paymentMethod: PaymentMethod;
@@ -24,6 +25,8 @@ export interface PaymentVoucherForm {
   destinationType: string;
   vendorId: string | null;
   vendorDisplay: string;
+  customerId: string | null;
+  customerDisplay: string;
   destinationAccountId: string | null;
   destinationAccountDisplay: string;
   amount: number;
@@ -37,7 +40,7 @@ export interface PaymentVoucherForm {
   selector: 'app-payment-vouchers',
   standalone: true,
   imports: [...SHARED_IMPORTS],
-  providers: [MessageService],
+  providers: [MessageService, ConfirmationService],
   templateUrl: './payment-vouchers.component.html',
   styleUrl: './payment-vouchers.component.scss'
 })
@@ -49,24 +52,34 @@ export class PaymentVouchersComponent implements OnInit {
   // ── Lookup data ──────────────────────────────────────────────
   cashAccounts: AccountLookup[] = [];
   bankAccounts: AccountLookup[] = [];
-  expenseAccounts: AccountLookup[] = [];
+  personalAccounts: AccountLookup[] = []; // For Account type (personal, employee, partner)
   vendors: Vendor[] = [];
+  customers: Customer[] = [];
   costCenters: CostCenterLookup[] = [];
   localCurrency: Currency | null = null;
+
+  // ── Tab State ─────────────────────────────────────────────────
+  activeTab: 'payment' | 'receipt' = 'payment';
 
   // ── Create Dialog ────────────────────────────────────────────
   createDialogVisible = false;
   isSaving = false;
 
-  voucherForm: PaymentVoucherForm = {
+  // ── View Details Dialog ───────────────────────────────────────
+  viewDetailsDialogVisible = false;
+  selectedVoucher: PaymentVoucherListItem | null = null;
+
+  voucherForm: VoucherForm = {
     voucherNumber: '',
     voucherDate: new Date(),
     paymentMethod: PaymentMethod.Cash,
     sourceAccountId: '',
     sourceAccountDisplay: '',
-    destinationType: '3',
+    destinationType: '2',
     vendorId: null,
     vendorDisplay: '',
+    customerId: null,
+    customerDisplay: '',
     destinationAccountId: null,
     destinationAccountDisplay: '',
     amount: 0,
@@ -82,10 +95,20 @@ export class PaymentVouchersComponent implements OnInit {
   VoucherStatus = VoucherStatus;
 
   // ── Destination Type Options ─────────────────────────────────────
-  destinationTypeOptions = [
-    { label: 'حساب مباشر (مصروف)', value: '3' },
-    { label: 'مورد', value: '2' }
-  ];
+  get destinationTypeOptions() {
+    if (this.activeTab === 'payment') {
+      return [
+        { label: 'عميل', value: '1' },
+        { label: 'مورد', value: '2' },
+        { label: 'حساب ذمم/عهد', value: '3' }
+      ];
+    } else {
+      return [
+        { label: 'عميل', value: '1' },
+        { label: 'حساب ذمم/عهد', value: '3' }
+      ];
+    }
+  }
 
   // ── Username (temp) ──────────────────────────────────────────
   currentUser = 'admin';
@@ -95,12 +118,14 @@ export class PaymentVouchersComponent implements OnInit {
     private accountService: AccountService,
     private costCenterService: CostCenterService,
     private vendorService: VendorService,
+    private customerService: CustomerService,
     private currencyService: CurrencyService,
     private messageService: MessageService
   ) {}
 
   ngOnInit(): void {
     this.loadLookups();
+    this.loadVouchers();
   }
 
   // ── Lookups ──────────────────────────────────────────────────
@@ -110,16 +135,24 @@ export class PaymentVouchersComponent implements OnInit {
       accounts: this.accountService.getDetailAccounts(),
       costCenters: this.costCenterService.getDetailCostCenters(),
       vendors: this.vendorService.getAllList(),
+      customers: this.customerService.getAllList(),
       currencies: this.currencyService.getList()
     }).subscribe({
-      next: ({ accounts, costCenters, vendors, currencies }) => {
-        // تصفية الحسابات حسب النوع
+      next: ({ accounts, costCenters, vendors, customers, currencies }) => {
+        // تصفية الحسابات حسب النوع - تطبيق قواعد العمل الصارمة
         this.cashAccounts = accounts.filter(a => a.accountCode.startsWith('110101')); // الصندوق
         this.bankAccounts = accounts.filter(a => a.accountCode.startsWith('110102')); // البنوك
-        this.expenseAccounts = accounts.filter(a => a.accountCode.startsWith('5')); // المصروفات
+        // حسابات شخصية/عهدية فقط - استبعاد الصناديق والبنوك والمصروفات والإيرادات
+        this.personalAccounts = accounts.filter((a: AccountLookup) =>
+          !a.accountCode.startsWith('1101') && // استبعاد الصناديق والبنوك
+          !a.accountCode.startsWith('5') &&      // استبعاد المصروفات
+          !a.accountCode.startsWith('4') &&      // استبعاد الإيرادات
+          a.accountCode.length > 4               // فقط الحسابات التفصيلية
+        );
 
         this.costCenters = costCenters || [];
         this.vendors = vendors || [];
+        this.customers = customers || [];
         this.localCurrency = currencies.find(c => c.isLocal) ?? currencies[0] ?? null;
 
         // تعيين افتراضي
@@ -138,6 +171,62 @@ export class PaymentVouchersComponent implements OnInit {
     });
   }
 
+  // ── Voucher List ───────────────────────────────────────────────
+
+  loadVouchers(): void {
+    this.isLoading = true;
+    this.paymentVoucherService.getAll().subscribe({
+      next: (data) => {
+        this.vouchers = data || [];
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Failed to load vouchers:', err);
+        this.messageService.add({ severity: 'error', summary: 'خطأ', detail: 'فشل تحميل سندات الصرف' });
+        this.isLoading = false;
+      }
+    });
+  }
+
+  postVoucher(voucherId: string): void {
+    this.paymentVoucherService.post(voucherId, this.currentUser).subscribe({
+      next: () => {
+        this.messageService.add({ severity: 'success', summary: 'تم', detail: 'تم ترحيل السند بنجاح' });
+        this.loadVouchers(); // Refresh the list
+      },
+      error: (err) => {
+        console.error('Failed to post voucher:', err);
+        this.messageService.add({ severity: 'error', summary: 'خطأ', detail: err.error?.message || 'فشل ترحيل السند' });
+      }
+    });
+  }
+
+  // ── Tab Actions ───────────────────────────────────────────────
+
+  onTabChange(tab: 'payment' | 'receipt'): void {
+    this.activeTab = tab;
+    // Reset form when switching tabs
+    this.voucherForm = {
+      voucherNumber: '',
+      voucherDate: new Date(),
+      paymentMethod: PaymentMethod.Cash,
+      sourceAccountId: this.cashAccounts[0]?.id || '',
+      sourceAccountDisplay: this.cashAccounts[0] ? `${this.cashAccounts[0].accountCode} - ${this.cashAccounts[0].accountNameAr}` : '',
+      destinationType: tab === 'payment' ? '2' : '1', // Set based on new tab value
+      vendorId: null,
+      vendorDisplay: '',
+      customerId: null,
+      customerDisplay: '',
+      destinationAccountId: null,
+      destinationAccountDisplay: '',
+      amount: 0,
+      costCenterId: null,
+      costCenterDisplay: '',
+      costCenterStatus: 'Optional',
+      notes: ''
+    };
+  }
+
   // ── Form Actions ─────────────────────────────────────────────
 
   openCreateDialog(): void {
@@ -147,9 +236,11 @@ export class PaymentVouchersComponent implements OnInit {
       paymentMethod: PaymentMethod.Cash,
       sourceAccountId: this.cashAccounts[0]?.id || '',
       sourceAccountDisplay: this.cashAccounts[0] ? `${this.cashAccounts[0].accountCode} - ${this.cashAccounts[0].accountNameAr}` : '',
-      destinationType: '3',
+      destinationType: this.activeTab === 'payment' ? '2' : '1', // Default to Vendor for payment, Customer for receipt
       vendorId: null,
       vendorDisplay: '',
+      customerId: null,
+      customerDisplay: '',
       destinationAccountId: null,
       destinationAccountDisplay: '',
       amount: 0,
@@ -186,10 +277,11 @@ export class PaymentVouchersComponent implements OnInit {
 
   onDestinationTypeChange(event: any): void {
     const type = event;
-    console.log('Destination type changed to:', type);
     this.voucherForm.destinationType = type;
     this.voucherForm.vendorId = null;
     this.voucherForm.vendorDisplay = '';
+    this.voucherForm.customerId = null;
+    this.voucherForm.customerDisplay = '';
     this.voucherForm.destinationAccountId = null;
     this.voucherForm.destinationAccountDisplay = '';
     this.voucherForm.costCenterId = null;
@@ -204,9 +296,16 @@ export class PaymentVouchersComponent implements OnInit {
     this.voucherForm.vendorDisplay = vendor ? `${vendor.vendorCode} - ${vendor.nameAr}` : '';
   }
 
+  onCustomerChange(event: any): void {
+    const customerId = event;
+    const customer = this.customers.find(c => c.id === customerId);
+    this.voucherForm.customerId = customerId;
+    this.voucherForm.customerDisplay = customer ? `${customer.customerCode} - ${customer.nameAr}` : '';
+  }
+
   onDestinationAccountChange(event: any): void {
     const accountId = event;
-    const account = this.expenseAccounts.find(a => a.id === accountId);
+    const account = this.personalAccounts.find((a: AccountLookup) => a.id === accountId);
     this.voucherForm.destinationAccountId = accountId;
     this.voucherForm.destinationAccountDisplay = account ? `${account.accountCode} - ${account.accountNameAr}` : '';
 
@@ -230,13 +329,19 @@ export class PaymentVouchersComponent implements OnInit {
   }
 
   saveVoucher(): void {
-    console.log('saveVoucher called', this.voucherForm);
+    // Temporarily disable receipt voucher creation until backend is ready
+    if (this.activeTab === 'receipt') {
+      this.messageService.add({ severity: 'warn', summary: 'تنبيه', detail: 'سندات القبض غير متاحة حالياً - قيد التطوير' });
+      return;
+    }
+
     // Validation
     if (!this.voucherForm.sourceAccountId) {
       this.messageService.add({ severity: 'warn', summary: 'تنبيه', detail: 'يرجى اختيار الحساب المصدر' });
       return;
     }
 
+    // Validate based on destination type
     if (this.voucherForm.destinationType === '3' && !this.voucherForm.destinationAccountId) {
       this.messageService.add({ severity: 'warn', summary: 'تنبيه', detail: 'يرجى اختيار الحساب الوجهة' });
       return;
@@ -247,8 +352,13 @@ export class PaymentVouchersComponent implements OnInit {
       return;
     }
 
+    if (this.voucherForm.destinationType === '1' && !this.voucherForm.customerId) {
+      this.messageService.add({ severity: 'warn', summary: 'تنبيه', detail: 'يرجى اختيار العميل' });
+      return;
+    }
+
     if (this.voucherForm.amount <= 0) {
-      this.messageService.add({ severity: 'warn', summary: 'تنبيه', detail: 'يرجى إدخال مبلغ صحيح' });
+      this.messageService.add({ severity: 'warn', summary: 'تنبيه', detail: 'يرجى إدخال مبلغ صحيح أكبر من صفر' });
       return;
     }
 
@@ -260,9 +370,8 @@ export class PaymentVouchersComponent implements OnInit {
       return;
     }
 
-    // التحقق من مركز التكلفة الإلزامي للمورد إذا تم اختيار حساب وجهة
-    if (this.voucherForm.destinationType === '2' &&
-        this.voucherForm.destinationAccountId &&
+    // التحقق من مركز التكلفة الإلزامي إذا تم اختيار حساب وجهة
+    if (this.voucherForm.destinationAccountId &&
         this.voucherForm.costCenterStatus === 'Required' &&
         (!this.voucherForm.costCenterId || this.voucherForm.costCenterId === '')) {
       this.messageService.add({ severity: 'warn', summary: 'مراكز تكلفة مفقودة', detail: 'يرجى تحديد مركز تكلفة لهذا السند' });
@@ -279,22 +388,26 @@ export class PaymentVouchersComponent implements OnInit {
       createdBy: this.currentUser,
       notes: this.voucherForm.notes || undefined,
       vendorId: this.voucherForm.vendorId ? this.voucherForm.vendorId as any : undefined,
+      customerId: this.voucherForm.customerId ? this.voucherForm.customerId as any : undefined,
       destinationAccountId: this.voucherForm.destinationAccountId ? this.voucherForm.destinationAccountId as any : undefined,
       costCenterId: (this.voucherForm.costCenterId && this.voucherForm.costCenterId !== '') ? this.voucherForm.costCenterId as any : undefined
     };
 
-    console.log('Command to send:', command);
+    console.log('Command being sent to backend:', command);
+    console.log('Form state:', this.voucherForm);
     this.isSaving = true;
+
+    // Since receipt vouchers are temporarily disabled, only use payment endpoint
     this.paymentVoucherService.create(command).subscribe({
       next: () => {
         this.isSaving = false;
         this.createDialogVisible = false;
-        this.messageService.add({ severity: 'success', summary: 'تم', detail: 'تم إنشاء سند الصرف والقيد المحاسبي بنجاح' });
-        // TODO: Load vouchers list
+        this.messageService.add({ severity: 'success', summary: 'تم', detail: 'تم إنشاء السند بنجاح' });
+        this.loadVouchers(); // Refresh the voucher list
       },
       error: (err) => {
         this.isSaving = false;
-        this.messageService.add({ severity: 'error', summary: 'خطأ', detail: err.error?.message || 'فشل إنشاء سند الصرف' });
+        this.messageService.add({ severity: 'error', summary: 'خطأ', detail: err.error?.message || 'فشل إنشاء السند' });
       }
     });
   }
@@ -317,12 +430,12 @@ export class PaymentVouchersComponent implements OnInit {
     }
   }
 
-  getDestinationTypeLabel(type: VoucherPartnerType): string {
+  getDestinationTypeLabel(type: number): string {
     switch (type) {
-      case VoucherPartnerType.Customer: return 'عميل';
-      case VoucherPartnerType.Vendor: return 'مورد';
-      case VoucherPartnerType.Account: return 'حساب مباشر';
-      default: return '';
+      case 1: return 'عميل';
+      case 2: return 'مورد';
+      case 3: return 'حساب مباشر';
+      default: return 'غير معروف';
     }
   }
 
@@ -350,5 +463,12 @@ export class PaymentVouchersComponent implements OnInit {
 
   isCostCenterDisabled(status: string): boolean {
     return status === 'Disabled';
+  }
+
+  // ── View Details ────────────────────────────────────────────────
+
+  viewVoucherDetails(voucher: PaymentVoucherListItem): void {
+    this.selectedVoucher = voucher;
+    this.viewDetailsDialogVisible = true;
   }
 }

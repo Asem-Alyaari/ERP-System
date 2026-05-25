@@ -1,11 +1,33 @@
+
+<p-toast position="top-right" />
+<p-confirmDialog />
+
 <div class="payment-vouchers-container">
-  <!-- Header -->
+  <!-- Header with Tabs -->
   <div class="page-header">
-    <h1>سندات الصرف والمصروفات</h1>
-    <p-button 
-      label="سند صرف جديد" 
-      icon="pi pi-plus" 
+    <div class="header-content">
+      <h1>سندات الخزينة</h1>
+      <div class="tab-buttons">
+        <p-button
+          [label]="'سندات الصرف'"
+          [icon]="'pi pi-arrow-down'"
+          [styleClass]="'tab-button ' + (activeTab === 'payment' ? 'active' : '')"
+          (onClick)="onTabChange('payment')">
+        </p-button>
+        <p-button
+          [label]="'سندات القبض (قيد التطوير)'"
+          [icon]="'pi pi-arrow-up'"
+          [styleClass]="'tab-button ' + (activeTab === 'receipt' ? 'active' : '')"
+          [disabled]="true"
+          (onClick)="onTabChange('receipt')">
+        </p-button>
+      </div>
+    </div>
+    <p-button
+      [label]="activeTab === 'payment' ? 'سند صرف جديد' : 'سند قبض جديد'"
+      icon="pi pi-plus"
       (onClick)="openCreateDialog()"
+      [disabled]="activeTab === 'receipt'"
       styleClass="p-button-success">
     </p-button>
   </div>
@@ -41,7 +63,8 @@
         <td>{{ voucher.sourceAccountCode }} - {{ voucher.sourceAccountNameAr }}</td>
         <td>
           <ng-container [ngSwitch]="voucher.destinationType">
-            <span *ngSwitchCase="1">{{ voucher.vendorName || '-' }}</span>
+            <span *ngSwitchCase="1">{{ voucher.customerName || '-' }}</span>
+            <span *ngSwitchCase="2">{{ voucher.vendorName || '-' }}</span>
             <span *ngSwitchCase="3">{{ voucher.destinationAccountCode }} - {{ voucher.destinationAccountNameAr }}</span>
           </ng-container>
         </td>
@@ -53,9 +76,18 @@
           </p-tag>
         </td>
         <td>
-          <p-button 
-            icon="pi pi-eye" 
+          <p-button
+            *ngIf="voucher.status === 1"
+            icon="pi pi-check"
+            label="ترحيل"
+            styleClass="p-button-rounded p-button-text p-button-success"
+            (onClick)="postVoucher(voucher.id)"
+            pTooltip="ترحيل السند">
+          </p-button>
+          <p-button
+            icon="pi pi-eye"
             styleClass="p-button-rounded p-button-text p-button-info"
+            (onClick)="viewVoucherDetails(voucher)"
             pTooltip="عرض التفاصيل">
           </p-button>
         </td>
@@ -70,10 +102,10 @@
   </p-table>
 
   <!-- Create Dialog -->
-  <p-dialog 
-    [(visible)]="createDialogVisible" 
-    header="سند صرف جديد" 
-    [modal]="true" 
+  <p-dialog
+    [(visible)]="createDialogVisible"
+    [header]="activeTab === 'payment' ? 'سند صرف جديد' : 'سند قبض جديد'"
+    [modal]="true"
     [style]="{ width: '50vw' }"
     [closable]="!isSaving">
     
@@ -111,12 +143,12 @@
         </div>
         <div class="form-field">
           <label>الحساب المصدر</label>
-          <p-select 
-            [(ngModel)]="voucherForm.sourceAccountId" 
+          <p-select
+            [(ngModel)]="voucherForm.sourceAccountId"
             [options]="cashAccounts.concat(bankAccounts)"
             optionLabel="accountNameAr"
             optionValue="id"
-            (onChange)="onSourceAccountChange($event)"
+            (ngModelChange)="onSourceAccountChange($event)"
             [filter]="true"
             filterBy="accountCode,accountNameAr"
             placeholder="اختر الحساب المصدر">
@@ -126,40 +158,31 @@
 
       <!-- Destination Type -->
       <div class="form-field">
-        <label>نوع الوجهة</label>
-        <p-select 
-          [(ngModel)]="voucherForm.destinationType" 
+        <label [ngSwitch]="activeTab">
+          <span *ngSwitchCase="'payment'">نوع الوجهة (المدين)</span>
+          <span *ngSwitchCase="'receipt'">نوع المصدر (الدائن)</span>
+        </label>
+        <p-select
+          [(ngModel)]="voucherForm.destinationType"
           [options]="destinationTypeOptions"
           optionLabel="label"
           optionValue="value"
           (ngModelChange)="onDestinationTypeChange($event)"
-          placeholder="اختر نوع الوجهة">
+          placeholder="اختر النوع">
         </p-select>
       </div>
 
-      <!-- Destination Account (if Account type) -->
-      <div class="form-field" *ngIf="voucherForm.destinationType === '3'">
-        <label>الحساب الوجهة</label>
-        <p-select 
-          [(ngModel)]="voucherForm.destinationAccountId" 
-          [options]="expenseAccounts"
-          optionLabel="accountNameAr"
-          optionValue="id"
-          (onChange)="onDestinationAccountChange($event)"
-          [filter]="true"
-          filterBy="accountCode,accountNameAr"
-          placeholder="اختر الحساب الوجهة">
-        </p-select>
-      </div>
-
-      <!-- Vendor (if Vendor type) -->
+      <!-- Vendor (when destination type is Vendor) -->
       <div class="form-field" *ngIf="voucherForm.destinationType === '2'">
         <label>المورد</label>
-        <p-select 
-          [(ngModel)]="voucherForm.vendorId" 
+        <p-select
+          [(ngModel)]="voucherForm.vendorId"
           [options]="vendors"
           optionLabel="nameAr"
           optionValue="id"
+          (ngModelChange)="onVendorChange($event)"
+          [filter]="true"
+          filterBy="vendorCode,nameAr"
           placeholder="اختر المورد">
         </p-select>
         <div *ngIf="vendors.length === 0" style="color: red; font-size: 12px;">
@@ -167,19 +190,40 @@
         </div>
       </div>
 
-      <!-- Destination Account (for Vendor type - optional) -->
-      <div class="form-field" *ngIf="voucherForm.destinationType === '2'">
-        <label>الحساب الوجهة (اختياري)</label>
-        <p-select 
-          [(ngModel)]="voucherForm.destinationAccountId" 
-          [options]="expenseAccounts"
+      <!-- Customer (when destination type is Customer) -->
+      <div class="form-field" *ngIf="voucherForm.destinationType === '1'">
+        <label>العميل</label>
+        <p-select
+          [(ngModel)]="voucherForm.customerId"
+          [options]="customers"
+          optionLabel="nameAr"
+          optionValue="id"
+          (ngModelChange)="onCustomerChange($event)"
+          [filter]="true"
+          filterBy="customerCode,nameAr"
+          placeholder="اختر العميل">
+        </p-select>
+        <div *ngIf="customers.length === 0" style="color: red; font-size: 12px;">
+          لا يوجد عملاء متاحين
+        </div>
+      </div>
+
+      <!-- Personal Account (if Account type) -->
+      <div class="form-field" *ngIf="voucherForm.destinationType === '3'">
+        <label>حساب ذمم/عهد</label>
+        <p-select
+          [(ngModel)]="voucherForm.destinationAccountId"
+          [options]="personalAccounts"
           optionLabel="accountNameAr"
           optionValue="id"
-          (onChange)="onDestinationAccountChange($event)"
+          (ngModelChange)="onDestinationAccountChange($event)"
           [filter]="true"
           filterBy="accountCode,accountNameAr"
-          placeholder="اختر الحساب الوجهة (سيتم استخدام حساب ذمم الموردين إذا لم يتم الاختيار)">
+          placeholder="اختر الحساب (حسابات شخصية/عهدية فقط)">
         </p-select>
+        <div *ngIf="personalAccounts.length === 0" style="color: red; font-size: 12px;">
+          لا توجد حسابات شخصية متاحة
+        </div>
       </div>
 
       <!-- Cost Center (if Account type and required) -->
@@ -191,12 +235,12 @@
             ({{ getCostCenterStatusLabel(voucherForm.costCenterStatus || '') }})
           </span>
         </label>
-        <p-select 
-          [(ngModel)]="voucherForm.costCenterId" 
+        <p-select
+          [(ngModel)]="voucherForm.costCenterId"
           [options]="costCenters"
           optionLabel="costCenterNameAr"
           optionValue="id"
-          (onChange)="onCostCenterChange($event)"
+          (ngModelChange)="onCostCenterChange($event)"
           [filter]="true"
           filterBy="costCenterCode,costCenterNameAr"
           [disabled]="isCostCenterDisabled(voucherForm.costCenterStatus || '')"
@@ -233,13 +277,121 @@
         [disabled]="isSaving"
         styleClass="p-button-text">
       </p-button>
-      <p-button 
-        label="حفظ وترحيل" 
-        icon="pi pi-check" 
+      <p-button
+        label="حفظ"
+        icon="pi pi-check"
         (onClick)="saveVoucher()"
         [loading]="isSaving"
         [disabled]="isSaving">
       </p-button>
     </ng-template>
   </p-dialog>
+
+  <!-- View Details Drawer -->
+  <p-drawer
+    [(visible)]="viewDetailsDialogVisible"
+    position="left"
+    [style]="{ width: '680px' }"
+    styleClass="pv-detail-drawer">
+    <ng-template #header>
+      <div class="pv-drawer-header">
+        <i class="pi pi-arrow-down text-primary"></i>
+        <span>تفاصيل سند الصرف</span>
+      </div>
+    </ng-template>
+
+    <!-- Content -->
+    <div *ngIf="selectedVoucher" class="pv-detail-content">
+
+      <!-- Status Banner -->
+      <div class="pv-status-banner" [attr.data-status]="selectedVoucher.status">
+        <i class="pi"
+          [ngClass]="{
+            'pi-clock': selectedVoucher.status === 1,
+            'pi-check-circle': selectedVoucher.status === 2,
+            'pi-times-circle': selectedVoucher.status === 3
+          }">
+        </i>
+        <span>{{ selectedVoucher.status === 2 ? 'مرحل' : selectedVoucher.status === 3 ? 'ملغي' : 'مسودة' }}</span>
+
+        <!-- Action buttons inside banner -->
+        <div class="pv-banner-actions">
+          <p-button
+            *ngIf="selectedVoucher.status === 1"
+            label="ترحيل السند"
+            icon="pi pi-check"
+            severity="success"
+            size="small"
+            (onClick)="postVoucher(selectedVoucher.id)"
+          />
+        </div>
+      </div>
+
+      <!-- Meta Info Grid -->
+      <div class="pv-meta-grid">
+        <div class="pv-meta-item">
+          <span class="pv-meta-label">رقم السند</span>
+          <span class="pv-meta-value font-mono">{{ selectedVoucher.voucherNumber }}</span>
+        </div>
+        <div class="pv-meta-item">
+          <span class="pv-meta-label">التاريخ</span>
+          <span class="pv-meta-value">{{ selectedVoucher.voucherDate | date:'yyyy-MM-dd' }}</span>
+        </div>
+        <div class="pv-meta-item">
+          <span class="pv-meta-label">طريقة الدفع</span>
+          <span class="pv-meta-value">{{ getPaymentMethodLabel(selectedVoucher.paymentMethod) }}</span>
+        </div>
+        <div class="pv-meta-item">
+          <span class="pv-meta-label">نوع الوجهة</span>
+          <span class="pv-meta-value">{{ getDestinationTypeLabel(selectedVoucher.destinationType) }}</span>
+        </div>
+        <div class="pv-meta-item pv-meta-full">
+          <span class="pv-meta-label">الحساب المصدر</span>
+          <span class="pv-meta-value">{{ selectedVoucher.sourceAccountCode }} - {{ selectedVoucher.sourceAccountNameAr }}</span>
+        </div>
+        <div class="pv-meta-item pv-meta-full" *ngIf="selectedVoucher.destinationType === 1 && selectedVoucher.customerName">
+          <span class="pv-meta-label">العميل</span>
+          <span class="pv-meta-value">{{ selectedVoucher.customerName }}</span>
+        </div>
+        <div class="pv-meta-item pv-meta-full" *ngIf="selectedVoucher.destinationType === 2 && selectedVoucher.vendorName">
+          <span class="pv-meta-label">المورد</span>
+          <span class="pv-meta-value">{{ selectedVoucher.vendorName }}</span>
+        </div>
+        <div class="pv-meta-item pv-meta-full" *ngIf="selectedVoucher.destinationType === 3 && selectedVoucher.destinationAccountNameAr">
+          <span class="pv-meta-label">الحساب الوجهة</span>
+          <span class="pv-meta-value">{{ selectedVoucher.destinationAccountCode }} - {{ selectedVoucher.destinationAccountNameAr }}</span>
+        </div>
+        <div class="pv-meta-item pv-meta-full" *ngIf="selectedVoucher.costCenterNameAr">
+          <span class="pv-meta-label">مركز التكلفة</span>
+          <span class="pv-meta-value">{{ selectedVoucher.costCenterCode }} - {{ selectedVoucher.costCenterNameAr }}</span>
+        </div>
+        <div class="pv-meta-item">
+          <span class="pv-meta-label">المبلغ</span>
+          <span class="pv-meta-value">{{ selectedVoucher.amount | number:'1.2-2' }}</span>
+        </div>
+        <div class="pv-meta-item pv-meta-full" *ngIf="selectedVoucher.notes">
+          <span class="pv-meta-label">البيان</span>
+          <span class="pv-meta-value">{{ selectedVoucher.notes }}</span>
+        </div>
+        <div class="pv-meta-item">
+          <span class="pv-meta-label">أُنشئ بواسطة</span>
+          <span class="pv-meta-value">{{ selectedVoucher.createdBy }}</span>
+        </div>
+        <div class="pv-meta-item">
+          <span class="pv-meta-label">تاريخ الإنشاء</span>
+          <span class="pv-meta-value">{{ selectedVoucher.createdAt | date:'yyyy-MM-dd HH:mm' }}</span>
+        </div>
+        <div class="pv-meta-item" *ngIf="selectedVoucher.postedBy">
+          <span class="pv-meta-label">رُحِّل بواسطة</span>
+          <span class="pv-meta-value">{{ selectedVoucher.postedBy }}</span>
+        </div>
+        <div class="pv-meta-item" *ngIf="selectedVoucher.postedAt">
+          <span class="pv-meta-label">تاريخ الترحيل</span>
+          <span class="pv-meta-value">{{ selectedVoucher.postedAt | date:'yyyy-MM-dd HH:mm' }}</span>
+        </div>
+      </div>
+
+    </div>
+
+  </p-drawer>
 </div>

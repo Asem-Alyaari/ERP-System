@@ -9,5 +9,9 @@ public class PaymentVoucherWithDetailsSpecification : BaseSpecification<PaymentV
         : base(x => x.Id == id)
     {
         AddInclude(x => x.Vendor!);
+        AddInclude(x => x.Customer!);
+        AddInclude(x => x.SourceAccount!);
+        AddInclude(x => x.DestinationAccount!);
+        AddInclude(x => x.CostCenter!);
     }
 }

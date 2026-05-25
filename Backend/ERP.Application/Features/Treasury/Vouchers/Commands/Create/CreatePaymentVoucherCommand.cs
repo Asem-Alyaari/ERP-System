@@ -14,6 +14,7 @@ public record CreatePaymentVoucherCommand : IRequest<Guid>
     public string CreatedBy { get; init; } = string.Empty;
     public string? Notes { get; init; }
     public Guid? VendorId { get; init; }
+    public Guid? CustomerId { get; init; }
     public Guid? DestinationAccountId { get; init; }
     public Guid? CostCenterId { get; init; }
 }

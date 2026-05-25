@@ -43,6 +43,11 @@ public class PaymentVoucherConfiguration : IEntityTypeConfiguration<PaymentVouch
             .HasForeignKey(x => x.VendorId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasOne(x => x.Customer)
+            .WithMany()
+            .HasForeignKey(x => x.CustomerId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasOne(x => x.DestinationAccount)
             .WithMany()
             .HasForeignKey(x => x.DestinationAccountId)

@@ -22,6 +22,9 @@ public class PaymentVoucher : Entity
     public Guid? VendorId { get; private set; }
     public virtual Vendor? Vendor { get; private set; }
 
+    public Guid? CustomerId { get; private set; }
+    public virtual Customer? Customer { get; private set; }
+
     public Guid? DestinationAccountId { get; private set; }
     public virtual Account? DestinationAccount { get; private set; }
 
@@ -52,6 +55,7 @@ public class PaymentVoucher : Entity
         string createdBy,
         string? notes = null,
         Guid? vendorId = null,
+        Guid? customerId = null,
         Guid? destinationAccountId = null,
         Guid? costCenterId = null) : base(id)
     {
@@ -65,6 +69,7 @@ public class PaymentVoucher : Entity
         CreatedAt = DateTime.UtcNow;
         Notes = notes;
         VendorId = vendorId;
+        CustomerId = customerId;
         DestinationAccountId = destinationAccountId;
         CostCenterId = costCenterId;
         Status = VoucherStatus.Draft;
