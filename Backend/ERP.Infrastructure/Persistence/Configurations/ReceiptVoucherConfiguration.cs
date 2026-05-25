@@ -43,6 +43,16 @@ public class ReceiptVoucherConfiguration : IEntityTypeConfiguration<ReceiptVouch
             .HasForeignKey(x => x.CustomerId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasOne(x => x.Vendor)
+            .WithMany()
+            .HasForeignKey(x => x.VendorId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(x => x.CostCenter)
+            .WithMany()
+            .HasForeignKey(x => x.CostCenterId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasOne(x => x.SourceAccount)
             .WithMany()
             .HasForeignKey(x => x.SourceAccountId)

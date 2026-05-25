@@ -6,6 +6,10 @@ export const TREASURY_ROUTES: Routes = [
     loadComponent: () => import('./payment-vouchers/payment-vouchers.component').then(m => m.PaymentVouchersComponent)
   },
   {
+    path: 'receipt-vouchers',
+    loadComponent: () => import('./receipt-vouchers/receipt-vouchers.component').then(m => m.ReceiptVouchersComponent)
+  },
+  {
     path: '',
     redirectTo: 'payment-vouchers',
     pathMatch: 'full'

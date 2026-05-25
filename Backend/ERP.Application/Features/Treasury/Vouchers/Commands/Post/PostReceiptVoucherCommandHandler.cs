@@ -40,6 +40,13 @@ public class PostReceiptVoucherCommandHandler : IRequestHandler<PostReceiptVouch
             if (fiscalPeriod == null)
                 throw new BusinessException("لا توجد فترة مالية مفتوحة لتوليد القيد المحاسبي.");
 
+            // الحصول على العملة المحلية
+            var currencies = await _unitOfWork.Repository<Currency>().ListAllAsync();
+            var localCurrency = currencies.FirstOrDefault(c => c.IsLocal);
+
+            if (localCurrency == null)
+                throw new BusinessException("العملة المحلية غير موجودة.");
+
             // توليد القيد المحاسبي
             var journalEntry = new JournalEntryMaster(
                 Guid.NewGuid(),
@@ -56,30 +63,43 @@ public class PostReceiptVoucherCommandHandler : IRequestHandler<PostReceiptVouch
             // 1. الطرف المدين: الصندوق أو البنك (المستلم)
             var debitLine = new JournalEntryLine(
                 Guid.NewGuid(), journalEntry.Id, voucher.DestinationAccountId,
-                voucher.Amount, 0, Guid.Empty, 1, null, journalEntry.Description
+                voucher.Amount, 0, localCurrency.Id, 1, null, journalEntry.Description
             );
             _unitOfWork.Repository<JournalEntryLine>().Add(debitLine);
-            await UpdateAccountBalance(debitLine, fiscalPeriod.Id);
+            await UpdateAccountBalance(debitLine, fiscalPeriod.Id, localCurrency.Id);
 
-            // 2. الطرف الدائن: المصدر (عميل أو حساب مباشر)
+            // 2. الطرف الدائن: المصدر (عميل أو مورد أو حساب مباشر)
             Guid creditAccountId;
-            if (voucher.SourceType == VoucherPartnerType.Customer)
+            if (voucher.SourceType == 0)
+            {
+                throw new BusinessException("نوع المصدر غير محدد. يرجى حذف السند وإنشائه مرة أخرى مع تحديد نوع المصدر بشكل صحيح.");
+            }
+            else if (voucher.SourceType == VoucherPartnerType.Customer)
             {
                 if (voucher.Customer == null) throw new BusinessException("يجب تحديد العميل في حال كان نوع المصدر عميل.");
                 creditAccountId = voucher.Customer.AccountId;
             }
+            else if (voucher.SourceType == VoucherPartnerType.Vendor)
+            {
+                if (voucher.Vendor == null) throw new BusinessException("يجب تحديد المورد في حال كان نوع المصدر مورد.");
+                creditAccountId = voucher.Vendor.AccountId;
+            }
+            else if (voucher.SourceType == VoucherPartnerType.Account)
+            {
+                if (voucher.SourceAccountId == null) throw new BusinessException("يجب تحديد حساب المصدر عند اختيار نوع المصدر كحساب.");
+                creditAccountId = voucher.SourceAccountId.Value;
+            }
             else
             {
-                if (voucher.SourceAccountId == null) throw new BusinessException("يجب تحديد حساب المصدر.");
-                creditAccountId = voucher.SourceAccountId.Value;
+                throw new BusinessException($"نوع المصدر غير مدعوم: {voucher.SourceType}");
             }
 
             var creditLine = new JournalEntryLine(
                 Guid.NewGuid(), journalEntry.Id, creditAccountId,
-                0, voucher.Amount, Guid.Empty, 1, null, journalEntry.Description
+                0, voucher.Amount, localCurrency.Id, 1, voucher.CostCenterId, journalEntry.Description
             );
             _unitOfWork.Repository<JournalEntryLine>().Add(creditLine);
-            await UpdateAccountBalance(creditLine, fiscalPeriod.Id);
+            await UpdateAccountBalance(creditLine, fiscalPeriod.Id, localCurrency.Id);
 
             // تحديث حالة السند
             voucher.Post(request.UserId);
@@ -97,17 +117,17 @@ public class PostReceiptVoucherCommandHandler : IRequestHandler<PostReceiptVouch
         }
     }
 
-    private async Task UpdateAccountBalance(JournalEntryLine line, Guid fiscalPeriodId)
+    private async Task UpdateAccountBalance(JournalEntryLine line, Guid fiscalPeriodId, Guid currencyId)
     {
         var balanceSpec = new AccountBalanceFilterSpecification(
-            fiscalPeriodId, line.AccountId, line.CostCenterId, line.CurrencyId
+            fiscalPeriodId, line.AccountId, line.CostCenterId, currencyId
         );
 
         var balance = await _unitOfWork.Repository<AccountBalance>().GetEntityWithSpec(balanceSpec);
 
         if (balance == null)
         {
-            balance = new AccountBalance(Guid.NewGuid(), fiscalPeriodId, line.AccountId, line.CurrencyId, line.CostCenterId);
+            balance = new AccountBalance(Guid.NewGuid(), fiscalPeriodId, line.AccountId, currencyId, line.CostCenterId);
             balance.AddTransaction(line.Debit, line.Credit);
             _unitOfWork.Repository<AccountBalance>().Add(balance);
         }

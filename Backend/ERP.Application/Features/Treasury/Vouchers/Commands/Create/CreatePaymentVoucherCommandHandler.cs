@@ -23,6 +23,10 @@ public class CreatePaymentVoucherCommandHandler : IRequestHandler<CreatePaymentV
         if (request.Amount <= 0)
             throw new BusinessException("المبلغ يجب أن يكون أكبر من صفر.");
 
+        // 2. التحقق من نوع الوجهة
+        if (request.DestinationType == 0)
+            throw new BusinessException("يجب تحديد نوع الوجهة (عميل، مورد، أو حساب).");
+
         // 2. التحقق من الحساب المصدر (يجب أن يكون خزينة أو بنك)
         var sourceAccount = await _unitOfWork.Repository<Account>().GetByIdAsync(request.SourceAccountId);
         if (sourceAccount == null)

@@ -70,7 +70,11 @@ public class PostPaymentVoucherCommandHandler : IRequestHandler<PostPaymentVouch
 
             // 2. الطرف المدين: الوجهة (عميل أو مورد أو حساب مباشر)
             Guid debitAccountId;
-            if (voucher.DestinationType == VoucherPartnerType.Customer)
+            if (voucher.DestinationType == 0)
+            {
+                throw new BusinessException("نوع الوجهة غير محدد. يرجى حذف السند وإنشائه مرة أخرى مع تحديد نوع الوجهة بشكل صحيح.");
+            }
+            else if (voucher.DestinationType == VoucherPartnerType.Customer)
             {
                 if (voucher.Customer == null) throw new BusinessException("يجب تحديد العميل في حال كان نوع الوجهة عميل.");
                 // استخدام حساب العميل إذا وجد، أو البحث عن حساب ذمم العملاء
@@ -114,10 +118,14 @@ public class PostPaymentVoucherCommandHandler : IRequestHandler<PostPaymentVouch
                     debitAccountId = vendorsPayable.Id;
                 }
             }
+            else if (voucher.DestinationType == VoucherPartnerType.Account)
+            {
+                if (voucher.DestinationAccountId == null) throw new BusinessException("يجب تحديد حساب الوجهة عند اختيار نوع الوجهة كحساب.");
+                debitAccountId = voucher.DestinationAccountId.Value;
+            }
             else
             {
-                if (voucher.DestinationAccountId == null) throw new BusinessException("يجب تحديد حساب الوجهة.");
-                debitAccountId = voucher.DestinationAccountId.Value;
+                throw new BusinessException($"نوع الوجهة غير مدعوم: {voucher.DestinationType}");
             }
 
             var debitLine = new JournalEntryLine(
