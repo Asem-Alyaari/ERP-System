@@ -35,6 +35,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<SalesInvoiceLine> SalesInvoiceLines => Set<SalesInvoiceLine>();
     public DbSet<ReceiptVoucher> ReceiptVouchers => Set<ReceiptVoucher>();
     public DbSet<PaymentVoucher> PaymentVouchers => Set<PaymentVoucher>();
+    public DbSet<ExpenseBillMaster> ExpenseBillMasters => Set<ExpenseBillMaster>();
+    public DbSet<ExpenseBillLine> ExpenseBillLines => Set<ExpenseBillLine>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
