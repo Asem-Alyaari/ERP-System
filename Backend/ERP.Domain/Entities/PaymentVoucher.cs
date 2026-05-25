@@ -29,6 +29,10 @@ public class PaymentVoucher : Entity
     public string? Notes { get; private set; }
     public VoucherStatus Status { get; private set; }
 
+    // مركز التكلفة (للمصروفات التي تتطلب مركز تكلفة)
+    public Guid? CostCenterId { get; private set; }
+    public virtual CostCenter? CostCenter { get; private set; }
+
     // Audit Fields
     public string CreatedBy { get; private set; } = string.Empty;
     public DateTime CreatedAt { get; private set; }
@@ -38,17 +42,18 @@ public class PaymentVoucher : Entity
     private PaymentVoucher() { } // For EF Core
 
     public PaymentVoucher(
-        Guid id, 
-        string voucherNumber, 
-        DateTime voucherDate, 
-        PaymentMethod paymentMethod, 
-        Guid sourceAccountId, 
-        VoucherPartnerType destinationType, 
-        decimal amount, 
-        string createdBy, 
-        string? notes = null, 
-        Guid? vendorId = null, 
-        Guid? destinationAccountId = null) : base(id)
+        Guid id,
+        string voucherNumber,
+        DateTime voucherDate,
+        PaymentMethod paymentMethod,
+        Guid sourceAccountId,
+        VoucherPartnerType destinationType,
+        decimal amount,
+        string createdBy,
+        string? notes = null,
+        Guid? vendorId = null,
+        Guid? destinationAccountId = null,
+        Guid? costCenterId = null) : base(id)
     {
         VoucherNumber = voucherNumber;
         VoucherDate = voucherDate;
@@ -61,6 +66,7 @@ public class PaymentVoucher : Entity
         Notes = notes;
         VendorId = vendorId;
         DestinationAccountId = destinationAccountId;
+        CostCenterId = costCenterId;
         Status = VoucherStatus.Draft;
     }
 

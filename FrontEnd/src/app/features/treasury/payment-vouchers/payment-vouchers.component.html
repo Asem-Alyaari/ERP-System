@@ -1,0 +1,245 @@
+<div class="payment-vouchers-container">
+  <!-- Header -->
+  <div class="page-header">
+    <h1>سندات الصرف والمصروفات</h1>
+    <p-button 
+      label="سند صرف جديد" 
+      icon="pi pi-plus" 
+      (onClick)="openCreateDialog()"
+      styleClass="p-button-success">
+    </p-button>
+  </div>
+
+  <!-- Data Table -->
+  <p-table 
+    [value]="vouchers" 
+    [loading]="isLoading"
+    [paginator]="true"
+    [rows]="10"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="عرض {first} إلى {last} من {totalRecords} سند"
+    class="vouchers-table">
+    
+    <ng-template pTemplate="header">
+      <tr>
+        <th>رقم السند</th>
+        <th>التاريخ</th>
+        <th>طريقة الدفع</th>
+        <th>الحساب المصدر</th>
+        <th>الوجهة</th>
+        <th>المبلغ</th>
+        <th>الحالة</th>
+        <th>الإجراءات</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-voucher>
+      <tr>
+        <td>{{ voucher.voucherNumber }}</td>
+        <td>{{ voucher.voucherDate | date:'yyyy-MM-dd' }}</td>
+        <td>{{ getPaymentMethodLabel(voucher.paymentMethod) }}</td>
+        <td>{{ voucher.sourceAccountCode }} - {{ voucher.sourceAccountNameAr }}</td>
+        <td>
+          <ng-container [ngSwitch]="voucher.destinationType">
+            <span *ngSwitchCase="1">{{ voucher.vendorName || '-' }}</span>
+            <span *ngSwitchCase="3">{{ voucher.destinationAccountCode }} - {{ voucher.destinationAccountNameAr }}</span>
+          </ng-container>
+        </td>
+        <td>{{ voucher.amount.toFixed(2) }}</td>
+        <td>
+          <p-tag 
+            [value]="voucher.status === 2 ? 'مرحل' : voucher.status === 3 ? 'ملغي' : 'مسودة'"
+            [severity]="voucher.status === 2 ? 'success' : voucher.status === 3 ? 'danger' : 'warn'">
+          </p-tag>
+        </td>
+        <td>
+          <p-button 
+            icon="pi pi-eye" 
+            styleClass="p-button-rounded p-button-text p-button-info"
+            pTooltip="عرض التفاصيل">
+          </p-button>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="8" class="text-center p-4">لا توجد سندات صرف</td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <!-- Create Dialog -->
+  <p-dialog 
+    [(visible)]="createDialogVisible" 
+    header="سند صرف جديد" 
+    [modal]="true" 
+    [style]="{ width: '50vw' }"
+    [closable]="!isSaving">
+    
+    <div class="form-container" *ngIf="createDialogVisible">
+      <!-- Voucher Number & Date -->
+      <div class="form-grid">
+        <div class="form-field">
+          <label>رقم السند</label>
+          <input pInputText [(ngModel)]="voucherForm.voucherNumber" [readonly]="true" />
+        </div>
+        <div class="form-field">
+          <label>التاريخ</label>
+          <p-datepicker 
+            [(ngModel)]="voucherForm.voucherDate" 
+            dateFormat="yy-mm-dd">
+          </p-datepicker>
+        </div>
+      </div>
+
+      <!-- Payment Method & Source Account -->
+      <div class="form-grid">
+        <div class="form-field">
+          <label>طريقة الدفع</label>
+          <p-select 
+            [(ngModel)]="voucherForm.paymentMethod" 
+            [options]="[
+              { label: 'نقدي', value: 1 },
+              { label: 'تحويل بنكي', value: 2 },
+              { label: 'شيك', value: 3 }
+            ]"
+            [disabled]="true"
+            optionLabel="label"
+            optionValue="value">
+          </p-select>
+        </div>
+        <div class="form-field">
+          <label>الحساب المصدر</label>
+          <p-select 
+            [(ngModel)]="voucherForm.sourceAccountId" 
+            [options]="cashAccounts.concat(bankAccounts)"
+            optionLabel="accountNameAr"
+            optionValue="id"
+            (onChange)="onSourceAccountChange($event)"
+            [filter]="true"
+            filterBy="accountCode,accountNameAr"
+            placeholder="اختر الحساب المصدر">
+          </p-select>
+        </div>
+      </div>
+
+      <!-- Destination Type -->
+      <div class="form-field">
+        <label>نوع الوجهة</label>
+        <p-select 
+          [(ngModel)]="voucherForm.destinationType" 
+          [options]="destinationTypeOptions"
+          optionLabel="label"
+          optionValue="value"
+          (ngModelChange)="onDestinationTypeChange($event)"
+          placeholder="اختر نوع الوجهة">
+        </p-select>
+      </div>
+
+      <!-- Destination Account (if Account type) -->
+      <div class="form-field" *ngIf="voucherForm.destinationType === '3'">
+        <label>الحساب الوجهة</label>
+        <p-select 
+          [(ngModel)]="voucherForm.destinationAccountId" 
+          [options]="expenseAccounts"
+          optionLabel="accountNameAr"
+          optionValue="id"
+          (onChange)="onDestinationAccountChange($event)"
+          [filter]="true"
+          filterBy="accountCode,accountNameAr"
+          placeholder="اختر الحساب الوجهة">
+        </p-select>
+      </div>
+
+      <!-- Vendor (if Vendor type) -->
+      <div class="form-field" *ngIf="voucherForm.destinationType === '2'">
+        <label>المورد</label>
+        <p-select 
+          [(ngModel)]="voucherForm.vendorId" 
+          [options]="vendors"
+          optionLabel="nameAr"
+          optionValue="id"
+          placeholder="اختر المورد">
+        </p-select>
+        <div *ngIf="vendors.length === 0" style="color: red; font-size: 12px;">
+          لا توجد موردين متاحين
+        </div>
+      </div>
+
+      <!-- Destination Account (for Vendor type - optional) -->
+      <div class="form-field" *ngIf="voucherForm.destinationType === '2'">
+        <label>الحساب الوجهة (اختياري)</label>
+        <p-select 
+          [(ngModel)]="voucherForm.destinationAccountId" 
+          [options]="expenseAccounts"
+          optionLabel="accountNameAr"
+          optionValue="id"
+          (onChange)="onDestinationAccountChange($event)"
+          [filter]="true"
+          filterBy="accountCode,accountNameAr"
+          placeholder="اختر الحساب الوجهة (سيتم استخدام حساب ذمم الموردين إذا لم يتم الاختيار)">
+        </p-select>
+      </div>
+
+      <!-- Cost Center (if Account type and required) -->
+      <div class="form-field" *ngIf="voucherForm.destinationType === '3' && voucherForm.destinationAccountId">
+        <label>
+          مركز التكلفة
+          <span *ngIf="isCostCenterRequired(voucherForm.costCenterStatus || '')" class="required-star">*</span>
+          <span class="cost-center-status" [ngClass]="getCostCenterStatusClass(voucherForm.costCenterStatus || '')">
+            ({{ getCostCenterStatusLabel(voucherForm.costCenterStatus || '') }})
+          </span>
+        </label>
+        <p-select 
+          [(ngModel)]="voucherForm.costCenterId" 
+          [options]="costCenters"
+          optionLabel="costCenterNameAr"
+          optionValue="id"
+          (onChange)="onCostCenterChange($event)"
+          [filter]="true"
+          filterBy="costCenterCode,costCenterNameAr"
+          [disabled]="isCostCenterDisabled(voucherForm.costCenterStatus || '')"
+          placeholder="اختر مركز التكلفة">
+        </p-select>
+      </div>
+
+      <!-- Amount -->
+      <div class="form-field">
+        <label>المبلغ</label>
+        <p-inputnumber 
+          [(ngModel)]="voucherForm.amount" 
+          [min]="0"
+          [minFractionDigits]="2"
+          [maxFractionDigits]="2"
+          mode="decimal"
+          showButtons
+          placeholder="0.00">
+        </p-inputnumber>
+      </div>
+
+      <!-- Notes -->
+      <div class="form-field">
+        <label>البيان</label>
+        <textarea pInputTextarea [(ngModel)]="voucherForm.notes" rows="3" placeholder="أدخل بيان السند"></textarea>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <p-button 
+        label="إلغاء" 
+        icon="pi pi-times" 
+        (onClick)="createDialogVisible = false"
+        [disabled]="isSaving"
+        styleClass="p-button-text">
+      </p-button>
+      <p-button 
+        label="حفظ وترحيل" 
+        icon="pi pi-check" 
+        (onClick)="saveVoucher()"
+        [loading]="isSaving"
+        [disabled]="isSaving">
+      </p-button>
+    </ng-template>
+  </p-dialog>
+</div>

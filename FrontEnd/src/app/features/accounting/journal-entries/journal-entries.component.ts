@@ -120,6 +120,11 @@ export class JournalEntriesComponent implements OnInit {
         if (!this.costCenters || this.costCenters.length === 0) {
           console.warn('No cost centers loaded');
         }
+
+        // تحذير إذا لم تكن هناك مراكز تكلفة
+        if (!this.costCenters || this.costCenters.length === 0) {
+          console.warn('No cost centers loaded');
+        }
       },
       error: (err) => {
         console.error('Failed to load lookups:', err);

@@ -27,6 +27,7 @@ export class SidebarComponent {
     { label: 'مراكز التكلفة', icon: 'pi pi-sitemap', route: '/accounting/cost-centers' },
     { label: 'الفترات المالية', icon: 'pi pi-calendar', route: '/accounting/fiscal-periods' },
     { label: 'أسعار الصرف', icon: 'pi pi-sync', route: '/accounting/exchange-rates' },
+    { label: 'سندات الصرف', icon: 'pi pi-money-bill', route: '/treasury/payment-vouchers' },
     { label: 'التقارير', icon: 'pi pi-chart-bar', route: '/reports' },
     { label: 'الإعدادات', icon: 'pi pi-cog', route: '/settings' }
   ];
