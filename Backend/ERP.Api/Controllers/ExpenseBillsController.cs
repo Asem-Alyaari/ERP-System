@@ -1,11 +1,34 @@
 using ERP.Application.Features.Expenses.Bills.Commands.Create;
 using ERP.Application.Features.Expenses.Bills.Commands.Post;
+using ERP.Application.Features.Expenses.Bills.Queries.GetAll;
+using ERP.Application.Features.Expenses.Bills.Queries.GetById;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ERP.Api.Controllers;
 
+[Route("api/[controller]")]
 public class ExpenseBillsController : ApiControllerBase
 {
+    /// <summary>
+    /// الحصول على جميع فواتير المصروفات
+    /// </summary>
+    [HttpGet]
+    public async Task<IActionResult> GetAllExpenseBills()
+    {
+        var result = await Mediator.Send(new GetAllExpenseBillsQuery());
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// الحصول على فاتورة مصروفات بالمعرف
+    /// </summary>
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetExpenseBillById(Guid id)
+    {
+        var result = await Mediator.Send(new GetExpenseBillByIdQuery(id));
+        return Ok(result);
+    }
+
     /// <summary>
     /// إنشاء فاتورة مصروفات جديدة
     /// </summary>

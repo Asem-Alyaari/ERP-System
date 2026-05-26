@@ -19,7 +19,11 @@ public class CreateExpenseBillCommandHandler : IRequestHandler<CreateExpenseBill
 
     public async Task<Guid> Handle(CreateExpenseBillCommand request, CancellationToken cancellationToken)
     {
-        // 1. التحقق من المبالغ
+        // 1. Parse TransactionDate
+        if (!DateTime.TryParse(request.TransactionDate, out var transactionDate))
+            throw new BusinessException("صيغة التاريخ غير صالحة.");
+
+        // 2. التحقق من المبالغ
         if (request.TotalAmount <= 0)
             throw new BusinessException("المبلغ الإجمالي يجب أن يكون أكبر من صفر.");
 
@@ -29,24 +33,41 @@ public class CreateExpenseBillCommandHandler : IRequestHandler<CreateExpenseBill
         if (request.NetAmount <= 0)
             throw new BusinessException("المبلغ الصافي يجب أن يكون أكبر من صفر.");
 
-        // 2. التحقق من طريقة الدفع والبيانات المطلوبة
+        // Parse GUIDs
+        Guid? vendorId = null;
+        if (!string.IsNullOrEmpty(request.VendorId))
+        {
+            if (!Guid.TryParse(request.VendorId, out var parsedVendorId))
+                throw new BusinessException("معرف المورد غير صالح.");
+            vendorId = parsedVendorId;
+        }
+
+        Guid? paymentAccountId = null;
+        if (!string.IsNullOrEmpty(request.PaymentAccountId))
+        {
+            if (!Guid.TryParse(request.PaymentAccountId, out var parsedPaymentAccountId))
+                throw new BusinessException("معرف حساب الدفع غير صالح.");
+            paymentAccountId = parsedPaymentAccountId;
+        }
+
+        // 3. التحقق من طريقة الدفع والبيانات المطلوبة
         if (request.PaymentMethod == ExpenseBillPaymentMethod.Credit)
         {
             // للمصروفات الآجلة، يجب تحديد المورد
-            if (!request.VendorId.HasValue || request.VendorId.Value == Guid.Empty)
+            if (!vendorId.HasValue || vendorId.Value == Guid.Empty)
                 throw new BusinessException("يجب تحديد المورد للمصروفات الآجلة.");
 
-            var vendor = await _unitOfWork.Repository<Vendor>().GetByIdAsync(request.VendorId.Value);
+            var vendor = await _unitOfWork.Repository<Vendor>().GetByIdAsync(vendorId.Value);
             if (vendor == null)
                 throw new BusinessException("المورد غير موجود.");
         }
         else if (request.PaymentMethod == ExpenseBillPaymentMethod.Cash || request.PaymentMethod == ExpenseBillPaymentMethod.Bank)
         {
             // للمصروفات النقدية أو البنكية، يجب تحديد حساب الدفع
-            if (!request.PaymentAccountId.HasValue || request.PaymentAccountId.Value == Guid.Empty)
+            if (!paymentAccountId.HasValue || paymentAccountId.Value == Guid.Empty)
                 throw new BusinessException("يجب تحديد حساب الدفع للمصروفات النقدية أو البنكية.");
 
-            var paymentAccount = await _unitOfWork.Repository<Account>().GetByIdAsync(request.PaymentAccountId.Value);
+            var paymentAccount = await _unitOfWork.Repository<Account>().GetByIdAsync(paymentAccountId.Value);
             if (paymentAccount == null)
                 throw new BusinessException("حساب الدفع غير موجود.");
 
@@ -55,18 +76,25 @@ public class CreateExpenseBillCommandHandler : IRequestHandler<CreateExpenseBill
                 throw new BusinessException("حساب الدفع يجب أن يكون أصل (خزينة أو بنك).");
         }
 
-        // 3. التحقق من وجود سطور
+        // 4. التحقق من وجود سطور
         if (request.Lines == null || !request.Lines.Any())
             throw new BusinessException("يجب إضافة سطر واحد على الأقل لفاتورة المصروفات.");
 
-        // 4. التحقق من السطور
+        // 5. التحقق من السطور
         foreach (var line in request.Lines)
         {
             if (line.Amount <= 0)
                 throw new BusinessException("مبلغ السطر يجب أن يكون أكبر من صفر.");
 
+            // Parse line GUIDs
+            if (!Guid.TryParse(line.AccountId, out var accountId))
+                throw new BusinessException("معرف الحساب غير صالح.");
+
+            if (!Guid.TryParse(line.CostCenterId, out var costCenterId))
+                throw new BusinessException("معرف مركز التكلفة غير صالح.");
+
             // التحقق من الحساب
-            var account = await _unitOfWork.Repository<Account>().GetByIdAsync(line.AccountId);
+            var account = await _unitOfWork.Repository<Account>().GetByIdAsync(accountId);
             if (account == null)
                 throw new BusinessException($"الحساب برقم {line.AccountId} غير موجود.");
 
@@ -75,15 +103,15 @@ public class CreateExpenseBillCommandHandler : IRequestHandler<CreateExpenseBill
                 throw new BusinessException($"الحساب '{account.AccountNameAr}' ({account.AccountCode}) ليس حساب مصروفات. يجب أن يبدأ برمز 5.");
 
             // التحقق من مركز التكلفة (إلزامي للمصروفات)
-            if (line.CostCenterId == Guid.Empty)
+            if (costCenterId == Guid.Empty)
                 throw new BusinessException($"الحساب '{account.AccountNameAr}' ({account.AccountCode}) يتطلب مركز تكلفة إلزامياً.");
 
-            var costCenter = await _unitOfWork.Repository<CostCenter>().GetByIdAsync(line.CostCenterId);
+            var costCenter = await _unitOfWork.Repository<CostCenter>().GetByIdAsync(costCenterId);
             if (costCenter == null)
                 throw new BusinessException("مركز التكلفة غير موجود.");
         }
 
-        // 5. التحقق من تطابق المبالغ
+        // 6. التحقق من تطابق المبالغ
         var linesTotal = request.Lines.Sum(l => l.Amount);
         if (Math.Abs(linesTotal - request.NetAmount) > 0.01m)
             throw new BusinessException($"مجموع السطور ({linesTotal}) لا يساوي المبلغ الصافي ({request.NetAmount}).");
@@ -93,31 +121,34 @@ public class CreateExpenseBillCommandHandler : IRequestHandler<CreateExpenseBill
 
         try
         {
-            // 6. إنشاء فاتورة المصروفات
+            // 7. إنشاء فاتورة المصروفات
             var expenseBill = new ExpenseBillMaster(
                 Guid.NewGuid(),
                 request.BillNumber,
-                request.TransactionDate,
+                transactionDate,
                 request.PaymentMethod,
                 request.TotalAmount,
                 request.TaxAmount,
                 request.NetAmount,
                 request.CreatedBy,
                 request.Notes,
-                request.VendorId,
+                vendorId,
                 request.SupplierName,
-                request.PaymentAccountId
+                paymentAccountId
             );
 
-            // 7. إضافة السطور
+            // 8. إضافة السطور
             foreach (var line in request.Lines)
             {
+                Guid.TryParse(line.AccountId, out var accountId);
+                Guid.TryParse(line.CostCenterId, out var costCenterId);
+
                 var expenseBillLine = new ExpenseBillLine(
                     Guid.NewGuid(),
                     expenseBill.Id,
-                    line.AccountId,
+                    accountId,
                     line.Amount,
-                    line.CostCenterId,
+                    costCenterId,
                     line.Notes
                 );
                 expenseBill.AddLine(expenseBillLine);

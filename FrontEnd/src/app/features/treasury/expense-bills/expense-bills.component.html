@@ -1,0 +1,379 @@
+<div class="expense-bills-container">
+  <!-- Header -->
+  <div class="page-header">
+    <h1>فواتير المصروفات</h1>
+    <p-button 
+      label="فاتورة جديدة" 
+      icon="pi pi-plus" 
+      (onClick)="openCreateDialog()"
+      [loading]="isLoading"
+    />
+  </div>
+
+  <!-- Bills Table -->
+  <p-table 
+    [value]="bills" 
+    [loading]="isLoading"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    dir="rtl"
+    styleClass="p-datatable-striped"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>رقم الفاتورة</th>
+        <th>التاريخ</th>
+        <th>طريقة الدفع</th>
+        <th>المورد</th>
+        <th>المبلغ الصافي</th>
+        <th>الحالة</th>
+        <th>الإجراءات</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-bill>
+      <tr>
+        <td>{{ bill.billNumber }}</td>
+        <td>{{ bill.transactionDate | date:'yyyy-MM-dd' }}</td>
+        <td>{{ getPaymentMethodLabel(bill.paymentMethod) }}</td>
+        <td>{{ bill.vendorName || bill.supplierName || '-' }}</td>
+        <td>{{ bill.netAmount | number:'1.2-2' }}</td>
+        <td>
+          <p-tag 
+            [value]="getStatusLabel(bill.status)" 
+            [severity]="getStatusSeverity(bill.status)"
+          />
+        </td>
+        <td>
+          <div class="action-buttons">
+            <p-button 
+              icon="pi pi-eye" 
+              pTooltip="عرض التفاصيل"
+              tooltipPosition="top"
+              rounded 
+              text 
+              (onClick)="viewBillDetails(bill)"
+            />
+            @if (bill.status === ExpenseBillStatus.Draft) {
+              <p-button 
+                icon="pi pi-check" 
+                pTooltip="ترحيل"
+                tooltipPosition="top"
+                rounded 
+                text 
+                severity="success"
+                (onClick)="postBill(bill.id)"
+              />
+            }
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <!-- Create Dialog -->
+  <p-dialog 
+    [(visible)]="createDialogVisible" 
+    header="فاتورة مصروفات جديدة" 
+    [modal]="true" 
+    [style]="{ width: '90vw', maxWidth: '1200px' }"
+    [closable]="!isSaving"
+    dir="rtl"
+  >
+    <div class="form-container">
+      <!-- Master Fields -->
+      <div class="form-grid">
+        <div class="form-field">
+          <label>رقم الفاتورة <span class="required">*</span></label>
+          <input pInputText type="text" [(ngModel)]="expenseBillForm.billNumber" />
+        </div>
+
+        <div class="form-field">
+          <label>التاريخ <span class="required">*</span></label>
+          <p-datepicker 
+            [(ngModel)]="expenseBillForm.transactionDate" 
+            [showIcon]="true" 
+            dateFormat="yy-mm-dd"
+          />
+        </div>
+
+        <div class="form-field">
+          <label>طريقة الدفع <span class="required">*</span></label>
+          <p-select 
+            [(ngModel)]="expenseBillForm.paymentMethod" 
+            [options]="paymentMethodOptions" 
+            optionLabel="label" 
+            optionValue="value"
+            (onChange)="onPaymentMethodChange($event)"
+          />
+        </div>
+
+        @if (expenseBillForm.paymentMethod === ExpenseBillPaymentMethod.Credit) {
+          <div class="form-field">
+            <label>المورد <span class="required">*</span></label>
+            <p-select 
+              [(ngModel)]="expenseBillForm.vendorId" 
+              [options]="vendors" 
+              optionLabel="nameAr" 
+              optionValue="id"
+              [filter]="true"
+              filterBy="nameAr,vendorCode"
+              placeholder="اختر المورد"
+              (onChange)="onVendorChange($event)"
+            />
+          </div>
+        }
+
+        @if (expenseBillForm.paymentMethod === ExpenseBillPaymentMethod.Cash || 
+             expenseBillForm.paymentMethod === ExpenseBillPaymentMethod.Bank) {
+          <div class="form-field">
+            <label>حساب الدفع <span class="required">*</span></label>
+            <p-select 
+              [(ngModel)]="expenseBillForm.paymentAccountId" 
+              [options]="expenseBillForm.paymentMethod === ExpenseBillPaymentMethod.Cash ? cashAccounts : bankAccounts" 
+              optionLabel="accountNameAr" 
+              optionValue="id"
+              [filter]="true"
+              filterBy="accountCode,accountNameAr"
+              placeholder="اختر حساب الدفع"
+              (onChange)="onPaymentAccountChange($event)"
+            />
+          </div>
+        }
+
+        @if (expenseBillForm.paymentMethod === ExpenseBillPaymentMethod.Cash || 
+             expenseBillForm.paymentMethod === ExpenseBillPaymentMethod.Bank) {
+          <div class="form-field">
+            <label>اسم المورد (اختياري)</label>
+            <input pInputText type="text" [(ngModel)]="expenseBillForm.supplierName" placeholder="للمصروفات النقدية بدون مورد" />
+          </div>
+        }
+
+        <div class="form-field full-width">
+          <label>ملاحظات</label>
+          <textarea pInputTextarea [(ngModel)]="expenseBillForm.notes" rows="2"></textarea>
+        </div>
+      </div>
+
+      <!-- Lines Section -->
+      <div class="lines-section">
+        <div class="lines-header">
+          <h3>سطور الفاتورة</h3>
+          <p-button 
+            label="إضافة سطر" 
+            icon="pi pi-plus" 
+            size="small" 
+            (onClick)="addLine()"
+          />
+        </div>
+
+        @if (expenseBillForm.lines.length > 0) {
+          <div class="lines-grid">
+            @for (line of expenseBillForm.lines; track line; let i = $index) {
+              <div class="line-card">
+                <div class="line-header">
+                  <span>سطر {{ i + 1 }}</span>
+                  <p-button 
+                    icon="pi pi-times" 
+                    rounded 
+                    text 
+                    severity="danger" 
+                    size="small"
+                    (onClick)="removeLine(i)"
+                  />
+                </div>
+                <div class="line-fields">
+                  <div class="form-field">
+                    <label>حساب المصروف <span class="required">*</span></label>
+                    <p-select 
+                      [(ngModel)]="line.accountId" 
+                      [options]="expenseAccounts" 
+                      optionLabel="accountNameAr" 
+                      optionValue="id"
+                      [filter]="true"
+                      filterBy="accountCode,accountNameAr"
+                      placeholder="اختر حساب المصروف (5xxx)"
+                      (onChange)="onLineAccountChange(i, $event)"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label>مركز التكلفة <span class="required">*</span></label>
+                    <p-select 
+                      [(ngModel)]="line.costCenterId" 
+                      [options]="costCenters" 
+                      optionLabel="costCenterNameAr" 
+                      optionValue="id"
+                      [filter]="true"
+                      filterBy="costCenterCode,costCenterNameAr"
+                      placeholder="اختر مركز التكلفة"
+                      (onChange)="onLineCostCenterChange(i, $event)"
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label>المبلغ <span class="required">*</span></label>
+                    <p-inputNumber 
+                      [(ngModel)]="line.amount" 
+                      [min]="0" 
+                      [maxFractionDigits]="2"
+                      mode="decimal"
+                      (onInput)="onLineAmountChange(i, $event)"
+                    />
+                  </div>
+
+                  <div class="form-field full-width">
+                    <label>ملاحظات السطر</label>
+                    <input pInputText type="text" [(ngModel)]="line.notes" />
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <p-message severity="info" text="لا توجد سطور. اضغط على إضافة سطر للبدء." />
+        }
+
+        <!-- Totals -->
+        @if (expenseBillForm.lines.length > 0) {
+          <div class="totals-section">
+            <div class="total-row">
+              <span>مبلغ الضريبة:</span>
+              <p-inputNumber 
+                [(ngModel)]="expenseBillForm.taxAmount" 
+                [min]="0" 
+                [maxFractionDigits]="2"
+                mode="decimal"
+                (onInput)="onTaxAmountChange($event)"
+              />
+            </div>
+            <div class="total-row main-total">
+              <span>المبلغ الصافي:</span>
+              <span class="total-amount">{{ expenseBillForm.netAmount | number:'1.2-2' }}</span>
+            </div>
+            <div class="total-row">
+              <span>المبلغ الإجمالي:</span>
+              <span class="total-amount">{{ expenseBillForm.totalAmount | number:'1.2-2' }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <p-button 
+        label="إلغاء" 
+        icon="pi pi-times" 
+        text 
+        (onClick)="createDialogVisible = false"
+        [disabled]="isSaving"
+      />
+      <p-button 
+        label="حفظ" 
+        icon="pi pi-check" 
+        (onClick)="saveBill()" 
+        [loading]="isSaving"
+      />
+    </ng-template>
+  </p-dialog>
+
+  <!-- View Details Dialog -->
+  <p-dialog 
+    [(visible)]="viewDetailsDialogVisible" 
+    header="تفاصيل فاتورة المصروفات" 
+    [modal]="true" 
+    [style]="{ width: '80vw', maxWidth: '1000px' }"
+    dir="rtl"
+  >
+    @if (selectedBill) {
+      <div class="details-container">
+        <div class="details-grid">
+          <div class="detail-item">
+            <label>رقم الفاتورة:</label>
+            <span>{{ selectedBill.billNumber }}</span>
+          </div>
+          <div class="detail-item">
+            <label>التاريخ:</label>
+            <span>{{ selectedBill.transactionDate | date:'yyyy-MM-dd' }}</span>
+          </div>
+          <div class="detail-item">
+            <label>طريقة الدفع:</label>
+            <span>{{ getPaymentMethodLabel(selectedBill.paymentMethod) }}</span>
+          </div>
+          <div class="detail-item">
+            <label>المورد:</label>
+            <span>{{ selectedBill.vendorName || selectedBill.supplierName || '-' }}</span>
+          </div>
+          <div class="detail-item">
+            <label>حساب الدفع:</label>
+            <span>{{ selectedBill.paymentAccountNameAr || '-' }}</span>
+          </div>
+          <div class="detail-item">
+            <label>الحالة:</label>
+            <p-tag 
+              [value]="getStatusLabel(selectedBill.status)" 
+              [severity]="getStatusSeverity(selectedBill.status)"
+            />
+          </div>
+          <div class="detail-item">
+            <label>مبلغ الضريبة:</label>
+            <span>{{ selectedBill.taxAmount | number:'1.2-2' }}</span>
+          </div>
+          <div class="detail-item">
+            <label>المبلغ الصافي:</label>
+            <span>{{ selectedBill.netAmount | number:'1.2-2' }}</span>
+          </div>
+          <div class="detail-item">
+            <label>المبلغ الإجمالي:</label>
+            <span>{{ selectedBill.totalAmount | number:'1.2-2' }}</span>
+          </div>
+          <div class="detail-item full-width">
+            <label>ملاحظات:</label>
+            <span>{{ selectedBill.notes || '-' }}</span>
+          </div>
+        </div>
+
+        @if (selectedBill.lines && selectedBill.lines.length > 0) {
+          <div class="lines-details">
+            <h3>سطور الفاتورة</h3>
+            <p-table [value]="selectedBill.lines" dir="rtl">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>الحساب</th>
+                  <th>مركز التكلفة</th>
+                  <th>المبلغ</th>
+                  <th>ملاحظات</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-line>
+                <tr>
+                  <td>{{ line.accountCode }} - {{ line.accountNameAr }}</td>
+                  <td>{{ line.costCenterCode }} - {{ line.costCenterNameAr }}</td>
+                  <td>{{ line.amount | number:'1.2-2' }}</td>
+                  <td>{{ line.notes || '-' }}</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        }
+
+        <div class="audit-info">
+          <p>تم الإنشاء بواسطة: {{ selectedBill.createdBy }} - {{ selectedBill.createdAt | date:'yyyy-MM-dd HH:mm' }}</p>
+          @if (selectedBill.postedBy) {
+            <p>تم الترحيل بواسطة: {{ selectedBill.postedBy }} - {{ selectedBill.postedAt | date:'yyyy-MM-dd HH:mm' }}</p>
+          }
+        </div>
+      </div>
+    }
+
+    <ng-template pTemplate="footer">
+      <p-button 
+        label="إغلاق" 
+        icon="pi pi-times" 
+        (onClick)="viewDetailsDialogVisible = false"
+      />
+    </ng-template>
+  </p-dialog>
+</div>
+
+<p-toast />

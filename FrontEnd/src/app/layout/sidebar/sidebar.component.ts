@@ -29,6 +29,7 @@ export class SidebarComponent {
     { label: 'أسعار الصرف', icon: 'pi pi-sync', route: '/accounting/exchange-rates' },
     { label: 'سندات الصرف', icon: 'pi pi-money-bill', route: '/treasury/payment-vouchers' },
     { label: 'سندات القبض', icon: 'pi pi-wallet', route: '/treasury/receipt-vouchers' },
+    { label: 'فواتير المصروفات', icon: 'pi pi-file-invoice-dollar', route: '/treasury/expense-bills' },
     { label: 'التقارير', icon: 'pi pi-chart-bar', route: '/reports' },
     { label: 'الإعدادات', icon: 'pi pi-cog', route: '/settings' }
   ];

@@ -45,6 +45,7 @@ export interface ReceiptVoucherListItem {
   destinationAccountCode: string;
   destinationAccountNameAr: string;
   sourceType: ReceiptTargetType;
+  targetType: ReceiptTargetType;
   vendorId?: string;
   vendorName?: string;
   customerId?: string;
