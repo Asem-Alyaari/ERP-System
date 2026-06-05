@@ -17114,3 +17114,375 @@ ORDER BY [a].[AccountCode]
 2026-05-26 04:12:55.321 +03:00 [INF] Executed action ERP.Api.Controllers.AccountsController.GetAll (ERP.Api) in 9.3518ms
 2026-05-26 04:12:55.327 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.AccountsController.GetAll (ERP.Api)'
 2026-05-26 04:12:55.328 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/Accounts - 200 null application/json; charset=utf-8 46.3855ms
+2026-05-26 04:16:28.112 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/Currencies/list - null null
+2026-05-26 04:16:28.122 +03:00 [INF] CORS policy execution successful.
+2026-05-26 04:16:28.124 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/Currencies/list - 204 null null 12.4494ms
+2026-05-26 04:16:28.129 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/Currencies/list - null null
+2026-05-26 04:16:28.139 +03:00 [INF] CORS policy execution successful.
+2026-05-26 04:16:28.140 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-05-26 04:16:28.155 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-05-26 04:16:28.158 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.CurrenciesController.GetList (ERP.Api)'
+2026-05-26 04:16:28.163 +03:00 [INF] Route matched with {action = "GetList", controller = "Currencies"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.List`1[ERP.Application.Features.Accounting.Currencies.CurrencyDto]]] GetList() on controller ERP.Api.Controllers.CurrenciesController (ERP.Api).
+2026-05-26 04:16:28.173 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [c].[Id], [c].[Code], [c].[IsLocal], [c].[Name], [c].[Symbol]
+FROM [Currencies] AS [c]
+2026-05-26 04:16:28.180 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[ERP.Application.Features.Accounting.Currencies.CurrencyDto, ERP.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-05-26 04:16:28.185 +03:00 [INF] Executed action ERP.Api.Controllers.CurrenciesController.GetList (ERP.Api) in 16.2742ms
+2026-05-26 04:16:28.187 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.CurrenciesController.GetList (ERP.Api)'
+2026-05-26 04:16:28.188 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/Currencies/list - 200 null application/json; charset=utf-8 59.8522ms
+2026-05-26 04:16:28.357 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/Accounts - null null
+2026-05-26 04:16:28.363 +03:00 [INF] CORS policy execution successful.
+2026-05-26 04:16:28.368 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/Accounts - 204 null null 10.915ms
+2026-05-26 04:16:28.371 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/Accounts - null null
+2026-05-26 04:16:28.380 +03:00 [INF] CORS policy execution successful.
+2026-05-26 04:16:28.382 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-05-26 04:16:28.395 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-05-26 04:16:28.400 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.AccountsController.GetAll (ERP.Api)'
+2026-05-26 04:16:28.402 +03:00 [INF] Route matched with {action = "GetAll", controller = "Accounts"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.List`1[ERP.Application.Features.Accounting.Accounts.Queries.GetAccountsTree.AccountDto]]] GetAll() on controller ERP.Api.Controllers.AccountsController (ERP.Api).
+2026-05-26 04:16:28.417 +03:00 [INF] Executed DbCommand (9ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[Id], [a].[AccountCode], [a].[AccountNameAr], [a].[AccountNameEn], [a].[AccountType], [a].[CostCenterStatus], [a].[CurrencyId], [a].[IsDetail], [a].[ParentAccountId], [c].[Id], [c].[Code], [c].[IsLocal], [c].[Name], [c].[Symbol]
+FROM [Accounts] AS [a]
+INNER JOIN [Currencies] AS [c] ON [a].[CurrencyId] = [c].[Id]
+ORDER BY [a].[AccountCode]
+2026-05-26 04:16:28.423 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[ERP.Application.Features.Accounting.Accounts.Queries.GetAccountsTree.AccountDto, ERP.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-05-26 04:16:28.442 +03:00 [INF] Executed action ERP.Api.Controllers.AccountsController.GetAll (ERP.Api) in 35.3055ms
+2026-05-26 04:16:28.446 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.AccountsController.GetAll (ERP.Api)'
+2026-05-26 04:16:28.450 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/Accounts - 200 null application/json; charset=utf-8 79.0179ms
+2026-05-26 04:16:47.827 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/Currencies/list - null null
+2026-05-26 04:16:47.831 +03:00 [INF] CORS policy execution successful.
+2026-05-26 04:16:47.832 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/Currencies/list - 204 null null 5.2412ms
+2026-05-26 04:16:47.835 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/Currencies/list - null null
+2026-05-26 04:16:47.839 +03:00 [INF] CORS policy execution successful.
+2026-05-26 04:16:47.841 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-05-26 04:16:47.857 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-05-26 04:16:47.864 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.CurrenciesController.GetList (ERP.Api)'
+2026-05-26 04:16:47.866 +03:00 [INF] Route matched with {action = "GetList", controller = "Currencies"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.List`1[ERP.Application.Features.Accounting.Currencies.CurrencyDto]]] GetList() on controller ERP.Api.Controllers.CurrenciesController (ERP.Api).
+2026-05-26 04:16:47.874 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [c].[Id], [c].[Code], [c].[IsLocal], [c].[Name], [c].[Symbol]
+FROM [Currencies] AS [c]
+2026-05-26 04:16:47.882 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[ERP.Application.Features.Accounting.Currencies.CurrencyDto, ERP.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-05-26 04:16:47.885 +03:00 [INF] Executed action ERP.Api.Controllers.CurrenciesController.GetList (ERP.Api) in 14.8392ms
+2026-05-26 04:16:47.887 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.CurrenciesController.GetList (ERP.Api)'
+2026-05-26 04:16:47.889 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/Currencies/list - 200 null application/json; charset=utf-8 53.8359ms
+2026-05-26 04:16:47.984 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/Accounts - null null
+2026-05-26 04:16:47.988 +03:00 [INF] CORS policy execution successful.
+2026-05-26 04:16:47.989 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/Accounts - 204 null null 4.9191ms
+2026-05-26 04:16:47.991 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/Accounts - null null
+2026-05-26 04:16:48.002 +03:00 [INF] CORS policy execution successful.
+2026-05-26 04:16:48.003 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-05-26 04:16:48.017 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-05-26 04:16:48.021 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.AccountsController.GetAll (ERP.Api)'
+2026-05-26 04:16:48.022 +03:00 [INF] Route matched with {action = "GetAll", controller = "Accounts"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.List`1[ERP.Application.Features.Accounting.Accounts.Queries.GetAccountsTree.AccountDto]]] GetAll() on controller ERP.Api.Controllers.AccountsController (ERP.Api).
+2026-05-26 04:16:48.033 +03:00 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[Id], [a].[AccountCode], [a].[AccountNameAr], [a].[AccountNameEn], [a].[AccountType], [a].[CostCenterStatus], [a].[CurrencyId], [a].[IsDetail], [a].[ParentAccountId], [c].[Id], [c].[Code], [c].[IsLocal], [c].[Name], [c].[Symbol]
+FROM [Accounts] AS [a]
+INNER JOIN [Currencies] AS [c] ON [a].[CurrencyId] = [c].[Id]
+ORDER BY [a].[AccountCode]
+2026-05-26 04:16:48.040 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[ERP.Application.Features.Accounting.Accounts.Queries.GetAccountsTree.AccountDto, ERP.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-05-26 04:16:48.043 +03:00 [INF] Executed action ERP.Api.Controllers.AccountsController.GetAll (ERP.Api) in 17.0003ms
+2026-05-26 04:16:48.048 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.AccountsController.GetAll (ERP.Api)'
+2026-05-26 04:16:48.050 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/Accounts - 200 null application/json; charset=utf-8 58.2348ms
+2026-05-26 04:17:07.120 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/Currencies/list - null null
+2026-05-26 04:17:07.126 +03:00 [INF] CORS policy execution successful.
+2026-05-26 04:17:07.130 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/Currencies/list - 204 null null 9.2136ms
+2026-05-26 04:17:07.133 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/Currencies/list - null null
+2026-05-26 04:17:07.144 +03:00 [INF] CORS policy execution successful.
+2026-05-26 04:17:07.146 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-05-26 04:17:07.163 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-05-26 04:17:07.172 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.CurrenciesController.GetList (ERP.Api)'
+2026-05-26 04:17:07.175 +03:00 [INF] Route matched with {action = "GetList", controller = "Currencies"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.List`1[ERP.Application.Features.Accounting.Currencies.CurrencyDto]]] GetList() on controller ERP.Api.Controllers.CurrenciesController (ERP.Api).
+2026-05-26 04:17:07.183 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [c].[Id], [c].[Code], [c].[IsLocal], [c].[Name], [c].[Symbol]
+FROM [Currencies] AS [c]
+2026-05-26 04:17:07.189 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[ERP.Application.Features.Accounting.Currencies.CurrencyDto, ERP.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-05-26 04:17:07.193 +03:00 [INF] Executed action ERP.Api.Controllers.CurrenciesController.GetList (ERP.Api) in 13.3109ms
+2026-05-26 04:17:07.195 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.CurrenciesController.GetList (ERP.Api)'
+2026-05-26 04:17:07.197 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/Currencies/list - 200 null application/json; charset=utf-8 63.4483ms
+2026-05-26 04:17:07.284 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/Accounts - null null
+2026-05-26 04:17:07.290 +03:00 [INF] CORS policy execution successful.
+2026-05-26 04:17:07.292 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/Accounts - 204 null null 7.7819ms
+2026-05-26 04:17:07.300 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/Accounts - null null
+2026-05-26 04:17:07.304 +03:00 [INF] CORS policy execution successful.
+2026-05-26 04:17:07.308 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-05-26 04:17:07.319 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-05-26 04:17:07.322 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.AccountsController.GetAll (ERP.Api)'
+2026-05-26 04:17:07.334 +03:00 [INF] Route matched with {action = "GetAll", controller = "Accounts"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.List`1[ERP.Application.Features.Accounting.Accounts.Queries.GetAccountsTree.AccountDto]]] GetAll() on controller ERP.Api.Controllers.AccountsController (ERP.Api).
+2026-05-26 04:17:07.346 +03:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[Id], [a].[AccountCode], [a].[AccountNameAr], [a].[AccountNameEn], [a].[AccountType], [a].[CostCenterStatus], [a].[CurrencyId], [a].[IsDetail], [a].[ParentAccountId], [c].[Id], [c].[Code], [c].[IsLocal], [c].[Name], [c].[Symbol]
+FROM [Accounts] AS [a]
+INNER JOIN [Currencies] AS [c] ON [a].[CurrencyId] = [c].[Id]
+ORDER BY [a].[AccountCode]
+2026-05-26 04:17:07.350 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[ERP.Application.Features.Accounting.Accounts.Queries.GetAccountsTree.AccountDto, ERP.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-05-26 04:17:07.352 +03:00 [INF] Executed action ERP.Api.Controllers.AccountsController.GetAll (ERP.Api) in 11.4758ms
+2026-05-26 04:17:07.354 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.AccountsController.GetAll (ERP.Api)'
+2026-05-26 04:17:07.360 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/Accounts - 200 null application/json; charset=utf-8 60.027ms
+2026-05-26 04:17:27.599 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/Currencies/list - null null
+2026-05-26 04:17:27.603 +03:00 [INF] CORS policy execution successful.
+2026-05-26 04:17:27.604 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/Currencies/list - 204 null null 5.0998ms
+2026-05-26 04:17:27.607 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/Currencies/list - null null
+2026-05-26 04:17:27.611 +03:00 [INF] CORS policy execution successful.
+2026-05-26 04:17:27.612 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-05-26 04:17:27.627 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-05-26 04:17:27.633 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.CurrenciesController.GetList (ERP.Api)'
+2026-05-26 04:17:27.635 +03:00 [INF] Route matched with {action = "GetList", controller = "Currencies"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.List`1[ERP.Application.Features.Accounting.Currencies.CurrencyDto]]] GetList() on controller ERP.Api.Controllers.CurrenciesController (ERP.Api).
+2026-05-26 04:17:27.642 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [c].[Id], [c].[Code], [c].[IsLocal], [c].[Name], [c].[Symbol]
+FROM [Currencies] AS [c]
+2026-05-26 04:17:27.648 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[ERP.Application.Features.Accounting.Currencies.CurrencyDto, ERP.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-05-26 04:17:27.651 +03:00 [INF] Executed action ERP.Api.Controllers.CurrenciesController.GetList (ERP.Api) in 12.1898ms
+2026-05-26 04:17:27.653 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.CurrenciesController.GetList (ERP.Api)'
+2026-05-26 04:17:27.655 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/Currencies/list - 200 null application/json; charset=utf-8 47.9304ms
+2026-05-26 04:17:27.727 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/Accounts - null null
+2026-05-26 04:17:27.731 +03:00 [INF] CORS policy execution successful.
+2026-05-26 04:17:27.733 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/Accounts - 204 null null 5.4637ms
+2026-05-26 04:17:27.744 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/Accounts - null null
+2026-05-26 04:17:27.748 +03:00 [INF] CORS policy execution successful.
+2026-05-26 04:17:27.750 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-05-26 04:17:27.780 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-05-26 04:17:27.783 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.AccountsController.GetAll (ERP.Api)'
+2026-05-26 04:17:27.784 +03:00 [INF] Route matched with {action = "GetAll", controller = "Accounts"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.List`1[ERP.Application.Features.Accounting.Accounts.Queries.GetAccountsTree.AccountDto]]] GetAll() on controller ERP.Api.Controllers.AccountsController (ERP.Api).
+2026-05-26 04:17:27.795 +03:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[Id], [a].[AccountCode], [a].[AccountNameAr], [a].[AccountNameEn], [a].[AccountType], [a].[CostCenterStatus], [a].[CurrencyId], [a].[IsDetail], [a].[ParentAccountId], [c].[Id], [c].[Code], [c].[IsLocal], [c].[Name], [c].[Symbol]
+FROM [Accounts] AS [a]
+INNER JOIN [Currencies] AS [c] ON [a].[CurrencyId] = [c].[Id]
+ORDER BY [a].[AccountCode]
+2026-05-26 04:17:27.799 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[ERP.Application.Features.Accounting.Accounts.Queries.GetAccountsTree.AccountDto, ERP.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-05-26 04:17:27.802 +03:00 [INF] Executed action ERP.Api.Controllers.AccountsController.GetAll (ERP.Api) in 11.1903ms
+2026-05-26 04:17:27.807 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.AccountsController.GetAll (ERP.Api)'
+2026-05-26 04:17:27.808 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/Accounts - 200 null application/json; charset=utf-8 63.8551ms
+2026-05-26 04:18:46.751 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/Currencies/list - null null
+2026-05-26 04:18:46.756 +03:00 [INF] CORS policy execution successful.
+2026-05-26 04:18:46.759 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/Currencies/list - 204 null null 7.4053ms
+2026-05-26 04:18:46.761 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/Currencies/list - null null
+2026-05-26 04:18:46.767 +03:00 [INF] CORS policy execution successful.
+2026-05-26 04:18:46.769 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-05-26 04:18:46.783 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-05-26 04:18:46.792 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.CurrenciesController.GetList (ERP.Api)'
+2026-05-26 04:18:46.793 +03:00 [INF] Route matched with {action = "GetList", controller = "Currencies"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.List`1[ERP.Application.Features.Accounting.Currencies.CurrencyDto]]] GetList() on controller ERP.Api.Controllers.CurrenciesController (ERP.Api).
+2026-05-26 04:18:46.800 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [c].[Id], [c].[Code], [c].[IsLocal], [c].[Name], [c].[Symbol]
+FROM [Currencies] AS [c]
+2026-05-26 04:18:46.806 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[ERP.Application.Features.Accounting.Currencies.CurrencyDto, ERP.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-05-26 04:18:46.809 +03:00 [INF] Executed action ERP.Api.Controllers.CurrenciesController.GetList (ERP.Api) in 11.5471ms
+2026-05-26 04:18:46.810 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.CurrenciesController.GetList (ERP.Api)'
+2026-05-26 04:18:46.812 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/Currencies/list - 200 null application/json; charset=utf-8 50.6415ms
+2026-05-26 04:18:46.932 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/Accounts - null null
+2026-05-26 04:18:46.936 +03:00 [INF] CORS policy execution successful.
+2026-05-26 04:18:46.937 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/Accounts - 204 null null 4.7368ms
+2026-05-26 04:18:46.941 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/Accounts - null null
+2026-05-26 04:18:46.945 +03:00 [INF] CORS policy execution successful.
+2026-05-26 04:18:46.947 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-05-26 04:18:46.962 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-05-26 04:18:46.965 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.AccountsController.GetAll (ERP.Api)'
+2026-05-26 04:18:46.967 +03:00 [INF] Route matched with {action = "GetAll", controller = "Accounts"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.List`1[ERP.Application.Features.Accounting.Accounts.Queries.GetAccountsTree.AccountDto]]] GetAll() on controller ERP.Api.Controllers.AccountsController (ERP.Api).
+2026-05-26 04:18:46.979 +03:00 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[Id], [a].[AccountCode], [a].[AccountNameAr], [a].[AccountNameEn], [a].[AccountType], [a].[CostCenterStatus], [a].[CurrencyId], [a].[IsDetail], [a].[ParentAccountId], [c].[Id], [c].[Code], [c].[IsLocal], [c].[Name], [c].[Symbol]
+FROM [Accounts] AS [a]
+INNER JOIN [Currencies] AS [c] ON [a].[CurrencyId] = [c].[Id]
+ORDER BY [a].[AccountCode]
+2026-05-26 04:18:46.984 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[ERP.Application.Features.Accounting.Accounts.Queries.GetAccountsTree.AccountDto, ERP.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-05-26 04:18:46.986 +03:00 [INF] Executed action ERP.Api.Controllers.AccountsController.GetAll (ERP.Api) in 16.1774ms
+2026-05-26 04:18:46.991 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.AccountsController.GetAll (ERP.Api)'
+2026-05-26 04:18:47.002 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/Accounts - 200 null application/json; charset=utf-8 61.2726ms
+2026-05-26 04:19:15.344 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/Currencies/list - null null
+2026-05-26 04:19:15.348 +03:00 [INF] CORS policy execution successful.
+2026-05-26 04:19:15.350 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/Currencies/list - 204 null null 5.6209ms
+2026-05-26 04:19:15.354 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/Currencies/list - null null
+2026-05-26 04:19:15.360 +03:00 [INF] CORS policy execution successful.
+2026-05-26 04:19:15.361 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-05-26 04:19:15.376 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-05-26 04:19:15.380 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.CurrenciesController.GetList (ERP.Api)'
+2026-05-26 04:19:15.381 +03:00 [INF] Route matched with {action = "GetList", controller = "Currencies"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.List`1[ERP.Application.Features.Accounting.Currencies.CurrencyDto]]] GetList() on controller ERP.Api.Controllers.CurrenciesController (ERP.Api).
+2026-05-26 04:19:15.395 +03:00 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [c].[Id], [c].[Code], [c].[IsLocal], [c].[Name], [c].[Symbol]
+FROM [Currencies] AS [c]
+2026-05-26 04:19:15.399 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[ERP.Application.Features.Accounting.Currencies.CurrencyDto, ERP.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-05-26 04:19:15.402 +03:00 [INF] Executed action ERP.Api.Controllers.CurrenciesController.GetList (ERP.Api) in 12.1443ms
+2026-05-26 04:19:15.407 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.CurrenciesController.GetList (ERP.Api)'
+2026-05-26 04:19:15.408 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/Currencies/list - 200 null application/json; charset=utf-8 54.9273ms
+2026-05-26 04:19:15.488 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/Accounts - null null
+2026-05-26 04:19:15.492 +03:00 [INF] CORS policy execution successful.
+2026-05-26 04:19:15.493 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/Accounts - 204 null null 5.4432ms
+2026-05-26 04:19:15.496 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/Accounts - null null
+2026-05-26 04:19:15.500 +03:00 [INF] CORS policy execution successful.
+2026-05-26 04:19:15.502 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-05-26 04:19:15.527 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-05-26 04:19:15.531 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.AccountsController.GetAll (ERP.Api)'
+2026-05-26 04:19:15.533 +03:00 [INF] Route matched with {action = "GetAll", controller = "Accounts"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.List`1[ERP.Application.Features.Accounting.Accounts.Queries.GetAccountsTree.AccountDto]]] GetAll() on controller ERP.Api.Controllers.AccountsController (ERP.Api).
+2026-05-26 04:19:15.549 +03:00 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[Id], [a].[AccountCode], [a].[AccountNameAr], [a].[AccountNameEn], [a].[AccountType], [a].[CostCenterStatus], [a].[CurrencyId], [a].[IsDetail], [a].[ParentAccountId], [c].[Id], [c].[Code], [c].[IsLocal], [c].[Name], [c].[Symbol]
+FROM [Accounts] AS [a]
+INNER JOIN [Currencies] AS [c] ON [a].[CurrencyId] = [c].[Id]
+ORDER BY [a].[AccountCode]
+2026-05-26 04:19:15.556 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[ERP.Application.Features.Accounting.Accounts.Queries.GetAccountsTree.AccountDto, ERP.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-05-26 04:19:15.568 +03:00 [INF] Executed action ERP.Api.Controllers.AccountsController.GetAll (ERP.Api) in 26.1983ms
+2026-05-26 04:19:15.570 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.AccountsController.GetAll (ERP.Api)'
+2026-05-26 04:19:15.576 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/Accounts - 200 null application/json; charset=utf-8 80.3616ms

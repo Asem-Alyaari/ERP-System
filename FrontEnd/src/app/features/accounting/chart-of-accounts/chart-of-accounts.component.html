@@ -41,41 +41,49 @@
   </p-toolbar>
 
   <!-- Main Grid Layout -->
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+  <div class="main-layout">
 
-    <!-- Tree Panel (Column Span 2) -->
-    <div class="col-span-1 lg:col-span-2 flex flex-col gap-3">
+    <!-- Tree Panel -->
+    <div class="tree-panel">
       
       <!-- Search & Count Bar -->
-      <div class="glass-card p-3 flex flex-wrap justify-between align-items-center gap-3">
-        <div class="p-input-icon-left flex-1" style="max-width: 400px;">
-          <i class="pi pi-search text-gray-400"></i>
+      <div class="search-bar">
+        <div class="search-input-wrapper">
+          <i class="pi pi-search search-icon"></i>
           <input
             pInputText
             type="text"
             [(ngModel)]="searchTerm"
             (input)="onSearchChange()"
             placeholder="بحث بالكود أو الاسم (عربي/إنجليزي)..."
-            class="w-full search-input"
+            class="search-input"
           />
         </div>
-        <div class="text-sm font-semibold text-gray-600 flex gap-4">
-          <span>إجمالي الحسابات: <p-badge [value]="totalAccountsCount" severity="info" /></span>
-          <span>الحسابات التفصيلية: <p-badge [value]="detailAccountsCount" severity="success" /></span>
+        <div class="stats-bar">
+          <div class="stat-item">
+            <span class="stat-label">إجمالي الحسابات</span>
+            <p-badge [value]="totalAccountsCount" severity="info" />
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">الحسابات التفصيلية</span>
+            <p-badge [value]="detailAccountsCount" severity="success" />
+          </div>
         </div>
       </div>
 
       <!-- Tree Container -->
-      <div class="glass-card p-4 tree-container-scrollable shadow-sm">
+      <div class="tree-container">
         <div *ngIf="isLoading" class="flex flex-col align-items-center justify-content-center py-8">
           <p-progressSpinner styleClass="w-3rem h-3rem" strokeWidth="4" />
           <span class="mt-2 text-gray-500">جاري تحميل شجرة الحسابات...</span>
         </div>
 
-        <div *ngIf="!isLoading && treeNodes.length === 0" class="empty-state-card py-8 text-center">
-          <i class="pi pi-sitemap text-6xl text-gray-300 mb-3"></i>
-          <p class="text-xl text-gray-500 font-bold">لم يتم تهيئة دليل الحسابات بعد</p>
-          <p class="text-sm text-gray-400 mt-1">اضغط على زر "حساب رئيسي جديد" للبدء في بناء الشجرة المحاسبية</p>
+        <div *ngIf="!isLoading && treeNodes.length === 0" class="empty-state">
+          <div class="empty-icon">
+            <i class="pi pi-sitemap"></i>
+          </div>
+          <h3 class="empty-title">لم يتم تهيئة دليل الحسابات بعد</h3>
+          <p class="empty-desc">اضغط على زر "حساب رئيسي جديد" للبدء في بناء الشجرة المحاسبية</p>
         </div>
 
         <!-- Recursive Tree View -->
@@ -87,75 +95,74 @@
       </div>
     </div>
 
-    <!-- Detail Panel / Info Card (Column Span 1) -->
-    <div class="col-span-1">
-      <div class="glass-card shadow-sm sticky top-4 border-t-4 border-primary-500">
+    <!-- Detail Panel -->
+    <div class="detail-panel">
+      <div class="detail-card">
         
         <!-- No Selected Account -->
-        <div *ngIf="!selectedAccount" class="no-selection-card py-8 text-center text-gray-400">
-          <i class="pi pi-info-circle text-5xl mb-3 text-gray-300"></i>
-          <h3 class="text-lg font-bold text-gray-500">تفاصيل الحساب</h3>
-          <p class="text-sm mt-1 px-4">اختر أي حساب من الشجرة المحاسبية لعرض تفاصيله وإجراء العمليات المتاحة عليه</p>
+        <div *ngIf="!selectedAccount" class="no-selection">
+          <i class="pi pi-info-circle"></i>
+          <h3>تفاصيل الحساب</h3>
+          <p>اختر أي حساب من الشجرة المحاسبية لعرض تفاصيله وإجراء العمليات المتاحة عليه</p>
         </div>
 
         <!-- Account Info Header -->
-        <div *ngIf="selectedAccount" class="account-details-panel">
-          <div class="panel-header p-4 border-b border-gray-100 flex justify-between align-items-start">
-            <div>
-              <span class="font-mono text-sm text-primary-600 font-bold bg-primary-50 px-2 py-1 rounded">
-                {{ selectedAccount.accountCode }}
-              </span>
-              <h3 class="text-xl font-bold mt-2 text-gray-800">{{ selectedAccount.accountNameAr }}</h3>
-              <p class="text-gray-400 font-sans text-sm mt-1">{{ selectedAccount.accountNameEn }}</p>
+        <div *ngIf="selectedAccount" class="account-details">
+          <div class="detail-header">
+            <div class="header-content">
+              <span class="account-code-badge">{{ selectedAccount.accountCode }}</span>
+              <h3 class="account-name-ar">{{ selectedAccount.accountNameAr }}</h3>
+              <p class="account-name-en">{{ selectedAccount.accountNameEn }}</p>
             </div>
             <p-tag
               [value]="selectedAccount.isDetail ? 'تحليلي (فرعي)' : 'رئيسي (أب)'"
               [severity]="selectedAccount.isDetail ? 'success' : 'info'"
+              class="account-type-badge"
             />
           </div>
 
           <!-- Account Details Fields -->
-          <div class="panel-body p-4 flex flex-col gap-4">
-            <div class="detail-row">
-              <span class="detail-label">نوع الحساب</span>
-              <span class="detail-value flex align-items-center gap-2">
-                <span class="color-indicator" [ngClass]="getTypeBadgeClass(selectedAccount.accountType)"></span>
+          <div class="detail-body">
+            <div class="detail-field">
+              <span class="field-label">نوع الحساب</span>
+              <span class="field-value">
+                <span class="type-dot" [ngClass]="getTypeBadgeClass(selectedAccount.accountType)"></span>
                 <strong>{{ getTypeLabel(selectedAccount.accountType) }}</strong>
               </span>
             </div>
 
-            <div class="detail-row">
-              <span class="detail-label">عملة الحساب</span>
-              <span class="detail-value font-bold text-gray-700">
+            <div class="detail-field">
+              <span class="field-label">عملة الحساب</span>
+              <span class="field-value">
                 {{ selectedAccount.currencyCode }} - {{ selectedAccount.currencySymbol }}
               </span>
             </div>
 
-            <div class="detail-row">
-              <span class="detail-label">الحساب الأب</span>
-              <span class="detail-value text-sm font-mono text-gray-600">
+            <div class="detail-field">
+              <span class="field-label">الحساب الأب</span>
+              <span class="field-value">
                 {{ getParentName(selectedAccount.parentAccountId) }}
               </span>
             </div>
 
-            <p-divider styleClass="my-2" />
+            <div class="detail-divider"></div>
 
             <!-- Operations / Actions -->
-            <div class="flex flex-col gap-2 pt-2">
+            <div class="detail-actions">
               <p-button
                 *ngIf="!selectedAccount.isDetail"
                 label="إضافة حساب فرعي"
                 icon="pi pi-plus"
                 severity="primary"
-                styleClass="w-full text-right"
+                class="action-btn full-width"
                 (onClick)="openAddSubDialog(selectedAccount)"
               />
-              <div class="flex gap-2">
+              <div class="action-row">
                 <p-button
-                  label="تعديل الحساب"
+                  label="تعديل"
                   icon="pi pi-pencil"
                   severity="info"
-                  styleClass="flex-1"
+                  class="action-btn"
                   [outlined]="true"
                   (onClick)="openEditDialog(selectedAccount)"
                 />
@@ -163,7 +170,7 @@
                   label="حذف"
                   icon="pi pi-trash"
                   severity="danger"
-                  styleClass="flex-1"
+                  class="action-btn"
                   [outlined]="true"
                   (onClick)="confirmDelete(selectedAccount)"
                 />
@@ -181,54 +188,54 @@
 
 <!-- Recursive Node Template -->
 <ng-template #nodeTemplate let-node>
-  <div *ngIf="node.visible" class="tree-node-wrapper">
+  <div *ngIf="node.visible" class="tree-node">
     <!-- Node Item -->
     <div 
-      class="tree-node-item cursor-pointer" 
+      class="node-item" 
       [class.selected]="selectedAccount?.id === node.account.id"
       [class.is-detail]="node.account.isDetail"
       (click)="selectAccount(node.account)"
     >
-      <div class="flex align-items-center gap-2 flex-1">
+      <div class="node-main">
         <!-- Toggle / Expand Collapse Arrow -->
         <button 
           *ngIf="!node.account.isDetail" 
           type="button" 
-          class="node-toggle-btn"
+          class="toggle-btn"
           (click)="toggleNode(node, $event)"
         >
           <i class="pi" [class.pi-chevron-down]="node.expanded" [class.pi-chevron-left]="!node.expanded"></i>
         </button>
-        <span *ngIf="node.account.isDetail" class="w-6 h-6 flex-shrink-0"></span>
+        <span *ngIf="node.account.isDetail" class="toggle-spacer"></span>
 
         <!-- Icon -->
-        <i class="node-icon pi text-lg" 
+        <i class="node-icon pi" 
            [ngClass]="{
-             'pi-folder text-yellow-500': !node.account.isDetail && !node.expanded,
-             'pi-folder-open text-yellow-500': !node.account.isDetail && node.expanded,
-             'pi-file text-blue-500': node.account.isDetail
+             'pi-folder': !node.account.isDetail && !node.expanded,
+             'pi-folder-open': !node.account.isDetail && node.expanded,
+             'pi-file': node.account.isDetail
            }"></i>
 
         <!-- Text Content -->
-        <div class="node-content flex align-items-center gap-2 text-sm">
-          <span class="node-code font-mono font-bold text-gray-700 bg-gray-100 px-1.5 py-0.5 rounded">{{ node.account.accountCode }}</span>
-          <span class="node-name-ar font-semibold text-gray-800">{{ node.account.accountNameAr }}</span>
-          <span class="node-name-en text-xs text-gray-400 font-sans" *ngIf="node.account.accountNameEn">/ {{ node.account.accountNameEn }}</span>
+        <div class="node-text">
+          <span class="code-badge">{{ node.account.accountCode }}</span>
+          <span class="name-ar">{{ node.account.accountNameAr }}</span>
+          <span class="name-en" *ngIf="node.account.accountNameEn">{{ node.account.accountNameEn }}</span>
         </div>
       </div>
 
       <!-- Right Side Actions & Badges -->
-      <div class="flex align-items-center gap-3">
+      <div class="node-right">
         <!-- Type Badge -->
         <p-tag 
           *ngIf="!node.account.parentAccountId"
           [value]="getTypeLabel(node.account.accountType)" 
           [severity]="getTypeBadgeClass(node.account.accountType)"
-          class="node-type-tag"
+          class="type-badge"
         />
 
         <!-- Hover Actions -->
-        <div class="node-actions flex gap-1 opacity-0 hover-show">
+        <div class="node-actions">
           <p-button 
             *ngIf="!node.account.isDetail"
             icon="pi pi-plus" 
@@ -253,7 +260,7 @@
     </div>
 
     <!-- Children Container -->
-    <div *ngIf="!node.account.isDetail && node.expanded" class="tree-node-children">
+    <div *ngIf="!node.account.isDetail && node.expanded" class="node-children">
       <ng-container *ngFor="let child of node.children">
         <ng-container *ngTemplateOutlet="nodeTemplate; context:{ $implicit: child }"></ng-container>
       </ng-container>
@@ -271,124 +278,142 @@
   [resizable]="false"
   styleClass="erp-dialog"
 >
-  <form (ngSubmit)="saveAccount()" #accountForm="ngForm" class="dialog-form flex flex-col gap-4">
+  <form (ngSubmit)="saveAccount()" #accountForm="ngForm" class="dialog-form">
 
-    <!-- Parent Display (if adding sub-account) -->
-    <div *ngIf="!isEditMode && currentAccount.parentAccountId" class="form-field p-2 bg-gray-50 border rounded text-sm text-gray-600 flex flex-col gap-1">
-      <span class="font-bold text-gray-500">تحت الحساب الأب:</span>
-      <span class="font-mono text-gray-800">{{ getParentName(currentAccount.parentAccountId) }}</span>
+    <!-- Parent Info Section -->
+    <div *ngIf="!isEditMode && currentAccount.parentAccountId" class="form-section parent-info">
+      <div class="section-label">الحساب الأب</div>
+      <div class="parent-display">
+        <i class="pi pi-folder-open"></i>
+        <span>{{ getParentName(currentAccount.parentAccountId) }}</span>
+      </div>
     </div>
 
-    <!-- Account Code -->
-    <div class="form-field">
-      <label for="accountCode" class="form-label font-bold mb-1 block">
-        كود الحساب <span class="text-danger-500">*</span>
-      </label>
-      <input
-        pInputText
-        id="accountCode"
-        name="accountCode"
-        [(ngModel)]="currentAccount.accountCode"
-        required
-        placeholder="مثال: 110101"
-        class="w-full font-mono font-bold"
-        [disabled]="isEditMode || !!currentAccount.parentAccountId"
-      />
-      <small class="text-gray-400 mt-1 block" *ngIf="!isEditMode && currentAccount.parentAccountId">تم توليد كود الحساب تلقائياً بناءً على كود الحساب الأب.</small>
+    <!-- Basic Information Section -->
+    <div class="form-section">
+      <div class="section-label">المعلومات الأساسية</div>
+      
+      <!-- Account Code -->
+      <div class="form-field">
+        <label for="accountCode" class="field-label">
+          كود الحساب <span class="required">*</span>
+        </label>
+        <input
+          pInputText
+          id="accountCode"
+          name="accountCode"
+          [(ngModel)]="currentAccount.accountCode"
+          required
+          placeholder="مثال: 110101"
+          class="field-input code-input"
+          [disabled]="isEditMode || !!currentAccount.parentAccountId"
+        />
+        <small class="field-hint" *ngIf="!isEditMode && currentAccount.parentAccountId">
+          تم توليد كود الحساب تلقائياً بناءً على كود الحساب الأب
+        </small>
+      </div>
+
+      <!-- Names Row -->
+      <div class="form-row">
+        <div class="form-field flex-1">
+          <label for="accountNameAr" class="field-label">
+            الاسم بالعربية <span class="required">*</span>
+          </label>
+          <input
+            pInputText
+            id="accountNameAr"
+            name="accountNameAr"
+            [(ngModel)]="currentAccount.accountNameAr"
+            required
+            placeholder="مثال: الصندوق الرئيسي"
+            class="field-input"
+          />
+        </div>
+        <div class="form-field flex-1">
+          <label for="accountNameEn" class="field-label">
+            الاسم بالإنجليزية <span class="required">*</span>
+          </label>
+          <input
+            pInputText
+            id="accountNameEn"
+            name="accountNameEn"
+            [(ngModel)]="currentAccount.accountNameEn"
+            required
+            placeholder="مثال: Main Cash"
+            class="field-input"
+          />
+        </div>
+      </div>
     </div>
 
-    <!-- Name Arabic -->
-    <div class="form-field">
-      <label for="accountNameAr" class="form-label font-bold mb-1 block">
-        اسم الحساب بالعربية <span class="text-danger-500">*</span>
-      </label>
-      <input
-        pInputText
-        id="accountNameAr"
-        name="accountNameAr"
-        [(ngModel)]="currentAccount.accountNameAr"
-        required
-        placeholder="مثال: الصندوق الرئيسي"
-        class="w-full font-semibold"
-      />
-    </div>
+    <!-- Classification Section -->
+    <div class="form-section">
+      <div class="section-label">التصنيف والإعدادات</div>
+      
+      <!-- Account Type -->
+      <div class="form-field">
+        <label for="accountType" class="field-label">
+          تصنيف الحساب المحاسبي <span class="required">*</span>
+        </label>
+        <p-select
+          id="accountType"
+          name="accountType"
+          [options]="accountTypes"
+          [(ngModel)]="currentAccount.accountType"
+          [disabled]="isEditMode || !!currentAccount.parentAccountId"
+          class="field-select"
+          placeholder="اختر تصنيف الحساب"
+        />
+      </div>
 
-    <!-- Name English -->
-    <div class="form-field">
-      <label for="accountNameEn" class="form-label font-bold mb-1 block">
-        اسم الحساب بالإنجليزية <span class="text-danger-500">*</span>
-      </label>
-      <input
-        pInputText
-        id="accountNameEn"
-        name="accountNameEn"
-        [(ngModel)]="currentAccount.accountNameEn"
-        required
-        placeholder="مثال: Main Cash"
-        class="w-full font-sans"
-      />
-    </div>
+      <!-- Currency -->
+      <div class="form-field">
+        <label for="currencyId" class="field-label">
+          عملة الحساب <span class="required">*</span>
+        </label>
+        <p-select
+          id="currencyId"
+          name="currencyId"
+          [options]="currencies"
+          [(ngModel)]="currentAccount.currencyId"
+          optionLabel="name"
+          optionValue="id"
+          class="field-select"
+          placeholder="اختر عملة الحساب"
+          [disabled]="isEditMode && currentAccount.isDetail === false"
+        />
+      </div>
 
-    <!-- Account Type (Only editable for root accounts) -->
-    <div class="form-field">
-      <label for="accountType" class="form-label font-bold mb-1 block">
-        تصنيف الحساب المحاسبي <span class="text-danger-500">*</span>
-      </label>
-      <p-select
-        id="accountType"
-        name="accountType"
-        [options]="accountTypes"
-        [(ngModel)]="currentAccount.accountType"
-        [disabled]="isEditMode || !!currentAccount.parentAccountId"
-        class="w-full erp-select"
-        placeholder="اختر تصنيف الحساب"
-      />
-    </div>
-
-    <!-- Currency Selection -->
-    <div class="form-field">
-      <label for="currencyId" class="form-label font-bold mb-1 block">
-        العملة الخاصة بالحساب <span class="text-danger-500">*</span>
-      </label>
-      <p-select
-        id="currencyId"
-        name="currencyId"
-        [options]="currencies"
-        [(ngModel)]="currentAccount.currencyId"
-        optionLabel="name"
-        optionValue="id"
-        class="w-full erp-select"
-        placeholder="اختر عملة الحساب"
-        [disabled]="isEditMode && currentAccount.isDetail === false"
-      />
-    </div>
-
-    <!-- Nature Toggle: IsDetail -->
-    <div class="form-field flex align-items-center gap-2 py-2" *ngIf="!isEditMode">
-      <p-toggleSwitch
-        id="isDetail"
-        name="isDetail"
-        [(ngModel)]="currentAccount.isDetail"
-      />
-      <label for="isDetail" class="form-label mb-0 cursor-pointer font-semibold">
-        حساب تحليلي تفصيلي (يقبل قيود اليومية والحركات)
-      </label>
+      <!-- Account Nature Toggle -->
+      <div class="form-field toggle-field" *ngIf="!isEditMode">
+        <p-toggleSwitch
+          id="isDetail"
+          name="isDetail"
+          [(ngModel)]="currentAccount.isDetail"
+        />
+        <label for="isDetail" class="toggle-label">
+          <span class="toggle-title">حساب تحليلي تفصيلي</span>
+          <span class="toggle-desc">يقبل قيود اليومية والحركات المالية</span>
+        </label>
+      </div>
     </div>
 
     <!-- Dialog Footer Actions -->
-    <div class="dialog-footer flex justify-end gap-2 mt-4">
+    <div class="dialog-footer">
       <p-button
         type="button"
         label="إلغاء"
         severity="secondary"
         [outlined]="true"
         (onClick)="closeDialog()"
+        class="footer-btn"
       />
       <p-button
         type="submit"
         label="حفظ"
         icon="pi pi-check"
         [disabled]="!accountForm.form.valid"
+        class="footer-btn primary"
       />
     </div>
 
