@@ -26,6 +26,7 @@ export class SidebarComponent {
     { label: 'كشف الحساب', icon: 'pi pi-file-text', route: '/accounting/ledger-report' },
     { label: 'مراكز التكلفة', icon: 'pi pi-sitemap', route: '/accounting/cost-centers' },
     { label: 'الفترات المالية', icon: 'pi pi-calendar', route: '/accounting/fiscal-periods' },
+    { label: 'العملات', icon: 'pi pi-dollar', route: '/accounting/currencies' },
     { label: 'أسعار الصرف', icon: 'pi pi-sync', route: '/accounting/exchange-rates' },
     { label: 'سندات الصرف', icon: 'pi pi-money-bill', route: '/treasury/payment-vouchers' },
     { label: 'سندات القبض', icon: 'pi pi-wallet', route: '/treasury/receipt-vouchers' },
