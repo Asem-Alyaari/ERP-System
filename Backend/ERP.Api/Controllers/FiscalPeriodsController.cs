@@ -4,6 +4,7 @@ using ERP.Application.Features.Accounting.FiscalPeriods.Commands.Close;
 using ERP.Application.Features.Accounting.FiscalPeriods.Commands.Open;
 using ERP.Application.Features.Accounting.FiscalPeriods.Commands.Delete;
 using ERP.Application.Features.Accounting.FiscalPeriods.Queries.GetFiscalPeriods;
+using ERP.Application.Features.Accounting.OpeningBalances.Commands;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ERP.Api.Controllers;
@@ -40,6 +41,18 @@ public class FiscalPeriodsController : ApiControllerBase
     public async Task<ActionResult> Delete(Guid id)
     {
         await Mediator.Send(new DeleteFiscalPeriodCommand(id));
+        return NoContent();
+    }
+
+    /// <summary>
+    /// تعيين الأرصدة الافتتاحية لفترة مالية
+    /// </summary>
+    [HttpPost("{id}/opening-balances")]
+    public async Task<ActionResult> SetOpeningBalances(Guid id, SetOpeningBalancesCommand command)
+    {
+        // التأكد من أن الفترة المالية في الطلب تطابق المعامل في URL
+        var commandWithCorrectId = command with { FiscalPeriodId = id };
+        await Mediator.Send(commandWithCorrectId);
         return NoContent();
     }
 }

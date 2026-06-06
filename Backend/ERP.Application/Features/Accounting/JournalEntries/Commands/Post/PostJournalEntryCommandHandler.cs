@@ -3,6 +3,7 @@ using ERP.Domain.Entities;
 using ERP.Domain.Enums;
 using ERP.Domain.Exceptions;
 using ERP.Domain.Repositories;
+using ERP.Domain.Services;
 using MediatR;
 
 namespace ERP.Application.Features.Accounting.JournalEntries.Commands.Post;
@@ -10,10 +11,14 @@ namespace ERP.Application.Features.Accounting.JournalEntries.Commands.Post;
 public class PostJournalEntryCommandHandler : IRequestHandler<PostJournalEntryCommand, bool>
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IAccountBalanceService _accountBalanceService;
 
-    public PostJournalEntryCommandHandler(IUnitOfWork unitOfWork)
+    public PostJournalEntryCommandHandler(
+        IUnitOfWork unitOfWork,
+        IAccountBalanceService accountBalanceService)
     {
         _unitOfWork = unitOfWork;
+        _accountBalanceService = accountBalanceService;
     }
 
     public async Task<bool> Handle(PostJournalEntryCommand request, CancellationToken cancellationToken)
@@ -44,61 +49,22 @@ public class PostJournalEntryCommandHandler : IRequestHandler<PostJournalEntryCo
         var totalDebit = entry.Lines.Sum(x => x.Debit);
         var totalCredit = entry.Lines.Sum(x => x.Credit);
 
-        if (totalDebit != totalCredit)
+        if (Math.Abs(totalDebit - totalCredit) > 0.01m)
             throw new BusinessException($"القيد غير متوازن مالياً. إجمالي المدين: {totalDebit}، إجمالي الدائن: {totalCredit}");
 
-        // البدء بالترحيل داخل Transaction
-        await _unitOfWork.BeginTransactionAsync();
+        // 2. تحديث حالة القيد وبيانات المراجعة
+        entry.Post(request.PostedBy);
+        _unitOfWork.Repository<JournalEntryMaster>().Update(entry);
 
-        try
-        {
-            // 2. تحديث حالة القيد وبيانات المراجعة
-            entry.Post(request.PostedBy);
-            _unitOfWork.Repository<JournalEntryMaster>().Update(entry);
+        // 3. تحديث الأرصدة التراكمية باستخدام الخدمة المركزية
+        await _accountBalanceService.UpdateBalancesForLinesAsync(
+            entry.Lines,
+            entry.FiscalPeriodId,
+            cancellationToken);
 
-            // 3. تحديث الأرصدة التراكمية لكل سطر في القيد
-            foreach (var line in entry.Lines)
-            {
-                var balanceSpec = new AccountBalances.Specifications.AccountBalanceFilterSpecification(
-                    entry.FiscalPeriodId, 
-                    line.AccountId, 
-                    line.CostCenterId, 
-                    line.CurrencyId
-                );
+        // 4. حفظ التغييرات (TransactionBehavior سيتولى إدارة Transaction)
+        await _unitOfWork.Complete();
 
-                var balance = await _unitOfWork.Repository<AccountBalance>().GetEntityWithSpec(balanceSpec);
-
-                if (balance == null)
-                {
-                    // إنشاء سجل رصيد جديد إذا لم يكن موجوداً
-                    balance = new AccountBalance(
-                        Guid.NewGuid(),
-                        entry.FiscalPeriodId,
-                        line.AccountId,
-                        line.CurrencyId,
-                        line.CostCenterId
-                    );
-                    
-                    balance.AddTransaction(line.Debit, line.Credit);
-                    _unitOfWork.Repository<AccountBalance>().Add(balance);
-                }
-                else
-                {
-                    // تحديث السجل الموجود
-                    balance.AddTransaction(line.Debit, line.Credit);
-                    _unitOfWork.Repository<AccountBalance>().Update(balance);
-                }
-            }
-
-            await _unitOfWork.Complete();
-            await _unitOfWork.CommitTransactionAsync();
-
-            return true;
-        }
-        catch (Exception)
-        {
-            await _unitOfWork.RollbackTransactionAsync();
-            throw;
-        }
+        return true;
     }
 }

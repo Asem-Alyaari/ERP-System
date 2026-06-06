@@ -5,11 +5,11 @@ namespace ERP.Application.Features.Accounting.AccountBalances.Specifications;
 
 public class AccountBalanceFilterSpecification : BaseSpecification<AccountBalance>
 {
-    public AccountBalanceFilterSpecification(Guid fiscalPeriodId, Guid accountId, Guid? costCenterId, Guid currencyId)
-        : base(x => x.FiscalPeriodId == fiscalPeriodId && 
-                    x.AccountId == accountId && 
-                    x.CostCenterId == costCenterId && 
-                    x.CurrencyId == currencyId)
+    public AccountBalanceFilterSpecification(Guid fiscalPeriodId, Guid accountId, Guid? costCenterId, Guid? currencyId)
+        : base(x => x.FiscalPeriodId == fiscalPeriodId &&
+                    x.AccountId == accountId &&
+                    (costCenterId == null ? x.CostCenterId == null : x.CostCenterId == costCenterId) &&
+                    (currencyId == null ? x.CurrencyId == null : x.CurrencyId == currencyId))
     {
     }
 }

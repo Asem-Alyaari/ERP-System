@@ -3,6 +3,7 @@ using ERP.Domain.Entities;
 using ERP.Domain.Enums;
 using ERP.Domain.Exceptions;
 using ERP.Domain.Repositories;
+using ERP.Domain.Services;
 using MediatR;
 
 namespace ERP.Application.Features.Accounting.JournalEntries.Commands.Unpost;
@@ -10,10 +11,14 @@ namespace ERP.Application.Features.Accounting.JournalEntries.Commands.Unpost;
 public class UnpostJournalEntryCommandHandler : IRequestHandler<UnpostJournalEntryCommand, bool>
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IAccountBalanceService _accountBalanceService;
 
-    public UnpostJournalEntryCommandHandler(IUnitOfWork unitOfWork)
+    public UnpostJournalEntryCommandHandler(
+        IUnitOfWork unitOfWork,
+        IAccountBalanceService accountBalanceService)
     {
         _unitOfWork = unitOfWork;
+        _accountBalanceService = accountBalanceService;
     }
 
     public async Task<bool> Handle(UnpostJournalEntryCommand request, CancellationToken cancellationToken)
@@ -37,49 +42,19 @@ public class UnpostJournalEntryCommandHandler : IRequestHandler<UnpostJournalEnt
         if (entry.FiscalPeriod.IsClosed)
             throw new BusinessException("لا يمكن إلغاء ترحيل القيد لأن الفترة المالية مغلقة.");
 
-        // البدء بالعملية داخل Transaction
-        await _unitOfWork.BeginTransactionAsync();
+        // 2. إعادة حالة القيد إلى مسودة (Draft) وتصفير بيانات الترحيل
+        entry.Unpost();
+        _unitOfWork.Repository<JournalEntryMaster>().Update(entry);
 
-        try
-        {
-            // 2. إعادة حالة القيد إلى مسودة (Draft) وتصفير بيانات الترحيل
-            entry.Unpost();
-            _unitOfWork.Repository<JournalEntryMaster>().Update(entry);
+        // 3. عكس الأثر المالي في جدول الأرصدة باستخدام الخدمة المركزية
+        await _accountBalanceService.ReverseBalancesForLinesAsync(
+            entry.Lines,
+            entry.FiscalPeriodId,
+            cancellationToken);
 
-            // 3. عكس الأثر المالي في جدول الأرصدة (SubtractTransaction)
-            foreach (var line in entry.Lines)
-            {
-                var balanceSpec = new AccountBalances.Specifications.AccountBalanceFilterSpecification(
-                    entry.FiscalPeriodId, 
-                    line.AccountId, 
-                    line.CostCenterId, 
-                    line.CurrencyId
-                );
+        // 4. حفظ التغييرات (TransactionBehavior سيتولى إدارة Transaction)
+        await _unitOfWork.Complete();
 
-                var balance = await _unitOfWork.Repository<AccountBalance>().GetEntityWithSpec(balanceSpec);
-
-                if (balance != null)
-                {
-                    // طرح المبالغ من الرصيد التراكمي
-                    balance.SubtractTransaction(line.Debit, line.Credit);
-                    _unitOfWork.Repository<AccountBalance>().Update(balance);
-                }
-                else
-                {
-                    // حالة نادرة: إذا لم يوجد سجل رصيد لقيد مرحل (خلل في البيانات)
-                    throw new BusinessException($"فشل إلغاء الترحيل: سجل الرصيد غير موجود للحساب ({line.AccountId})");
-                }
-            }
-
-            await _unitOfWork.Complete();
-            await _unitOfWork.CommitTransactionAsync();
-
-            return true;
-        }
-        catch (Exception)
-        {
-            await _unitOfWork.RollbackTransactionAsync();
-            throw;
-        }
+        return true;
     }
 }
