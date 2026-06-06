@@ -550,3 +550,185 @@ FROM [Categories] AS [c]
 2026-06-06 15:49:56.102 +03:00 [INF] Executed action ERP.Api.Controllers.CategoriesController.GetAll (ERP.Api) in 30.4808ms
 2026-06-06 15:49:56.105 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.CategoriesController.GetAll (ERP.Api)'
 2026-06-06 15:49:56.106 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/Categories?PageNumber=1&PageSize=100 - 200 null application/json; charset=utf-8 56.7288ms
+2026-06-06 16:43:24.987 +03:00 [INF] User profile is available. Using 'C:\Users\عاصم\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-06-06 16:43:27.515 +03:00 [WRN] The 'CostCenterStatus' property 'CostCenterStatus' on entity type 'Account' is configured with a database-generated default, but has no configured sentinel value. The database-generated default will always be used for inserts when the property has the value '0', since this is the CLR default for the 'CostCenterStatus' type. Consider using a nullable type, using a nullable backing field, or setting the sentinel value for the property to ensure the database default is used when, and only when, appropriate. See https://aka.ms/efcore-docs-default-values for more information.
+2026-06-06 16:43:32.206 +03:00 [INF] Executed DbCommand (473ms) [Parameters=[@__normalizedName_0='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @__normalizedName_0
+2026-06-06 16:43:32.482 +03:00 [INF] Executed DbCommand (21ms) [Parameters=[@__normalizedEmail_0='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[Email], [a].[EmailConfirmed], [a].[FullName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UserName]
+FROM [AspNetUsers] AS [a]
+WHERE [a].[NormalizedEmail] = @__normalizedEmail_0
+2026-06-06 16:43:32.619 +03:00 [INF] Executed DbCommand (11ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [c].[Id], [c].[Code], [c].[IsLocal], [c].[Name], [c].[Symbol]
+FROM [Currencies] AS [c]
+WHERE [c].[IsLocal] = CAST(1 AS bit)
+2026-06-06 16:43:32.721 +03:00 [INF] Executed DbCommand (17ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Accounts] AS [a]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-06-06 16:43:32.888 +03:00 [INF] Executed DbCommand (116ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+            UPDATE Accounts
+            SET    IsDetail = 0
+            WHERE  AccountCode IN ('4101', '5101')
+              AND  IsDetail   = 1;
+2026-06-06 16:43:32.949 +03:00 [INF] Executed DbCommand (54ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+            IF NOT EXISTS (SELECT 1 FROM Accounts WHERE AccountCode = '1103')
+            BEGIN
+                DECLARE @CurrentAssetsId UNIQUEIDENTIFIER = (
+                    SELECT Id FROM Accounts WHERE AccountCode = '11'
+                );
+                DECLARE @CurrencyId UNIQUEIDENTIFIER = (
+                    SELECT TOP 1 Id FROM Currencies WHERE IsLocal = 1
+                );
+                IF @CurrentAssetsId IS NOT NULL AND @CurrencyId IS NOT NULL
+                BEGIN
+                    INSERT INTO Accounts (Id, AccountCode, AccountNameAr, AccountNameEn,
+                                         AccountType, IsDetail, CurrencyId, ParentAccountId)
+                    VALUES (NEWID(), '1103', N'المخزون', 'Inventory',
+                            1, 0, @CurrencyId, @CurrentAssetsId);
+                END
+            END
+2026-06-06 16:43:32.976 +03:00 [INF] Executed DbCommand (18ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+            IF NOT EXISTS (SELECT 1 FROM Accounts WHERE AccountCode = '110301')
+            BEGIN
+                DECLARE @InvParentId UNIQUEIDENTIFIER = (
+                    SELECT Id FROM Accounts WHERE AccountCode = '1103'
+                );
+                DECLARE @Ccy1 UNIQUEIDENTIFIER = (
+                    SELECT TOP 1 Id FROM Currencies WHERE IsLocal = 1
+                );
+                IF @InvParentId IS NOT NULL AND @Ccy1 IS NOT NULL
+                    INSERT INTO Accounts (Id, AccountCode, AccountNameAr, AccountNameEn,
+                                         AccountType, IsDetail, CurrencyId, ParentAccountId)
+                    VALUES (NEWID(), '110301', N'مخزون عام', 'General Inventory',
+                            1, 1, @Ccy1, @InvParentId);
+            END
+2026-06-06 16:43:33.002 +03:00 [INF] Executed DbCommand (17ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+            IF NOT EXISTS (SELECT 1 FROM Accounts WHERE AccountCode = '410101')
+            BEGIN
+                DECLARE @SalesParentId UNIQUEIDENTIFIER = (
+                    SELECT Id FROM Accounts WHERE AccountCode = '4101'
+                );
+                DECLARE @Ccy2 UNIQUEIDENTIFIER = (
+                    SELECT TOP 1 Id FROM Currencies WHERE IsLocal = 1
+                );
+                IF @SalesParentId IS NOT NULL AND @Ccy2 IS NOT NULL
+                    INSERT INTO Accounts (Id, AccountCode, AccountNameAr, AccountNameEn,
+                                         AccountType, IsDetail, CurrencyId, ParentAccountId)
+                    VALUES (NEWID(), '410101', N'إيرادات المبيعات العامة', 'General Sales Revenues',
+                            4, 1, @Ccy2, @SalesParentId);
+            END
+2026-06-06 16:43:33.039 +03:00 [INF] Executed DbCommand (29ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+            IF NOT EXISTS (SELECT 1 FROM Accounts WHERE AccountCode = '510101')
+            BEGIN
+                DECLARE @CogsParentId UNIQUEIDENTIFIER = (
+                    SELECT Id FROM Accounts WHERE AccountCode = '5101'
+                );
+                DECLARE @Ccy3 UNIQUEIDENTIFIER = (
+                    SELECT TOP 1 Id FROM Currencies WHERE IsLocal = 1
+                );
+                IF @CogsParentId IS NOT NULL AND @Ccy3 IS NOT NULL
+                    INSERT INTO Accounts (Id, AccountCode, AccountNameAr, AccountNameEn,
+                                         AccountType, IsDetail, CurrencyId, ParentAccountId)
+                    VALUES (NEWID(), '510101', N'تكلفة البضاعة المباعة العامة', 'General Cost of Goods Sold',
+                            5, 1, @Ccy3, @CogsParentId);
+            END
+2026-06-06 16:43:33.068 +03:00 [INF] Executed DbCommand (19ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+            UPDATE Accounts
+            SET CostCenterStatus = 1
+            WHERE  AccountCode LIKE '5101%'
+              AND  IsDetail = 1
+              AND  CostCenterStatus <> 1;
+2026-06-06 16:43:33.116 +03:00 [INF] Executed DbCommand (35ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Units] AS [u]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-06-06 16:43:33.192 +03:00 [INF] Executed DbCommand (25ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Categories] AS [c]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-06-06 16:43:33.229 +03:00 [INF] Executed DbCommand (15ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [CostCenters] AS [c]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-06-06 16:43:33.280 +03:00 [INF] Executed DbCommand (26ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [StockGroups] AS [s]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-06-06 16:43:33.315 +03:00 [INF] Executed DbCommand (24ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [FiscalPeriods] AS [f]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-06-06 16:43:33.399 +03:00 [INF] Executed DbCommand (44ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [JournalEntryMasters] AS [j]
+        WHERE [j].[Id] IN ('66666666-6666-6666-6666-666666666601', '66666666-6666-6666-6666-666666666602')) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-06-06 16:43:33.432 +03:00 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[AccountCode], [a].[AccountNameAr], [a].[AccountNameEn], [a].[AccountType], [a].[CostCenterStatus], [a].[CurrencyId], [a].[IsDetail], [a].[ParentAccountId]
+FROM [Accounts] AS [a]
+WHERE [a].[AccountCode] = N'110101'
+2026-06-06 16:43:33.569 +03:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[AccountCode], [a].[AccountNameAr], [a].[AccountNameEn], [a].[AccountType], [a].[CostCenterStatus], [a].[CurrencyId], [a].[IsDetail], [a].[ParentAccountId]
+FROM [Accounts] AS [a]
+WHERE [a].[AccountCode] = N'51010102'
+2026-06-06 16:43:33.584 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[AccountCode], [a].[AccountNameAr], [a].[AccountNameEn], [a].[AccountType], [a].[CostCenterStatus], [a].[CurrencyId], [a].[IsDetail], [a].[ParentAccountId]
+FROM [Accounts] AS [a]
+WHERE [a].[AccountCode] = N'51010101'
+2026-06-06 16:43:33.595 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [c].[Id], [c].[Code], [c].[IsLocal], [c].[Name], [c].[Symbol]
+FROM [Currencies] AS [c]
+WHERE [c].[IsLocal] = CAST(1 AS bit)
+2026-06-06 16:43:33.605 +03:00 [WRN] The query uses the 'First'/'FirstOrDefault' operator without 'OrderBy' and filter operators. This may lead to unpredictable results.
+2026-06-06 16:43:33.616 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [f].[Id], [f].[EndDate], [f].[IsClosed], [f].[StartDate], [f].[YearName]
+FROM [FiscalPeriods] AS [f]
+2026-06-06 16:43:35.079 +03:00 [INF] Now listening on: https://localhost:7172
+2026-06-06 16:43:35.081 +03:00 [INF] Now listening on: http://localhost:5250
+2026-06-06 16:43:36.392 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-06-06 16:43:36.395 +03:00 [INF] Hosting environment: Development
+2026-06-06 16:43:36.397 +03:00 [INF] Content root path: H:\ERP\Backend\ERP.Api
+2026-06-06 16:43:42.588 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/swagger/index.html - null null
+2026-06-06 16:43:43.566 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/swagger/index.html - 200 null text/html;charset=utf-8 1023.816ms
+2026-06-06 16:43:43.591 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/swagger/index.js - null null
+2026-06-06 16:43:43.592 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/_framework/aspnetcore-browser-refresh.js - null null
+2026-06-06 16:43:43.644 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/swagger/index.js - 200 null application/javascript;charset=utf-8 53.9035ms
+2026-06-06 16:43:43.667 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/_framework/aspnetcore-browser-refresh.js - 200 16499 application/javascript; charset=utf-8 75.7806ms
+2026-06-06 16:43:43.718 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/_vs/browserLink - null null
+2026-06-06 16:43:43.955 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/_vs/browserLink - 200 null text/javascript; charset=UTF-8 237.0909ms
+2026-06-06 16:43:45.128 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/swagger/v1/swagger.json - null null
+2026-06-06 16:43:45.639 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 511.1908ms
+2026-06-06 16:43:52.920 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/_framework/aspnetcore-browser-refresh.js - null null
+2026-06-06 16:43:52.926 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/_framework/aspnetcore-browser-refresh.js - 200 16499 application/javascript; charset=utf-8 5.7116ms
+2026-06-06 16:43:54.060 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/swagger/v1/swagger.json - null null
+2026-06-06 16:43:54.171 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 111.1925ms
