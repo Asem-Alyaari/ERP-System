@@ -1,4 +1,5 @@
 using ERP.Domain.Entities;
+using ERP.Domain.Exceptions;
 using ERP.Domain.Repositories;
 using MediatR;
 
@@ -24,14 +25,10 @@ public class CreateFiscalPeriodCommandHandler : IRequestHandler<CreateFiscalPeri
     {
         // 1. Validation: Start date must be before End date
         if (request.StartDate >= request.EndDate)
-        {
-            throw new Exception("تاريخ البدء يجب أن يكون قبل تاريخ الانتهاء.");
-        }
+            throw new BusinessException("تاريخ البدء يجب أن يكون قبل تاريخ الانتهاء.");
 
         if (string.IsNullOrWhiteSpace(request.YearName))
-        {
-            throw new Exception("يجب إدخال اسم السنة المالية.");
-        }
+            throw new BusinessException("يجب إدخال اسم السنة المالية.");
 
         // 2. Validation: Overlap check
         var existingPeriods = await _unitOfWork.Repository<FiscalPeriod>().ListAllAsync();
@@ -39,9 +36,7 @@ public class CreateFiscalPeriodCommandHandler : IRequestHandler<CreateFiscalPeri
         {
             // Overlap condition: StartA <= EndB && StartB <= EndA
             if (request.StartDate <= p.EndDate && p.StartDate <= request.EndDate)
-            {
-                throw new Exception($"هذه الفترة تتداخل مع فترة مالية قائمة بالفعل: {p.YearName} ({p.StartDate:yyyy-MM-dd} - {p.EndDate:yyyy-MM-dd}).");
-            }
+                throw new BusinessException($"هذه الفترة تتداخل مع فترة مالية قائمة بالفعل: {p.YearName} ({p.StartDate:yyyy-MM-dd} - {p.EndDate:yyyy-MM-dd}).");
         }
 
         var period = new FiscalPeriod(

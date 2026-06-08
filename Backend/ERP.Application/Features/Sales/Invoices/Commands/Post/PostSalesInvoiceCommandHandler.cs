@@ -39,6 +39,16 @@ public class PostSalesInvoiceCommandHandler : IRequestHandler<PostSalesInvoiceCo
         if (invoice.Status != SalesInvoiceStatus.Draft)
             throw new BusinessException($"لا يمكن ترحيل الفاتورة لأنها بحالة: {invoice.Status}");
 
+        // التحقق من أن تاريخ الفاتورة لا ينتمي إلى فترة مالية مغلقة
+        var allPeriods = await _unitOfWork.Repository<FiscalPeriod>().ListAllAsync();
+        var closedPeriod = allPeriods
+            .FirstOrDefault(p => p.IsClosed && 
+                               invoice.InvoiceDate >= p.StartDate && 
+                               invoice.InvoiceDate <= p.EndDate);
+
+        if (closedPeriod != null)
+            throw new BusinessException("لا يمكن إجراء عمليات على فترة مالية مغلقة.");
+
         // --- أولاً: الأثر المخزني وتكلفة البضاعة (إنشاء واعتماد إذن صرف) ---
         var inventoryMaster = new InventoryTransactionMaster(
             Guid.NewGuid(),

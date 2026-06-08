@@ -1,10 +1,11 @@
 using ERP.Domain.Entities;
+using ERP.Domain.Exceptions;
 using ERP.Domain.Repositories;
 using MediatR;
 
 namespace ERP.Application.Features.Accounting.FiscalPeriods.Commands.Open;
 
-public record OpenFiscalPeriodCommand(Guid Id) : IRequest<bool>;
+public record OpenFiscalPeriodCommand(Guid Id, string OpenedBy) : IRequest<bool>;
 
 public class OpenFiscalPeriodCommandHandler : IRequestHandler<OpenFiscalPeriodCommand, bool>
 {
@@ -19,9 +20,7 @@ public class OpenFiscalPeriodCommandHandler : IRequestHandler<OpenFiscalPeriodCo
     {
         var period = await _unitOfWork.Repository<FiscalPeriod>().GetByIdAsync(request.Id);
         if (period == null)
-        {
-            throw new Exception("الفترة المالية غير موجودة.");
-        }
+            throw new BusinessException("الفترة المالية غير موجودة.");
 
         period.OpenPeriod();
         _unitOfWork.Repository<FiscalPeriod>().Update(period);

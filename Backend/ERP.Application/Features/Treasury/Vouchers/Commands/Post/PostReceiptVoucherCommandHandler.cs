@@ -34,6 +34,16 @@ public class PostReceiptVoucherCommandHandler : IRequestHandler<PostReceiptVouch
         if (voucher.Status != VoucherStatus.Draft)
             throw new BusinessException($"لا يمكن ترحيل السند لأنه بحالة: {voucher.Status}");
 
+        // التحقق من أن تاريخ السند لا ينتمي إلى فترة مالية مغلقة
+        var allPeriods = await _unitOfWork.Repository<FiscalPeriod>().ListAllAsync();
+        var closedPeriod = allPeriods
+            .FirstOrDefault(p => p.IsClosed && 
+                               voucher.VoucherDate >= p.StartDate && 
+                               voucher.VoucherDate <= p.EndDate);
+
+        if (closedPeriod != null)
+            throw new BusinessException("لا يمكن إجراء عمليات على فترة مالية مغلقة.");
+
         var fiscalPeriod = (await _unitOfWork.Repository<FiscalPeriod>().ListAllAsync())
             .FirstOrDefault(p => !p.IsClosed);
 

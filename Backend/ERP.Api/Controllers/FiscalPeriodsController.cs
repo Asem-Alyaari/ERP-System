@@ -26,14 +26,16 @@ public class FiscalPeriodsController : ApiControllerBase
     [HttpPut("{id}/close")]
     public async Task<ActionResult> Close(Guid id)
     {
-        await Mediator.Send(new CloseFiscalPeriodCommand(id));
+        var currentUser = User.Identity?.Name ?? "System";
+        await Mediator.Send(new CloseFiscalPeriodCommand(id, currentUser));
         return NoContent();
     }
 
     [HttpPut("{id}/open")]
     public async Task<ActionResult> Open(Guid id)
     {
-        await Mediator.Send(new OpenFiscalPeriodCommand(id));
+        var currentUser = User.Identity?.Name ?? "System";
+        await Mediator.Send(new OpenFiscalPeriodCommand(id, currentUser));
         return NoContent();
     }
 

@@ -1,4 +1,5 @@
 using ERP.Domain.Entities;
+using ERP.Domain.Exceptions;
 using ERP.Domain.Repositories;
 using MediatR;
 
@@ -19,14 +20,10 @@ public class DeleteFiscalPeriodCommandHandler : IRequestHandler<DeleteFiscalPeri
     {
         var period = await _unitOfWork.Repository<FiscalPeriod>().GetByIdAsync(request.Id);
         if (period == null)
-        {
-            throw new Exception("الفترة المالية غير موجودة.");
-        }
+            throw new BusinessException("الفترة المالية غير موجودة.");
 
         if (period.IsClosed)
-        {
-            throw new Exception("لا يمكن حذف فترة مالية مغلقة بالفعل. يرجى فتحها أولاً إذا لزم الأمر.");
-        }
+            throw new BusinessException("لا يمكن حذف فترة مالية مغلقة بالفعل. يرجى فتحها أولاً إذا لزم الأمر.");
 
         _unitOfWork.Repository<FiscalPeriod>().Delete(period);
         await _unitOfWork.Complete();

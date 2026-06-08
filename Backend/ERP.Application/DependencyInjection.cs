@@ -18,6 +18,7 @@ public static class DependencyInjection
         {
             configuration.RegisterServicesFromAssembly(assembly);
             configuration.AddOpenBehavior(typeof(ValidationBehavior<,>));
+            configuration.AddOpenBehavior(typeof(ClosedFiscalPeriodValidationBehavior<,>));
             configuration.AddOpenBehavior(typeof(TransactionBehavior<,>));
         });
 

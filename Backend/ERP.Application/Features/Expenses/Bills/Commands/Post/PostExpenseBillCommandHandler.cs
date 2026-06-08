@@ -32,6 +32,16 @@ public class PostExpenseBillCommandHandler : IRequestHandler<PostExpenseBillComm
         if (expenseBill.Status != ExpenseBillStatus.Draft)
             throw new BusinessException($"لا يمكن ترحيل الفاتورة لأنها بحالة: {expenseBill.Status}");
 
+        // التحقق من أن تاريخ الفاتورة لا ينتمي إلى فترة مالية مغلقة
+        var allPeriods = await _unitOfWork.Repository<FiscalPeriod>().ListAllAsync();
+        var closedPeriod = allPeriods
+            .FirstOrDefault(p => p.IsClosed && 
+                               expenseBill.TransactionDate >= p.StartDate && 
+                               expenseBill.TransactionDate <= p.EndDate);
+
+        if (closedPeriod != null)
+            throw new BusinessException("لا يمكن إجراء عمليات على فترة مالية مغلقة.");
+
         var fiscalPeriod = (await _unitOfWork.Repository<FiscalPeriod>().ListAllAsync())
             .FirstOrDefault(p => !p.IsClosed);
 
