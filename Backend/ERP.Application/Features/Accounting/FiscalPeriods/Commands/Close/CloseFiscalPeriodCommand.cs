@@ -62,12 +62,12 @@ public class CloseFiscalPeriodCommandHandler : IRequestHandler<CloseFiscalPeriod
             if (revenueAccountIds.Contains(balance.AccountId))
             {
                 // الإيرادات: الرصيد الدائن يمثل الإيرادات
-                totalRevenues += balance.Credit - balance.Debit;
+                totalRevenues += balance.TotalCredit - balance.TotalDebit;
             }
             else if (expenseAccountIds.Contains(balance.AccountId))
             {
                 // المصروفات: الرصيد المدين يمثل المصروفات
-                totalExpenses += balance.Debit - balance.Credit;
+                totalExpenses += balance.TotalDebit - balance.TotalCredit;
             }
         }
 
@@ -96,7 +96,7 @@ public class CloseFiscalPeriodCommandHandler : IRequestHandler<CloseFiscalPeriod
         // تصفير حسابات الإيرادات (4xxx)
         foreach (var balance in periodBalances.Where(b => revenueAccountIds.Contains(b.AccountId)))
         {
-            var netRevenue = balance.Credit - balance.Debit;
+            var netRevenue = balance.TotalCredit - balance.TotalDebit;
             if (netRevenue > 0)
             {
                 // Debit الإيرادات لتصفيرها
@@ -118,7 +118,7 @@ public class CloseFiscalPeriodCommandHandler : IRequestHandler<CloseFiscalPeriod
         // تصفير حسابات المصروفات (5xxx)
         foreach (var balance in periodBalances.Where(b => expenseAccountIds.Contains(b.AccountId)))
         {
-            var netExpense = balance.Debit - balance.Credit;
+            var netExpense = balance.TotalDebit - balance.TotalCredit;
             if (netExpense > 0)
             {
                 // Credit المصروفات لتصفيرها
