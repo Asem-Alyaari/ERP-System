@@ -52,5 +52,10 @@ public class StockGroupConfiguration : IEntityTypeConfiguration<StockGroup>
             .WithMany()
             .HasForeignKey(x => x.CostOfGoodsSoldAccountId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(x => x.ExpenseAccount)
+            .WithMany()
+            .HasForeignKey(x => x.ExpenseAccountId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

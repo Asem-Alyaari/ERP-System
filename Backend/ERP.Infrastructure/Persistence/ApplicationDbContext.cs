@@ -19,6 +19,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<JournalEntryMaster> JournalEntryMasters => Set<JournalEntryMaster>();
     public DbSet<JournalEntryLine> JournalEntryLines => Set<JournalEntryLine>();
     public DbSet<AccountBalance> AccountBalances => Set<AccountBalance>();
+    public DbSet<Warehouse> Warehouses => Set<Warehouse>();
     public DbSet<StockGroup> StockGroups => Set<StockGroup>();
     public DbSet<Item> Items => Set<Item>();
     public DbSet<Category> Categories => Set<Category>();

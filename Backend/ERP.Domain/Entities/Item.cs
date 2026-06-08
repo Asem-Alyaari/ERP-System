@@ -23,6 +23,9 @@ public class Item : Entity
     public decimal DefaultPurchasePrice { get; private set; } // سعر الشراء الافتراضي (استرشادي)
     public decimal SalesPrice { get; private set; }
 
+    public decimal StandardCost { get; private set; } // التكلفة المعيارية
+    public decimal AverageCost { get; private set; } // متوسط التكلفة
+
     public bool IsActive { get; private set; }
 
     // حدود الأمان والتنبيه المخزني
@@ -50,7 +53,9 @@ public class Item : Entity
         string? sku = null, 
         string? barcode = null, 
         decimal defaultPurchasePrice = 0, 
-        decimal salesPrice = 0) : base(id)
+        decimal salesPrice = 0,
+        decimal standardCost = 0,
+        decimal averageCost = 0) : base(id)
     {
         ItemCode = itemCode;
         ItemNameAr = itemNameAr;
@@ -60,6 +65,8 @@ public class Item : Entity
         Barcode = barcode;
         DefaultPurchasePrice = defaultPurchasePrice;
         SalesPrice = salesPrice;
+        StandardCost = standardCost;
+        AverageCost = averageCost;
         IsActive = true;
     }
 
@@ -71,7 +78,9 @@ public class Item : Entity
         string? sku = null, 
         string? barcode = null, 
         decimal defaultPurchasePrice = 0, 
-        decimal salesPrice = 0)
+        decimal salesPrice = 0,
+        decimal standardCost = 0,
+        decimal averageCost = 0)
     {
         ItemCode = itemCode;
         ItemNameAr = itemNameAr;
@@ -81,6 +90,8 @@ public class Item : Entity
         Barcode = barcode;
         DefaultPurchasePrice = defaultPurchasePrice;
         SalesPrice = salesPrice;
+        StandardCost = standardCost;
+        AverageCost = averageCost;
     }
 
 
@@ -104,6 +115,12 @@ public class Item : Entity
     {
         DefaultPurchasePrice = purchasePrice;
         SalesPrice = salesPrice;
+    }
+
+    public void UpdateCosts(decimal standardCost, decimal averageCost)
+    {
+        StandardCost = standardCost;
+        AverageCost = averageCost;
     }
 
     public void AddUnit(Guid unitId, decimal conversionRate, bool isBaseUnit, decimal price = 0)

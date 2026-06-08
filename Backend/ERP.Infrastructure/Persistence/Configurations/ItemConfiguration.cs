@@ -40,6 +40,12 @@ public class ItemConfiguration : IEntityTypeConfiguration<Item>
         builder.Property(x => x.SalesPrice)
             .HasPrecision(18, 4);
 
+        builder.Property(x => x.StandardCost)
+            .HasPrecision(18, 4);
+
+        builder.Property(x => x.AverageCost)
+            .HasPrecision(18, 4);
+
         builder.Property(x => x.ReorderLevel)
             .HasPrecision(18, 4);
 

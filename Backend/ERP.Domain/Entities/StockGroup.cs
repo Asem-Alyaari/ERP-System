@@ -26,6 +26,9 @@ public class StockGroup : Entity
     public Guid? CostOfGoodsSoldAccountId { get; private set; }
     public virtual Account? CostOfGoodsSoldAccount { get; private set; }
 
+    public Guid? ExpenseAccountId { get; private set; }
+    public virtual Account? ExpenseAccount { get; private set; }
+
     private readonly List<StockGroup> _subGroups = new();
     public virtual IReadOnlyCollection<StockGroup> SubGroups => _subGroups.AsReadOnly();
 
@@ -43,7 +46,8 @@ public class StockGroup : Entity
         Guid? parentGroupId = null,
         Guid? inventoryAccountId = null,
         Guid? salesAccountId = null,
-        Guid? cogsAccountId = null) : base(id)
+        Guid? cogsAccountId = null,
+        Guid? expenseAccountId = null) : base(id)
     {
         GroupCode = groupCode;
         GroupNameAr = groupNameAr;
@@ -53,6 +57,7 @@ public class StockGroup : Entity
         InventoryAccountId = inventoryAccountId;
         SalesAccountId = salesAccountId;
         CostOfGoodsSoldAccountId = cogsAccountId;
+        ExpenseAccountId = expenseAccountId;
     }
 
     public void Update(
@@ -63,7 +68,8 @@ public class StockGroup : Entity
         Guid? parentGroupId = null,
         Guid? inventoryAccountId = null,
         Guid? salesAccountId = null,
-        Guid? cogsAccountId = null)
+        Guid? cogsAccountId = null,
+        Guid? expenseAccountId = null)
     {
         GroupCode = groupCode;
         GroupNameAr = groupNameAr;
@@ -73,6 +79,7 @@ public class StockGroup : Entity
         InventoryAccountId = inventoryAccountId;
         SalesAccountId = salesAccountId;
         CostOfGoodsSoldAccountId = cogsAccountId;
+        ExpenseAccountId = expenseAccountId;
     }
 
     /// <summary>
@@ -89,6 +96,9 @@ public class StockGroup : Entity
 
         if (!CostOfGoodsSoldAccountId.HasValue)
             CostOfGoodsSoldAccountId = parentGroup.CostOfGoodsSoldAccountId;
+
+        if (!ExpenseAccountId.HasValue)
+            ExpenseAccountId = parentGroup.ExpenseAccountId;
     }
 }
 

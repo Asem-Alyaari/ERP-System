@@ -50,11 +50,14 @@ public class PostPurchaseInvoiceCommandHandler : IRequestHandler<PostPurchaseInv
             throw new BusinessException("لا يمكن إجراء عمليات على فترة مالية مغلقة.");
 
         // --- أولاً: الأثر المخزني (إنشاء واعتماد إذن إضافة) ---
+        // TODO: Get warehouseId from invoice or configuration when warehouse management is implemented
+        var defaultWarehouseId = Guid.Parse("00000000-0000-0000-0000-000000000003"); // Placeholder for default warehouse
         var inventoryMaster = new InventoryTransactionMaster(
             Guid.NewGuid(),
             $"SI-PI-{invoice.InvoiceNumber}",
             invoice.InvoiceDate,
             InventoryTransactionType.StockIn,
+            defaultWarehouseId,
             request.UserId,
             $"إذن إضافة ناتج عن فاتورة مشتريات رقم: {invoice.InvoiceNumber}"
         );

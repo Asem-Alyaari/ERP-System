@@ -14,6 +14,15 @@ public class InventoryTransactionMaster : Entity
     public string? Notes { get; private set; }
     public InventoryTransactionStatus Status { get; private set; }
 
+    // Warehouse fields
+    public Guid WarehouseId { get; private set; }
+    public virtual Warehouse? Warehouse { get; private set; }
+
+    public Guid? ToWarehouseId { get; private set; } // For transfers only
+    public virtual Warehouse? ToWarehouse { get; private set; }
+
+    public bool IsPosted { get; private set; } // Accounting integration flag
+
     // Audit Fields
     public string CreatedBy { get; private set; } = string.Empty;
     public DateTime CreatedAt { get; private set; }
@@ -26,20 +35,25 @@ public class InventoryTransactionMaster : Entity
     private InventoryTransactionMaster() { } // For EF Core
 
     public InventoryTransactionMaster(
-        Guid id, 
-        string documentNumber, 
-        DateTime transactionDate, 
-        InventoryTransactionType transactionType, 
-        string createdBy, 
-        string? notes = null) : base(id)
+        Guid id,
+        string documentNumber,
+        DateTime transactionDate,
+        InventoryTransactionType transactionType,
+        Guid warehouseId,
+        string createdBy,
+        string? notes = null,
+        Guid? toWarehouseId = null) : base(id)
     {
         DocumentNumber = documentNumber;
         TransactionDate = transactionDate;
         TransactionType = transactionType;
+        WarehouseId = warehouseId;
+        ToWarehouseId = toWarehouseId;
         CreatedBy = createdBy;
         CreatedAt = DateTime.UtcNow;
         Notes = notes;
         Status = InventoryTransactionStatus.Draft;
+        IsPosted = false;
     }
 
     public void Approve(string approvedBy)
@@ -52,5 +66,16 @@ public class InventoryTransactionMaster : Entity
     public void Cancel()
     {
         Status = InventoryTransactionStatus.Cancelled;
+    }
+
+    public void MarkAsPosted()
+    {
+        IsPosted = true;
+    }
+
+    public void SetWarehouse(Guid warehouseId, Guid? toWarehouseId = null)
+    {
+        WarehouseId = warehouseId;
+        ToWarehouseId = toWarehouseId;
     }
 }
