@@ -85,7 +85,7 @@
               <p-button
                 [label]="period.isClosed ? 'إعادة فتح' : 'إغلاق الفترة'"
                 [icon]="period.isClosed ? 'pi pi-lock-open' : 'pi pi-lock'"
-                [severity]="period.isClosed ? 'success' : 'warn'"
+                [severity]="period.isClosed ? 'success' : 'danger'"
                 [outlined]="true"
                 size="small"
                 (onClick)="togglePeriodStatus(period)"

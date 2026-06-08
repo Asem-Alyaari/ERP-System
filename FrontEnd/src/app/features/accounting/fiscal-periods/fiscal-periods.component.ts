@@ -139,42 +139,71 @@ export class FiscalPeriodsComponent implements OnInit {
   }
 
   togglePeriodStatus(period: FiscalPeriod) {
-    const actionText = period.isClosed ? 'فتح الفترة' : 'إغلاق الفترة';
-    const confirmMessage = period.isClosed 
-      ? `هل أنت متأكد من إعادة فتح السنة المالية "${period.yearName}"؟`
-      : `هل أنت متأكد من إغلاق السنة المالية "${period.yearName}"؟ عند الإغلاق، سيتم قفل إدخال أي قيود يومية أو حركات محاسبية في هذه الفترة.`;
+    if (period.isClosed) {
+      // فتح الفترة - رسالة بسيطة
+      const actionText = 'فتح الفترة';
+      const confirmMessage = `هل أنت متأكد من إعادة فتح السنة المالية "${period.yearName}"؟`;
 
-    this.confirmationService.confirm({
-      message: confirmMessage,
-      header: 'تأكيد تغيير حالة الفترة',
-      icon: period.isClosed ? 'pi pi-lock-open' : 'pi pi-lock',
-      acceptLabel: actionText,
-      rejectLabel: 'إلغاء',
-      acceptButtonStyleClass: period.isClosed ? 'p-button-success' : 'p-button-warning',
-      accept: () => {
-        const req = period.isClosed 
-          ? this.fiscalPeriodService.open(period.id)
-          : this.fiscalPeriodService.close(period.id);
+      this.confirmationService.confirm({
+        message: confirmMessage,
+        header: 'تأكيد فتح الفترة',
+        icon: 'pi pi-lock-open',
+        acceptLabel: actionText,
+        rejectLabel: 'إلغاء',
+        acceptButtonStyleClass: 'p-button-success',
+        accept: () => {
+          this.fiscalPeriodService.open(period.id).subscribe({
+            next: () => {
+              this.messageService.add({
+                severity: 'success',
+                summary: 'تم',
+                detail: 'تم فتح الفترة المالية بنجاح'
+              });
+              this.loadPeriods();
+            },
+            error: (err) => {
+              this.messageService.add({
+                severity: 'error',
+                summary: 'خطأ',
+                detail: err.error?.message || 'فشل فتح الفترة المالية.'
+              });
+            }
+          });
+        }
+      });
+    } else {
+      // إغلاق الفترة - رسالة تحذير مفصلة
+      const actionText = 'إغلاق الفترة';
+      const confirmMessage = `تنبيه: سيقوم النظام بتصفير حسابات الإيرادات والمصروفات تلقائياً، وتوليد قيد الإغلاق السنوي ونقل صافي الأرباح/الخسائر إلى الأرباح المحتجزة. هل أنت متأكد من إغلاق هذه الفترة نهائياً؟`;
 
-        req.subscribe({
-          next: () => {
-            this.messageService.add({
-              severity: 'success',
-              summary: 'تم',
-              detail: `تم ${period.isClosed ? 'فتح' : 'إغلاق'} الفترة المالية بنجاح`
-            });
-            this.loadPeriods();
-          },
-          error: (err) => {
-            this.messageService.add({
-              severity: 'error',
-              summary: 'خطأ',
-              detail: err.error?.message || 'فشل تغيير حالة الفترة المالية.'
-            });
-          }
-        });
-      }
-    });
+      this.confirmationService.confirm({
+        message: confirmMessage,
+        header: 'تأكيد إغلاق الفترة',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: actionText,
+        rejectLabel: 'إلغاء',
+        acceptButtonStyleClass: 'p-button-danger',
+        accept: () => {
+          this.fiscalPeriodService.close(period.id).subscribe({
+            next: () => {
+              this.messageService.add({
+                severity: 'success',
+                summary: 'تم',
+                detail: 'تم إغلاق الفترة المالية بنجاح وإنشاء قيد الإغلاق التلقائي'
+              });
+              this.loadPeriods();
+            },
+            error: (err) => {
+              this.messageService.add({
+                severity: 'error',
+                summary: 'خطأ',
+                detail: err.error?.message || 'فشل إغلاق الفترة المالية.'
+              });
+            }
+          });
+        }
+      });
+    }
   }
 
   confirmDelete(period: FiscalPeriod) {

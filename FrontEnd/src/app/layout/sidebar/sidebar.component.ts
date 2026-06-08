@@ -28,6 +28,7 @@ export class SidebarComponent {
     { label: 'الميزانية العمومية', icon: 'pi pi-chart-bar', route: '/accounting/balance-sheet' },
     { label: 'مراكز التكلفة', icon: 'pi pi-sitemap', route: '/accounting/cost-centers' },
     { label: 'الفترات المالية', icon: 'pi pi-calendar', route: '/accounting/fiscal-periods' },
+    { label: 'الأرصدة الافتتاحية', icon: 'pi pi-wallet', route: '/accounting/opening-balances' },
     { label: 'العملات', icon: 'pi pi-dollar', route: '/accounting/currencies' },
     { label: 'أسعار الصرف', icon: 'pi pi-sync', route: '/accounting/exchange-rates' },
     { label: 'سندات الصرف', icon: 'pi pi-money-bill', route: '/treasury/payment-vouchers' },

@@ -1,0 +1,139 @@
+<p-toast position="top-right" />
+<p-confirmDialog />
+
+<div class="animate-fade-in erp-workspace">
+
+  <!-- Toolbar / Header -->
+  <p-toolbar styleClass="mb-4 erp-toolbar">
+    <ng-template #start>
+      <div>
+        <h2 class="page-title text-2xl font-bold flex align-items-center gap-2">
+          <i class="pi pi-wallet text-primary-500"></i>
+          الأرصدة الافتتاحية
+        </h2>
+        <p class="page-subtitle text-gray-500">تعيين الأرصدة الافتتاحية للفترات المالية</p>
+      </div>
+    </ng-template>
+  </p-toolbar>
+
+  <!-- Filters Card -->
+  <p-card styleClass="mb-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="field-label">الفترة المالية</label>
+        <p-select
+          [options]="fiscalPeriods"
+          [(ngModel)]="selectedFiscalPeriodId"
+          [filter]="true"
+          optionLabel="yearName"
+          optionValue="id"
+          placeholder="اختر الفترة المالية"
+          class="w-full"
+          (ngModelChange)="onFiscalPeriodChange()"
+        />
+      </div>
+    </div>
+  </p-card>
+
+  <!-- Balances Table -->
+  @if (selectedFiscalPeriodId) {
+    <p-card>
+      <p-table
+        [value]="balances"
+        [rows]="10"
+        [paginator]="true"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        [scrollable]="true"
+        scrollHeight="flex"
+        styleClass="p-datatable-sm"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th>رقم الحساب</th>
+            <th>اسم الحساب</th>
+            <th style="width: 150px; text-align: center;">مدين</th>
+            <th style="width: 150px; text-align: center;">دائن</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-balance>
+          <tr>
+            <td>{{ balance.accountCode }}</td>
+            <td>{{ balance.accountNameAr }}</td>
+            <td style="text-align: center;">
+              <p-inputNumber
+                [(ngModel)]="balance.debit"
+                [min]="0"
+                [maxFractionDigits]="2"
+                [showButtons]="true"
+                mode="decimal"
+                [minFractionDigits]="2"
+                class="w-full"
+                style="width: 120px;"
+              />
+            </td>
+            <td style="text-align: center;">
+              <p-inputNumber
+                [(ngModel)]="balance.credit"
+                [min]="0"
+                [maxFractionDigits]="2"
+                [showButtons]="true"
+                mode="decimal"
+                [minFractionDigits]="2"
+                class="w-full"
+                style="width: 120px;"
+              />
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="footer">
+          <div class="flex justify-content-between align-items-center p-3 bg-gray-50">
+            <div class="flex gap-6">
+              <div>
+                <span class="font-semibold text-gray-600">إجمالي المدين:</span>
+                <span class="mr-2 font-bold text-primary-600">{{ formatNumber(totalDebit) }}</span>
+              </div>
+              <div>
+                <span class="font-semibold text-gray-600">إجمالي الدائن:</span>
+                <span class="mr-2 font-bold text-primary-600">{{ formatNumber(totalCredit) }}</span>
+              </div>
+            </div>
+            <div>
+              @if (isBalanced) {
+                <span class="text-green-600 font-semibold flex align-items-center gap-2">
+                  <i class="pi pi-check-circle"></i>
+                  متوازن
+                </span>
+              } @else {
+                <span class="text-red-600 font-semibold flex align-items-center gap-2">
+                  <i class="pi pi-times-circle"></i>
+                  غير متوازن
+                </span>
+              }
+            </div>
+          </div>
+        </ng-template>
+      </p-table>
+
+      <div class="flex justify-content-end mt-4">
+        <p-button
+          label="حفظ الأرصدة الافتتاحية"
+          icon="pi pi-save"
+          [loading]="saving"
+          [disabled]="!isBalanced"
+          severity="success"
+          (onClick)="saveBalances()"
+        />
+      </div>
+    </p-card>
+  } @else {
+    <p-card>
+      <div class="text-center text-gray-500 py-8">
+        <i class="pi pi-info-circle text-4xl mb-3"></i>
+        <p>يرجى اختيار الفترة المالية لعرض الأرصدة الافتتاحية</p>
+      </div>
+    </p-card>
+  }
+
+</div>

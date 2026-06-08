@@ -1,0 +1,17 @@
+:host {
+  display: block;
+}
+
+.field-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #374151;
+}
+
+@media print {
+  .erp-toolbar,
+  .p-paginator {
+    display: none !important;
+  }
+}

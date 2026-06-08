@@ -22,6 +22,10 @@ export const ACCOUNTING_ROUTES: Routes = [
     loadComponent: () => import('./fiscal-periods/fiscal-periods.component').then(m => m.FiscalPeriodsComponent)
   },
   {
+    path: 'opening-balances',
+    loadComponent: () => import('./opening-balances/opening-balances.component').then(m => m.OpeningBalancesComponent)
+  },
+  {
     path: 'currencies',
     loadComponent: () => import('./currencies/currencies.component').then(m => m.CurrenciesComponent)
   },
