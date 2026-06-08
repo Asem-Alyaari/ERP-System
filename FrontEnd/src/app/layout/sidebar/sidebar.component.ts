@@ -24,6 +24,8 @@ export class SidebarComponent {
     { label: 'دليل الحسابات', icon: 'pi pi-sitemap', route: '/accounting' },
     { label: 'القيود اليومية', icon: 'pi pi-book', route: '/accounting/journal-entries' },
     { label: 'كشف الحساب', icon: 'pi pi-file-text', route: '/accounting/ledger-report' },
+    { label: 'قائمة الدخل', icon: 'pi pi-chart-line', route: '/accounting/income-statement' },
+    { label: 'الميزانية العمومية', icon: 'pi pi-chart-bar', route: '/accounting/balance-sheet' },
     { label: 'مراكز التكلفة', icon: 'pi pi-sitemap', route: '/accounting/cost-centers' },
     { label: 'الفترات المالية', icon: 'pi pi-calendar', route: '/accounting/fiscal-periods' },
     { label: 'العملات', icon: 'pi pi-dollar', route: '/accounting/currencies' },

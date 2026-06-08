@@ -1,0 +1,20 @@
+.report-content {
+  @media print {
+    .grid,
+    .flex.gap-2.mb-6 {
+      display: none !important;
+    }
+
+    .grid.grid-cols-1.md\\:grid-cols-2 {
+      grid-template-columns: 1fr 1fr !important;
+    }
+  }
+}
+
+table {
+  font-family: 'Courier New', monospace;
+}
+
+.font-mono {
+  font-family: 'Courier New', monospace;
+}

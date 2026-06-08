@@ -1,0 +1,551 @@
+2026-06-08 16:46:58.913 +03:00 [INF] User profile is available. Using 'C:\Users\عاصم\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-06-08 16:47:04.523 +03:00 [WRN] The 'CostCenterStatus' property 'CostCenterStatus' on entity type 'Account' is configured with a database-generated default, but has no configured sentinel value. The database-generated default will always be used for inserts when the property has the value '0', since this is the CLR default for the 'CostCenterStatus' type. Consider using a nullable type, using a nullable backing field, or setting the sentinel value for the property to ensure the database default is used when, and only when, appropriate. See https://aka.ms/efcore-docs-default-values for more information.
+2026-06-08 16:47:18.108 +03:00 [INF] Executed DbCommand (3,024ms) [Parameters=[@__normalizedName_0='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @__normalizedName_0
+2026-06-08 16:47:18.543 +03:00 [INF] Executed DbCommand (104ms) [Parameters=[@__normalizedEmail_0='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[Email], [a].[EmailConfirmed], [a].[FullName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UserName]
+FROM [AspNetUsers] AS [a]
+WHERE [a].[NormalizedEmail] = @__normalizedEmail_0
+2026-06-08 16:47:18.883 +03:00 [INF] Executed DbCommand (44ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [c].[Id], [c].[Code], [c].[IsLocal], [c].[Name], [c].[Symbol]
+FROM [Currencies] AS [c]
+WHERE [c].[IsLocal] = CAST(1 AS bit)
+2026-06-08 16:47:19.237 +03:00 [INF] Executed DbCommand (58ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Accounts] AS [a]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-06-08 16:47:19.429 +03:00 [INF] Executed DbCommand (137ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+            UPDATE Accounts
+            SET    IsDetail = 0
+            WHERE  AccountCode IN ('4101', '5101')
+              AND  IsDetail   = 1;
+2026-06-08 16:47:19.584 +03:00 [INF] Executed DbCommand (146ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+            IF NOT EXISTS (SELECT 1 FROM Accounts WHERE AccountCode = '1103')
+            BEGIN
+                DECLARE @CurrentAssetsId UNIQUEIDENTIFIER = (
+                    SELECT Id FROM Accounts WHERE AccountCode = '11'
+                );
+                DECLARE @CurrencyId UNIQUEIDENTIFIER = (
+                    SELECT TOP 1 Id FROM Currencies WHERE IsLocal = 1
+                );
+                IF @CurrentAssetsId IS NOT NULL AND @CurrencyId IS NOT NULL
+                BEGIN
+                    INSERT INTO Accounts (Id, AccountCode, AccountNameAr, AccountNameEn,
+                                         AccountType, IsDetail, CurrencyId, ParentAccountId)
+                    VALUES (NEWID(), '1103', N'المخزون', 'Inventory',
+                            1, 0, @CurrencyId, @CurrentAssetsId);
+                END
+            END
+2026-06-08 16:47:19.673 +03:00 [INF] Executed DbCommand (33ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+            IF NOT EXISTS (SELECT 1 FROM Accounts WHERE AccountCode = '110301')
+            BEGIN
+                DECLARE @InvParentId UNIQUEIDENTIFIER = (
+                    SELECT Id FROM Accounts WHERE AccountCode = '1103'
+                );
+                DECLARE @Ccy1 UNIQUEIDENTIFIER = (
+                    SELECT TOP 1 Id FROM Currencies WHERE IsLocal = 1
+                );
+                IF @InvParentId IS NOT NULL AND @Ccy1 IS NOT NULL
+                    INSERT INTO Accounts (Id, AccountCode, AccountNameAr, AccountNameEn,
+                                         AccountType, IsDetail, CurrencyId, ParentAccountId)
+                    VALUES (NEWID(), '110301', N'مخزون عام', 'General Inventory',
+                            1, 1, @Ccy1, @InvParentId);
+            END
+2026-06-08 16:47:19.701 +03:00 [INF] Executed DbCommand (14ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+            IF NOT EXISTS (SELECT 1 FROM Accounts WHERE AccountCode = '410101')
+            BEGIN
+                DECLARE @SalesParentId UNIQUEIDENTIFIER = (
+                    SELECT Id FROM Accounts WHERE AccountCode = '4101'
+                );
+                DECLARE @Ccy2 UNIQUEIDENTIFIER = (
+                    SELECT TOP 1 Id FROM Currencies WHERE IsLocal = 1
+                );
+                IF @SalesParentId IS NOT NULL AND @Ccy2 IS NOT NULL
+                    INSERT INTO Accounts (Id, AccountCode, AccountNameAr, AccountNameEn,
+                                         AccountType, IsDetail, CurrencyId, ParentAccountId)
+                    VALUES (NEWID(), '410101', N'إيرادات المبيعات العامة', 'General Sales Revenues',
+                            4, 1, @Ccy2, @SalesParentId);
+            END
+2026-06-08 16:47:19.736 +03:00 [INF] Executed DbCommand (25ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+            IF NOT EXISTS (SELECT 1 FROM Accounts WHERE AccountCode = '510101')
+            BEGIN
+                DECLARE @CogsParentId UNIQUEIDENTIFIER = (
+                    SELECT Id FROM Accounts WHERE AccountCode = '5101'
+                );
+                DECLARE @Ccy3 UNIQUEIDENTIFIER = (
+                    SELECT TOP 1 Id FROM Currencies WHERE IsLocal = 1
+                );
+                IF @CogsParentId IS NOT NULL AND @Ccy3 IS NOT NULL
+                    INSERT INTO Accounts (Id, AccountCode, AccountNameAr, AccountNameEn,
+                                         AccountType, IsDetail, CurrencyId, ParentAccountId)
+                    VALUES (NEWID(), '510101', N'تكلفة البضاعة المباعة العامة', 'General Cost of Goods Sold',
+                            5, 1, @Ccy3, @CogsParentId);
+            END
+2026-06-08 16:47:19.831 +03:00 [INF] Executed DbCommand (30ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+            UPDATE Accounts
+            SET CostCenterStatus = 1
+            WHERE  AccountCode LIKE '5101%'
+              AND  IsDetail = 1
+              AND  CostCenterStatus <> 1;
+2026-06-08 16:47:19.863 +03:00 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Units] AS [u]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-06-08 16:47:19.893 +03:00 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Categories] AS [c]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-06-08 16:47:19.918 +03:00 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [CostCenters] AS [c]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-06-08 16:47:19.942 +03:00 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [StockGroups] AS [s]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-06-08 16:47:19.966 +03:00 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [FiscalPeriods] AS [f]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-06-08 16:47:20.041 +03:00 [INF] Executed DbCommand (17ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [JournalEntryMasters] AS [j]
+        WHERE [j].[Id] IN ('66666666-6666-6666-6666-666666666601', '66666666-6666-6666-6666-666666666602')) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-06-08 16:47:20.087 +03:00 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[AccountCode], [a].[AccountNameAr], [a].[AccountNameEn], [a].[AccountType], [a].[CostCenterStatus], [a].[CurrencyId], [a].[IsDetail], [a].[ParentAccountId]
+FROM [Accounts] AS [a]
+WHERE [a].[AccountCode] = N'110101'
+2026-06-08 16:47:20.354 +03:00 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[AccountCode], [a].[AccountNameAr], [a].[AccountNameEn], [a].[AccountType], [a].[CostCenterStatus], [a].[CurrencyId], [a].[IsDetail], [a].[ParentAccountId]
+FROM [Accounts] AS [a]
+WHERE [a].[AccountCode] = N'51010102'
+2026-06-08 16:47:20.389 +03:00 [INF] Executed DbCommand (12ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[AccountCode], [a].[AccountNameAr], [a].[AccountNameEn], [a].[AccountType], [a].[CostCenterStatus], [a].[CurrencyId], [a].[IsDetail], [a].[ParentAccountId]
+FROM [Accounts] AS [a]
+WHERE [a].[AccountCode] = N'51010101'
+2026-06-08 16:47:20.431 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [c].[Id], [c].[Code], [c].[IsLocal], [c].[Name], [c].[Symbol]
+FROM [Currencies] AS [c]
+WHERE [c].[IsLocal] = CAST(1 AS bit)
+2026-06-08 16:47:20.444 +03:00 [WRN] The query uses the 'First'/'FirstOrDefault' operator without 'OrderBy' and filter operators. This may lead to unpredictable results.
+2026-06-08 16:47:20.458 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [f].[Id], [f].[EndDate], [f].[IsClosed], [f].[StartDate], [f].[YearName]
+FROM [FiscalPeriods] AS [f]
+2026-06-08 16:47:21.631 +03:00 [INF] Now listening on: https://localhost:7172
+2026-06-08 16:47:21.634 +03:00 [INF] Now listening on: http://localhost:5250
+2026-06-08 16:47:22.019 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-06-08 16:47:22.030 +03:00 [INF] Hosting environment: Development
+2026-06-08 16:47:22.076 +03:00 [INF] Content root path: H:\ERP\Backend\ERP.Api
+2026-06-08 16:47:23.081 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/swagger/index.html - null null
+2026-06-08 16:47:24.447 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/swagger/index.html - 200 null text/html;charset=utf-8 1369.3836ms
+2026-06-08 16:47:24.821 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/_framework/aspnetcore-browser-refresh.js - null null
+2026-06-08 16:47:24.821 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/swagger/index.js - null null
+2026-06-08 16:47:24.888 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/_vs/browserLink - null null
+2026-06-08 16:47:24.910 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/_framework/aspnetcore-browser-refresh.js - 200 16499 application/javascript; charset=utf-8 88.873ms
+2026-06-08 16:47:24.921 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/swagger/index.js - 200 null application/javascript;charset=utf-8 100.3646ms
+2026-06-08 16:47:25.012 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/_vs/browserLink - 200 null text/javascript; charset=UTF-8 123.4835ms
+2026-06-08 16:47:27.326 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/swagger/v1/swagger.json - null null
+2026-06-08 16:47:28.365 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 1038.4119ms
+2026-06-08 16:47:42.807 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/Categories?PageNumber=1&PageSize=100 - null null
+2026-06-08 16:47:42.946 +03:00 [INF] CORS policy execution successful.
+2026-06-08 16:47:42.966 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/Categories?PageNumber=1&PageSize=100 - 204 null null 159.1233ms
+2026-06-08 16:47:42.982 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/Categories?PageNumber=1&PageSize=100 - null null
+2026-06-08 16:47:43.049 +03:00 [INF] CORS policy execution successful.
+2026-06-08 16:47:50.546 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-06-08 16:47:50.564 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-06-08 16:47:50.576 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.CategoriesController.GetAll (ERP.Api)'
+2026-06-08 16:47:50.633 +03:00 [INF] Route matched with {action = "GetAll", controller = "Categories"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[ERP.Application.Features.Inventory.Categories.Queries.GetCategoriesWithPagination.CategoriesPagedResponse]] GetAll(ERP.Application.Features.Inventory.Categories.Queries.GetCategoriesWithPagination.GetCategoriesWithPaginationQuery) on controller ERP.Api.Controllers.CategoriesController (ERP.Api).
+2026-06-08 16:47:50.926 +03:00 [WRN] The query uses a row limiting operator ('Skip'/'Take') without an 'OrderBy' operator. This may lead to unpredictable results. If the 'Distinct' operator is used after 'OrderBy', then make sure to use the 'OrderBy' operator after 'Distinct' as the ordering would otherwise get erased.
+2026-06-08 16:47:50.930 +03:00 [WRN] The query uses a row limiting operator ('Skip'/'Take') without an 'OrderBy' operator. This may lead to unpredictable results. If the 'Distinct' operator is used after 'OrderBy', then make sure to use the 'OrderBy' operator after 'Distinct' as the ordering would otherwise get erased.
+2026-06-08 16:47:50.965 +03:00 [INF] Executed DbCommand (19ms) [Parameters=[@__p_0='?' (DbType = Int32), @__p_1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [c].[Id], [c].[NameAr], [c].[NameEn]
+FROM [Categories] AS [c]
+ORDER BY (SELECT 1)
+OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY
+2026-06-08 16:47:51.252 +03:00 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Categories] AS [c]
+2026-06-08 16:47:51.268 +03:00 [INF] Executing OkObjectResult, writing value of type 'ERP.Application.Features.Inventory.Categories.Queries.GetCategoriesWithPagination.CategoriesPagedResponse'.
+2026-06-08 16:47:51.295 +03:00 [INF] Executed action ERP.Api.Controllers.CategoriesController.GetAll (ERP.Api) in 648.0797ms
+2026-06-08 16:47:51.297 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.CategoriesController.GetAll (ERP.Api)'
+2026-06-08 16:47:51.303 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/Categories?PageNumber=1&PageSize=100 - 200 null application/json; charset=utf-8 8321.7181ms
+2026-06-08 16:48:06.344 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/Accounts/detail - null null
+2026-06-08 16:48:06.346 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/CostCenters?onlyDetail=true - null null
+2026-06-08 16:48:06.347 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/Vendors/all - null null
+2026-06-08 16:48:06.347 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/ExpenseBills - null null
+2026-06-08 16:48:06.351 +03:00 [INF] CORS policy execution successful.
+2026-06-08 16:48:06.353 +03:00 [INF] CORS policy execution successful.
+2026-06-08 16:48:06.356 +03:00 [INF] CORS policy execution successful.
+2026-06-08 16:48:06.359 +03:00 [INF] CORS policy execution successful.
+2026-06-08 16:48:06.360 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/Accounts/detail - 204 null null 15.5973ms
+2026-06-08 16:48:06.361 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/CostCenters?onlyDetail=true - 204 null null 14.9527ms
+2026-06-08 16:48:06.362 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/Vendors/all - 204 null null 15.1257ms
+2026-06-08 16:48:06.364 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/ExpenseBills - 204 null null 16.1283ms
+2026-06-08 16:48:06.367 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/Accounts/detail - null null
+2026-06-08 16:48:06.368 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/CostCenters?onlyDetail=true - null null
+2026-06-08 16:48:06.369 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/Vendors/all - null null
+2026-06-08 16:48:06.369 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/ExpenseBills - null null
+2026-06-08 16:48:06.382 +03:00 [INF] CORS policy execution successful.
+2026-06-08 16:48:06.385 +03:00 [INF] CORS policy execution successful.
+2026-06-08 16:48:06.388 +03:00 [INF] CORS policy execution successful.
+2026-06-08 16:48:06.390 +03:00 [INF] CORS policy execution successful.
+2026-06-08 16:48:06.393 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-06-08 16:48:06.395 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-06-08 16:48:06.395 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-06-08 16:48:06.395 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-06-08 16:48:06.400 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-06-08 16:48:06.405 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-06-08 16:48:06.410 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-06-08 16:48:06.415 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-06-08 16:48:06.417 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.AccountsController.GetDetailAccounts (ERP.Api)'
+2026-06-08 16:48:06.420 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.ExpenseBillsController.GetAllExpenseBills (ERP.Api)'
+2026-06-08 16:48:06.422 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.VendorsController.GetAllList (ERP.Api)'
+2026-06-08 16:48:06.424 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.CostCentersController.GetAll (ERP.Api)'
+2026-06-08 16:48:06.430 +03:00 [INF] Route matched with {action = "GetDetailAccounts", controller = "Accounts"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.List`1[ERP.Application.Features.Accounting.Accounts.Queries.GetDetailAccounts.AccountLookupDto]]] GetDetailAccounts() on controller ERP.Api.Controllers.AccountsController (ERP.Api).
+2026-06-08 16:48:06.433 +03:00 [INF] Route matched with {action = "GetAll", controller = "CostCenters"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.List`1[ERP.Application.Features.Accounting.CostCenters.CostCenterDto]]] GetAll(System.Nullable`1[System.Boolean]) on controller ERP.Api.Controllers.CostCentersController (ERP.Api).
+2026-06-08 16:48:06.444 +03:00 [INF] Route matched with {action = "GetAllExpenseBills", controller = "ExpenseBills"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAllExpenseBills() on controller ERP.Api.Controllers.ExpenseBillsController (ERP.Api).
+2026-06-08 16:48:06.446 +03:00 [INF] Route matched with {action = "GetAllList", controller = "Vendors"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.List`1[ERP.Application.Features.Purchasing.Vendors.VendorDto]]] GetAllList() on controller ERP.Api.Controllers.VendorsController (ERP.Api).
+2026-06-08 16:48:06.497 +03:00 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[Id], [a].[AccountCode], [a].[AccountNameAr], [a].[AccountNameEn], [a].[AccountType], [a].[CostCenterStatus], [a].[CurrencyId], [a].[IsDetail], [a].[ParentAccountId]
+FROM [Accounts] AS [a]
+2026-06-08 16:48:06.519 +03:00 [INF] Executed DbCommand (13ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [c].[Id], [c].[CostCenterCode], [c].[CostCenterNameAr], [c].[CostCenterNameEn], [c].[IsDetail], [c].[ParentCostCenterId]
+FROM [CostCenters] AS [c]
+2026-06-08 16:48:06.524 +03:00 [INF] Executed DbCommand (13ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [e].[Id], [e].[BillNumber], [e].[CreatedAt], [e].[CreatedBy], [e].[NetAmount], [e].[Notes], [e].[PaymentAccountId], [e].[PaymentMethod], [e].[PostedAt], [e].[PostedBy], [e].[Status], [e].[SupplierName], [e].[TaxAmount], [e].[TotalAmount], [e].[TransactionDate], [e].[VendorId]
+FROM [ExpenseBillMasters] AS [e]
+2026-06-08 16:48:06.528 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[ERP.Application.Features.Accounting.Accounts.Queries.GetDetailAccounts.AccountLookupDto, ERP.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-06-08 16:48:06.534 +03:00 [INF] Executed action ERP.Api.Controllers.AccountsController.GetDetailAccounts (ERP.Api) in 101.0795ms
+2026-06-08 16:48:06.537 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.AccountsController.GetDetailAccounts (ERP.Api)'
+2026-06-08 16:48:06.538 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/Accounts/detail - 200 null application/json; charset=utf-8 171.1077ms
+2026-06-08 16:48:06.555 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[ERP.Application.Features.Accounting.CostCenters.CostCenterDto, ERP.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-06-08 16:48:06.564 +03:00 [INF] Executed action ERP.Api.Controllers.CostCentersController.GetAll (ERP.Api) in 128.3404ms
+2026-06-08 16:48:06.566 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.CostCentersController.GetAll (ERP.Api)'
+2026-06-08 16:48:06.569 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/CostCenters?onlyDetail=true - 200 null application/json; charset=utf-8 200.5266ms
+2026-06-08 16:48:06.594 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[ERP.Domain.Entities.ExpenseBillMaster, ERP.Domain, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-06-08 16:48:06.623 +03:00 [INF] Executed DbCommand (15ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [v].[Id], [v].[AccountId], [v].[Email], [v].[NameAr], [v].[NameEn], [v].[Phone], [v].[TaxNumber], [v].[VendorCode], [a].[Id], [a].[AccountCode], [a].[AccountNameAr], [a].[AccountNameEn], [a].[AccountType], [a].[CostCenterStatus], [a].[CurrencyId], [a].[IsDetail], [a].[ParentAccountId]
+FROM [Vendors] AS [v]
+INNER JOIN [Accounts] AS [a] ON [v].[AccountId] = [a].[Id]
+2026-06-08 16:48:06.653 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[ERP.Application.Features.Purchasing.Vendors.VendorDto, ERP.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-06-08 16:48:06.660 +03:00 [INF] Executed action ERP.Api.Controllers.VendorsController.GetAllList (ERP.Api) in 210.825ms
+2026-06-08 16:48:06.662 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.VendorsController.GetAllList (ERP.Api)'
+2026-06-08 16:48:06.663 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/Vendors/all - 200 null application/json; charset=utf-8 294.3259ms
+2026-06-08 16:48:06.683 +03:00 [INF] Executed action ERP.Api.Controllers.ExpenseBillsController.GetAllExpenseBills (ERP.Api) in 236.6877ms
+2026-06-08 16:48:06.685 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.ExpenseBillsController.GetAllExpenseBills (ERP.Api)'
+2026-06-08 16:48:06.687 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/ExpenseBills - 200 null application/json; charset=utf-8 318.2315ms
+2026-06-08 16:48:08.261 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/Accounts/detail - null null
+2026-06-08 16:48:08.262 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/CostCenters?onlyDetail=true - null null
+2026-06-08 16:48:08.263 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/Customers/all - null null
+2026-06-08 16:48:08.263 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/Currencies/list - null null
+2026-06-08 16:48:08.263 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/Vouchers/receipt - null null
+2026-06-08 16:48:08.264 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/Vendors/all - null null
+2026-06-08 16:48:08.267 +03:00 [INF] CORS policy execution successful.
+2026-06-08 16:48:08.270 +03:00 [INF] CORS policy execution successful.
+2026-06-08 16:48:08.273 +03:00 [INF] CORS policy execution successful.
+2026-06-08 16:48:08.277 +03:00 [INF] CORS policy execution successful.
+2026-06-08 16:48:08.279 +03:00 [INF] CORS policy execution successful.
+2026-06-08 16:48:08.282 +03:00 [INF] CORS policy execution successful.
+2026-06-08 16:48:08.284 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-06-08 16:48:08.285 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-06-08 16:48:08.286 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/Customers/all - 204 null null 22.7014ms
+2026-06-08 16:48:08.287 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/Currencies/list - 204 null null 23.6755ms
+2026-06-08 16:48:08.288 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/Vouchers/receipt - 204 null null 24.9031ms
+2026-06-08 16:48:08.290 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-06-08 16:48:08.295 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/Customers/all - null null
+2026-06-08 16:48:08.295 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/Currencies/list - null null
+2026-06-08 16:48:08.296 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/Vouchers/receipt - null null
+2026-06-08 16:48:08.298 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-06-08 16:48:08.303 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-06-08 16:48:08.318 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-06-08 16:48:08.321 +03:00 [INF] CORS policy execution successful.
+2026-06-08 16:48:08.324 +03:00 [INF] CORS policy execution successful.
+2026-06-08 16:48:08.329 +03:00 [INF] CORS policy execution successful.
+2026-06-08 16:48:08.330 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.AccountsController.GetDetailAccounts (ERP.Api)'
+2026-06-08 16:48:08.332 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.CostCentersController.GetAll (ERP.Api)'
+2026-06-08 16:48:08.334 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.VendorsController.GetAllList (ERP.Api)'
+2026-06-08 16:48:08.335 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-06-08 16:48:08.336 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-06-08 16:48:08.337 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-06-08 16:48:08.338 +03:00 [INF] Route matched with {action = "GetDetailAccounts", controller = "Accounts"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.List`1[ERP.Application.Features.Accounting.Accounts.Queries.GetDetailAccounts.AccountLookupDto]]] GetDetailAccounts() on controller ERP.Api.Controllers.AccountsController (ERP.Api).
+2026-06-08 16:48:08.340 +03:00 [INF] Route matched with {action = "GetAll", controller = "CostCenters"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.List`1[ERP.Application.Features.Accounting.CostCenters.CostCenterDto]]] GetAll(System.Nullable`1[System.Boolean]) on controller ERP.Api.Controllers.CostCentersController (ERP.Api).
+2026-06-08 16:48:08.341 +03:00 [INF] Route matched with {action = "GetAllList", controller = "Vendors"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.List`1[ERP.Application.Features.Purchasing.Vendors.VendorDto]]] GetAllList() on controller ERP.Api.Controllers.VendorsController (ERP.Api).
+2026-06-08 16:48:08.347 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-06-08 16:48:08.353 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-06-08 16:48:08.360 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-06-08 16:48:08.368 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[Id], [a].[AccountCode], [a].[AccountNameAr], [a].[AccountNameEn], [a].[AccountType], [a].[CostCenterStatus], [a].[CurrencyId], [a].[IsDetail], [a].[ParentAccountId]
+FROM [Accounts] AS [a]
+2026-06-08 16:48:08.370 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [c].[Id], [c].[CostCenterCode], [c].[CostCenterNameAr], [c].[CostCenterNameEn], [c].[IsDetail], [c].[ParentCostCenterId]
+FROM [CostCenters] AS [c]
+2026-06-08 16:48:08.371 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.CustomersController.GetAllList (ERP.Api)'
+2026-06-08 16:48:08.373 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.CurrenciesController.GetList (ERP.Api)'
+2026-06-08 16:48:08.376 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.VouchersController.GetAllReceiptVouchers (ERP.Api)'
+2026-06-08 16:48:08.377 +03:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [v].[Id], [v].[AccountId], [v].[Email], [v].[NameAr], [v].[NameEn], [v].[Phone], [v].[TaxNumber], [v].[VendorCode], [a].[Id], [a].[AccountCode], [a].[AccountNameAr], [a].[AccountNameEn], [a].[AccountType], [a].[CostCenterStatus], [a].[CurrencyId], [a].[IsDetail], [a].[ParentAccountId]
+FROM [Vendors] AS [v]
+INNER JOIN [Accounts] AS [a] ON [v].[AccountId] = [a].[Id]
+2026-06-08 16:48:08.381 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[ERP.Application.Features.Accounting.Accounts.Queries.GetDetailAccounts.AccountLookupDto, ERP.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-06-08 16:48:08.381 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[ERP.Application.Features.Accounting.CostCenters.CostCenterDto, ERP.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-06-08 16:48:08.385 +03:00 [INF] Route matched with {action = "GetAllList", controller = "Customers"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.List`1[ERP.Application.Features.Sales.Customers.CustomerDto]]] GetAllList() on controller ERP.Api.Controllers.CustomersController (ERP.Api).
+2026-06-08 16:48:08.387 +03:00 [INF] Route matched with {action = "GetList", controller = "Currencies"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.List`1[ERP.Application.Features.Accounting.Currencies.CurrencyDto]]] GetList() on controller ERP.Api.Controllers.CurrenciesController (ERP.Api).
+2026-06-08 16:48:08.388 +03:00 [INF] Route matched with {action = "GetAllReceiptVouchers", controller = "Vouchers"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAllReceiptVouchers() on controller ERP.Api.Controllers.VouchersController (ERP.Api).
+2026-06-08 16:48:08.388 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[ERP.Application.Features.Purchasing.Vendors.VendorDto, ERP.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-06-08 16:48:08.393 +03:00 [INF] Executed action ERP.Api.Controllers.CostCentersController.GetAll (ERP.Api) in 27.5896ms
+2026-06-08 16:48:08.393 +03:00 [INF] Executed action ERP.Api.Controllers.AccountsController.GetDetailAccounts (ERP.Api) in 31.012ms
+2026-06-08 16:48:08.402 +03:00 [INF] Executed action ERP.Api.Controllers.VendorsController.GetAllList (ERP.Api) in 33.2197ms
+2026-06-08 16:48:08.404 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.CostCentersController.GetAll (ERP.Api)'
+2026-06-08 16:48:08.405 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.AccountsController.GetDetailAccounts (ERP.Api)'
+2026-06-08 16:48:08.407 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.VendorsController.GetAllList (ERP.Api)'
+2026-06-08 16:48:08.409 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/CostCenters?onlyDetail=true - 200 null application/json; charset=utf-8 146.4427ms
+2026-06-08 16:48:08.409 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [c].[Id], [c].[Code], [c].[IsLocal], [c].[Name], [c].[Symbol]
+FROM [Currencies] AS [c]
+2026-06-08 16:48:08.410 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/Accounts/detail - 200 null application/json; charset=utf-8 148.8752ms
+2026-06-08 16:48:08.412 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/Vendors/all - 200 null application/json; charset=utf-8 148.1334ms
+2026-06-08 16:48:08.420 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[ERP.Application.Features.Accounting.Currencies.CurrencyDto, ERP.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-06-08 16:48:08.431 +03:00 [INF] Executed action ERP.Api.Controllers.CurrenciesController.GetList (ERP.Api) in 32.7616ms
+2026-06-08 16:48:08.433 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.CurrenciesController.GetList (ERP.Api)'
+2026-06-08 16:48:08.434 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/Currencies/list - 200 null application/json; charset=utf-8 139.0672ms
+2026-06-08 16:48:08.436 +03:00 [INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [c].[Id], [c].[AccountId], [c].[CustomerCode], [c].[Email], [c].[NameAr], [c].[NameEn], [c].[Phone], [c].[TaxNumber], [a].[Id], [a].[AccountCode], [a].[AccountNameAr], [a].[AccountNameEn], [a].[AccountType], [a].[CostCenterStatus], [a].[CurrencyId], [a].[IsDetail], [a].[ParentAccountId]
+FROM [Customers] AS [c]
+INNER JOIN [Accounts] AS [a] ON [c].[AccountId] = [a].[Id]
+2026-06-08 16:48:08.464 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[ERP.Application.Features.Sales.Customers.CustomerDto, ERP.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-06-08 16:48:08.469 +03:00 [INF] Executed action ERP.Api.Controllers.CustomersController.GetAllList (ERP.Api) in 73.1754ms
+2026-06-08 16:48:08.470 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.CustomersController.GetAllList (ERP.Api)'
+2026-06-08 16:48:08.472 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/Customers/all - 200 null application/json; charset=utf-8 177.0136ms
+2026-06-08 16:48:08.484 +03:00 [INF] Executed DbCommand (14ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [r].[Id], [r].[Amount], [r].[CostCenterId], [r].[CreatedAt], [r].[CreatedBy], [r].[CustomerId], [r].[DestinationAccountId], [r].[Notes], [r].[PaymentMethod], [r].[PostedAt], [r].[PostedBy], [r].[SourceAccountId], [r].[SourceType], [r].[Status], [r].[VendorId], [r].[VoucherDate], [r].[VoucherNumber], [a].[Id], [a].[AccountCode], [a].[AccountNameAr], [a].[AccountNameEn], [a].[AccountType], [a].[CostCenterStatus], [a].[CurrencyId], [a].[IsDetail], [a].[ParentAccountId], [c].[Id], [c].[AccountId], [c].[CustomerCode], [c].[Email], [c].[NameAr], [c].[NameEn], [c].[Phone], [c].[TaxNumber], [v].[Id], [v].[AccountId], [v].[Email], [v].[NameAr], [v].[NameEn], [v].[Phone], [v].[TaxNumber], [v].[VendorCode], [a0].[Id], [a0].[AccountCode], [a0].[AccountNameAr], [a0].[AccountNameEn], [a0].[AccountType], [a0].[CostCenterStatus], [a0].[CurrencyId], [a0].[IsDetail], [a0].[ParentAccountId], [c0].[Id], [c0].[CostCenterCode], [c0].[CostCenterNameAr], [c0].[CostCenterNameEn], [c0].[IsDetail], [c0].[ParentCostCenterId]
+FROM [ReceiptVouchers] AS [r]
+INNER JOIN [Accounts] AS [a] ON [r].[DestinationAccountId] = [a].[Id]
+LEFT JOIN [Customers] AS [c] ON [r].[CustomerId] = [c].[Id]
+LEFT JOIN [Vendors] AS [v] ON [r].[VendorId] = [v].[Id]
+LEFT JOIN [Accounts] AS [a0] ON [r].[SourceAccountId] = [a0].[Id]
+LEFT JOIN [CostCenters] AS [c0] ON [r].[CostCenterId] = [c0].[Id]
+2026-06-08 16:48:08.543 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[ERP.Application.Features.Treasury.Vouchers.DTOs.ReceiptVoucherListItemDto, ERP.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-06-08 16:48:08.565 +03:00 [INF] Executed action ERP.Api.Controllers.VouchersController.GetAllReceiptVouchers (ERP.Api) in 164.5848ms
+2026-06-08 16:48:08.567 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.VouchersController.GetAllReceiptVouchers (ERP.Api)'
+2026-06-08 16:48:08.568 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/Vouchers/receipt - 200 null application/json; charset=utf-8 272.4731ms
+2026-06-08 16:48:09.595 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7172/api/Currencies?PageNumber=1&PageSize=100 - null null
+2026-06-08 16:48:09.599 +03:00 [INF] CORS policy execution successful.
+2026-06-08 16:48:09.601 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7172/api/Currencies?PageNumber=1&PageSize=100 - 204 null null 6.3762ms
+2026-06-08 16:48:09.606 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/api/Currencies?PageNumber=1&PageSize=100 - null null
+2026-06-08 16:48:09.609 +03:00 [INF] CORS policy execution successful.
+2026-06-08 16:48:09.611 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-06-08 16:48:09.617 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: '8XrOhi0Kzftwgu648V8q2EgUz3-ej509ZPnRdvMgcy4'. , KeyId: 
+'. Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'. 
+Exceptions caught:
+ '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-06-08 16:48:09.619 +03:00 [INF] Executing endpoint 'ERP.Api.Controllers.CurrenciesController.GetAll (ERP.Api)'
+2026-06-08 16:48:09.625 +03:00 [INF] Route matched with {action = "GetAll", controller = "Currencies"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[ERP.Application.Features.Accounting.Currencies.Queries.GetCurrenciesWithPagination.CurrenciesPagedResponse]] GetAll(ERP.Application.Features.Accounting.Currencies.Queries.GetCurrenciesWithPagination.GetCurrenciesWithPaginationQuery) on controller ERP.Api.Controllers.CurrenciesController (ERP.Api).
+2026-06-08 16:48:09.637 +03:00 [WRN] The query uses a row limiting operator ('Skip'/'Take') without an 'OrderBy' operator. This may lead to unpredictable results. If the 'Distinct' operator is used after 'OrderBy', then make sure to use the 'OrderBy' operator after 'Distinct' as the ordering would otherwise get erased.
+2026-06-08 16:48:09.638 +03:00 [WRN] The query uses a row limiting operator ('Skip'/'Take') without an 'OrderBy' operator. This may lead to unpredictable results. If the 'Distinct' operator is used after 'OrderBy', then make sure to use the 'OrderBy' operator after 'Distinct' as the ordering would otherwise get erased.
+2026-06-08 16:48:09.646 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[@__p_0='?' (DbType = Int32), @__p_1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [c].[Id], [c].[Code], [c].[IsLocal], [c].[Name], [c].[Symbol]
+FROM [Currencies] AS [c]
+ORDER BY (SELECT 1)
+OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY
+2026-06-08 16:48:09.654 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Currencies] AS [c]
+2026-06-08 16:48:09.659 +03:00 [INF] Executing OkObjectResult, writing value of type 'ERP.Application.Features.Accounting.Currencies.Queries.GetCurrenciesWithPagination.CurrenciesPagedResponse'.
+2026-06-08 16:48:09.664 +03:00 [INF] Executed action ERP.Api.Controllers.CurrenciesController.GetAll (ERP.Api) in 35.8647ms
+2026-06-08 16:48:09.666 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.CurrenciesController.GetAll (ERP.Api)'
+2026-06-08 16:48:09.668 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/Currencies?PageNumber=1&PageSize=100 - 200 null application/json; charset=utf-8 61.8491ms

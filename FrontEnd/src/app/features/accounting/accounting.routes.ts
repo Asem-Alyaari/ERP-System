@@ -30,6 +30,14 @@ export const ACCOUNTING_ROUTES: Routes = [
     loadComponent: () => import('./currency-exchange-rates/currency-exchange-rates.component').then(m => m.CurrencyExchangeRatesComponent)
   },
   {
+    path: 'financial-reports/income-statement',
+    loadComponent: () => import('./financial-reports/income-statement/income-statement.component').then(m => m.IncomeStatementComponent)
+  },
+  {
+    path: 'financial-reports/balance-sheet',
+    loadComponent: () => import('./financial-reports/balance-sheet/balance-sheet.component').then(m => m.BalanceSheetComponent)
+  },
+  {
     path: '',
     redirectTo: 'chart-of-accounts',
     pathMatch: 'full'

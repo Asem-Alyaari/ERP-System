@@ -1,0 +1,16 @@
+.report-content {
+  @media print {
+    .grid,
+    .flex.gap-2.mb-6 {
+      display: none !important;
+    }
+  }
+}
+
+table {
+  font-family: 'Courier New', monospace;
+}
+
+.font-mono {
+  font-family: 'Courier New', monospace;
+}
