@@ -3355,3 +3355,7 @@ FROM [Currencies] AS [c]
 2026-06-08 17:49:35.196 +03:00 [INF] Executed action ERP.Api.Controllers.CurrenciesController.GetAll (ERP.Api) in 397.2418ms
 2026-06-08 17:49:35.198 +03:00 [INF] Executed endpoint 'ERP.Api.Controllers.CurrenciesController.GetAll (ERP.Api)'
 2026-06-08 17:49:35.199 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/api/Currencies?PageNumber=1&PageSize=100 - 200 null application/json; charset=utf-8 422.1709ms
+2026-06-08 18:07:54.496 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/_framework/aspnetcore-browser-refresh.js - null null
+2026-06-08 18:07:54.557 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/_framework/aspnetcore-browser-refresh.js - 200 16499 application/javascript; charset=utf-8 62.6499ms
+2026-06-08 18:07:54.632 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7172/swagger/v1/swagger.json - null null
+2026-06-08 18:07:55.078 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7172/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 446.6327ms
