@@ -122,7 +122,9 @@ public class ClosedFiscalPeriodValidationBehavior<TRequest, TResponse> : IPipeli
             "PostPaymentVoucherCommand",
             "PostReceiptVoucherCommand",
             "PostExpenseBillCommand",
-            "SetOpeningBalancesCommand"
+            "SetOpeningBalancesCommand",
+            "PostInventoryTransactionCommand",
+            "CreateInventoryTransactionCommand"
         };
 
         var requestName = requestType.Name;

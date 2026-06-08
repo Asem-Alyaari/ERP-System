@@ -78,4 +78,9 @@ public class InventoryTransactionMaster : Entity
         WarehouseId = warehouseId;
         ToWarehouseId = toWarehouseId;
     }
+
+    public void AddLine(InventoryTransactionLine line)
+    {
+        _lines.Add(line);
+    }
 }

@@ -10,6 +10,9 @@ public class ItemBatch : Entity
     public Guid ItemId { get; private set; }
     public virtual Item? Item { get; private set; }
 
+    public Guid WarehouseId { get; private set; }
+    public virtual Warehouse? Warehouse { get; private set; }
+
     public string BatchNumber { get; private set; } = string.Empty;
     public DateTime? ProductionDate { get; private set; }
     public DateTime? ExpiryDate { get; private set; }
@@ -20,15 +23,17 @@ public class ItemBatch : Entity
     private ItemBatch() { } // For EF Core
 
     public ItemBatch(
-        Guid id, 
-        Guid itemId, 
-        string batchNumber, 
-        decimal purchasePrice, 
-        decimal quantityOnHand, 
-        DateTime? productionDate = null, 
+        Guid id,
+        Guid itemId,
+        Guid warehouseId,
+        string batchNumber,
+        decimal purchasePrice,
+        decimal quantityOnHand,
+        DateTime? productionDate = null,
         DateTime? expiryDate = null) : base(id)
     {
         ItemId = itemId;
+        WarehouseId = warehouseId;
         BatchNumber = batchNumber;
         PurchasePrice = purchasePrice;
         QuantityOnHand = quantityOnHand;

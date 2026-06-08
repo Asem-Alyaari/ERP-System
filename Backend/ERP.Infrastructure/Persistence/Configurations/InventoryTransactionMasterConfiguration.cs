@@ -49,5 +49,8 @@ public class InventoryTransactionMasterConfiguration : IEntityTypeConfiguration<
             .WithOne(x => x.InventoryTransactionMaster)
             .HasForeignKey(x => x.InventoryTransactionMasterId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Navigation(x => x.Lines)
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
     }
 }

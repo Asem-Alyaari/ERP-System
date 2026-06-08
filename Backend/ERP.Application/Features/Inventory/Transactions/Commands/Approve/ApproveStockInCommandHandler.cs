@@ -46,7 +46,7 @@ public class ApproveStockInCommandHandler : IRequestHandler<ApproveStockInComman
                 if (string.IsNullOrEmpty(line.BatchNumber))
                     throw new BusinessException($"يجب تحديد رقم الدفعة للصنف {line.Item?.ItemNameAr}");
 
-                var batchSpec = new ItemBatchSpecification(line.ItemId, line.BatchNumber);
+                var batchSpec = new ItemBatchSpecification(line.ItemId, transaction.WarehouseId, line.BatchNumber);
                 var batch = await _unitOfWork.Repository<ItemBatch>().GetEntityWithSpec(batchSpec);
 
                 if (batch != null)
@@ -60,6 +60,7 @@ public class ApproveStockInCommandHandler : IRequestHandler<ApproveStockInComman
                     batch = new ItemBatch(
                         Guid.NewGuid(),
                         line.ItemId,
+                        transaction.WarehouseId,
                         line.BatchNumber,
                         line.Price,
                         line.BaseQuantity

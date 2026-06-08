@@ -22,8 +22,19 @@ public class ItemBatchConfiguration : IEntityTypeConfiguration<ItemBatch>
         builder.Property(x => x.QuantityOnHand)
             .HasPrecision(18, 4);
 
-        // Composite Index for ItemId and BatchNumber
-        builder.HasIndex(x => new { x.ItemId, x.BatchNumber })
+        // Composite Index for ItemId, WarehouseId, and BatchNumber
+        builder.HasIndex(x => new { x.ItemId, x.WarehouseId, x.BatchNumber })
             .IsUnique();
+
+        // Relationships
+        builder.HasOne(x => x.Item)
+            .WithMany()
+            .HasForeignKey(x => x.ItemId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(x => x.Warehouse)
+            .WithMany()
+            .HasForeignKey(x => x.WarehouseId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
