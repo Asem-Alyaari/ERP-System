@@ -1,0 +1,160 @@
+<div class="warehouses-container">
+  <div class="header">
+    <h1>إدارة المستودعات</h1>
+    <p-button 
+      label="مستودع جديد" 
+      icon="pi pi-plus" 
+      (onClick)="openAddDialog()"
+      styleClass="p-button-success"
+    />
+  </div>
+
+  <p-table 
+    [value]="warehouses" 
+    [loading]="isLoading"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    stripedRows
+    responsiveLayout="scroll"
+    dir="rtl"
+  >
+    <ng-template pTemplate="caption">
+      <div class="table-caption">
+        <span>قائمة المستودعات</span>
+        <span class="badge">{{ warehouses.length }}</span>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th>الكود</th>
+        <th>الاسم (عربي)</th>
+        <th>الاسم (إنجليزي)</th>
+        <th>الموقع</th>
+        <th>الحالة</th>
+        <th>الإجراءات</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-warehouse>
+      <tr>
+        <td>{{ warehouse.code }}</td>
+        <td>{{ warehouse.nameAr }}</td>
+        <td>{{ warehouse.nameEn }}</td>
+        <td>{{ warehouse.location || '-' }}</td>
+        <td>
+          <p-tag [value]="getStatusBadge(warehouse).label" [severity]="getStatusBadge(warehouse).severity" />
+        </td>
+        <td>
+          <p-button 
+            icon="pi pi-pencil" 
+            rounded 
+            text 
+            (onClick)="openEditDialog(warehouse)"
+            pTooltip="تعديل"
+            tooltipPosition="top"
+          />
+          <p-button 
+            icon="pi pi-trash" 
+            rounded 
+            text 
+            severity="danger" 
+            (onClick)="confirmDelete(warehouse)"
+            pTooltip="حذف"
+            tooltipPosition="top"
+          />
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="empty">
+      <tr>
+        <td colspan="6" class="empty-message">
+          <i class="pi pi-inbox"></i>
+          <span>لا توجد مستودعات</span>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <!-- Dialog for Add/Edit -->
+  <p-dialog 
+    [(visible)]="dialogVisible" 
+    [header]="isEditMode ? 'تعديل المستودع' : 'مستودع جديد'"
+    [modal]="true"
+    [style]="{ width: '500px' }"
+    [closable]="true"
+    (onHide)="closeDialog()"
+    dir="rtl"
+  >
+    <div class="dialog-form">
+      <div class="form-group">
+        <label for="code">الكود <span class="required">*</span></label>
+        <input 
+          pInputText 
+          id="code" 
+          [(ngModel)]="currentWarehouse.code" 
+          placeholder="أدخل كود المستودع"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="nameAr">الاسم (عربي) <span class="required">*</span></label>
+        <input 
+          pInputText 
+          id="nameAr" 
+          [(ngModel)]="currentWarehouse.nameAr" 
+          placeholder="أدخل الاسم بالعربية"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="nameEn">الاسم (إنجليزي) <span class="required">*</span></label>
+        <input 
+          pInputText 
+          id="nameEn" 
+          [(ngModel)]="currentWarehouse.nameEn" 
+          placeholder="أدخل الاسم بالإنجليزية"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="location">الموقع</label>
+        <input 
+          pInputText 
+          id="location" 
+          [(ngModel)]="currentWarehouse.location" 
+          placeholder="أدخل موقع المستودع"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="isActive">الحالة</label>
+        <p-toggleButton 
+          [(ngModel)]="currentWarehouse.isActive" 
+          onLabel="نشط" 
+          offLabel="غير نشط"
+          styleClass="w-full"
+        />
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <p-button 
+        label="إلغاء" 
+        icon="pi pi-times" 
+        text 
+        (onClick)="closeDialog()"
+      />
+      <p-button 
+        label="حفظ" 
+        icon="pi pi-check" 
+        (onClick)="saveWarehouse()"
+        [loading]="isLoading"
+      />
+    </ng-template>
+  </p-dialog>
+</div>
+
+<p-toast />

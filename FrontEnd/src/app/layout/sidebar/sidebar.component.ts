@@ -15,7 +15,8 @@ export class SidebarComponent {
 
   menuItems = [
     { label: 'الرئيسية', icon: 'pi pi-home', route: '/' },
-    { label: 'الأصناف (المنتجات)', icon: 'pi pi-box', route: '/inventory/items' },
+    { label: 'إدارة المخازن', icon: 'pi pi-warehouse', route: '/inventory/warehouses' },
+    { label: 'دليل الأصناف والمجموعات', icon: 'pi pi-box', route: '/inventory/items' },
     { label: 'مجموعات الأصناف', icon: 'pi pi-folder', route: '/inventory/stock-groups' },
     { label: 'التصنيفات', icon: 'pi pi-tags', route: '/inventory/categories' },
     { label: 'الوحدات', icon: 'pi pi-percentage', route: '/inventory/units' },

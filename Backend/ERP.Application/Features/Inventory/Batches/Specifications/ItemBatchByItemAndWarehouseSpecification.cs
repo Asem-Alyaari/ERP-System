@@ -5,7 +5,7 @@ namespace ERP.Application.Features.Inventory.Batches.Specifications;
 
 public class ItemBatchByItemAndWarehouseSpecification : BaseSpecification<ItemBatch>
 {
-    public ItemBatchByItemAndWarehouseSpecification(Guid itemId, Guid warehouseId)
+    public ItemBatchByItemAndWarehouseSpecification(Guid itemId, Guid? warehouseId)
         : base(x => x.ItemId == itemId && x.WarehouseId == warehouseId)
     {
         AddInclude(x => x.Item);

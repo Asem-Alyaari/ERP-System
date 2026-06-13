@@ -19,7 +19,11 @@ public class WarehouseConfiguration : IEntityTypeConfiguration<Warehouse>
         builder.HasIndex(x => x.Code)
             .IsUnique();
 
-        builder.Property(x => x.Name)
+        builder.Property(x => x.NameAr)
+            .IsRequired()
+            .HasMaxLength(200);
+
+        builder.Property(x => x.NameEn)
             .IsRequired()
             .HasMaxLength(200);
 

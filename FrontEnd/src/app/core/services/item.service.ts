@@ -36,6 +36,8 @@ export interface Item {
   minimumQuantity: number;
   maximumQuantity: number;
   safetyStockUnitId?: string;
+  standardCost: number;
+  averageCost: number;
   itemUnits?: ItemUnit[];
 }
 

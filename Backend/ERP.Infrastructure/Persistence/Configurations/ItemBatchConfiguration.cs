@@ -24,7 +24,8 @@ public class ItemBatchConfiguration : IEntityTypeConfiguration<ItemBatch>
 
         // Composite Index for ItemId, WarehouseId, and BatchNumber
         builder.HasIndex(x => new { x.ItemId, x.WarehouseId, x.BatchNumber })
-            .IsUnique();
+            .IsUnique()
+            .HasFilter("WarehouseId IS NOT NULL");
 
         // Relationships
         builder.HasOne(x => x.Item)

@@ -14,6 +14,7 @@ export interface StockGroup {
   inventoryAccountId?: string;
   salesAccountId?: string;
   costOfGoodsSoldAccountId?: string;
+  expenseAccountId?: string;
 }
 
 export interface StockGroupTreeDto extends StockGroup {

@@ -8,7 +8,8 @@ namespace ERP.Domain.Entities;
 public class Warehouse : Entity
 {
     public string Code { get; private set; } = string.Empty;
-    public string Name { get; private set; } = string.Empty;
+    public string NameAr { get; private set; } = string.Empty;
+    public string NameEn { get; private set; } = string.Empty;
     public string? Location { get; private set; }
     public bool IsActive { get; private set; }
 
@@ -23,22 +24,26 @@ public class Warehouse : Entity
     public Warehouse(
         Guid id,
         string code,
-        string name,
+        string nameAr,
+        string nameEn,
         string? location = null) : base(id)
     {
         Code = code;
-        Name = name;
+        NameAr = nameAr;
+        NameEn = nameEn;
         Location = location;
         IsActive = true;
     }
 
     public void Update(
         string code,
-        string name,
+        string nameAr,
+        string nameEn,
         string? location = null)
     {
         Code = code;
-        Name = name;
+        NameAr = nameAr;
+        NameEn = nameEn;
         Location = location;
     }
 

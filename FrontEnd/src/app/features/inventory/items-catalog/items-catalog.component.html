@@ -1,0 +1,449 @@
+<div class="items-catalog-container">
+  <div class="header">
+    <h1>دليل الأصناف والمجموعات</h1>
+  </div>
+
+  <div class="catalog-layout">
+    <!-- Right Panel: Stock Groups Tree -->
+    <div class="tree-panel">
+      <div class="panel-header">
+        <h2>مجموعات الأصناف</h2>
+        <p-button 
+          icon="pi pi-plus" 
+          rounded 
+          text 
+          (onClick)="openAddGroupDialog()"
+          pTooltip="مجموعة جديدة"
+          tooltipPosition="top"
+        />
+      </div>
+
+      <p-tree 
+        [value]="treeNodes" 
+        [loading]="isLoadingTree"
+        selectionMode="single"
+        [(selection)]="selectedGroupNode"
+        (onNodeSelect)="onNodeSelect($event)"
+        class="stock-groups-tree"
+        dir="rtl"
+      >
+        <ng-template pTemplate="node" let-node>
+          <div class="tree-node">
+            <i [class]="node.icon"></i>
+            <span>{{ node.label }}</span>
+            @if (node.type === 'detail') {
+              <p-button 
+                icon="pi pi-pencil" 
+                rounded 
+                text 
+                size="small"
+                (click)="openEditGroupDialog(node.data); $event.stopPropagation()"
+                pTooltip="تعديل"
+                tooltipPosition="top"
+              />
+              <p-button 
+                icon="pi pi-trash" 
+                rounded 
+                text 
+                severity="danger" 
+                size="small"
+                (click)="confirmDeleteGroup(node.data); $event.stopPropagation()"
+                pTooltip="حذف"
+                tooltipPosition="top"
+              />
+            }
+          </div>
+        </ng-template>
+      </p-tree>
+
+      @if (!selectedGroup) {
+        <div class="no-selection">
+          <i class="pi pi-arrow-left"></i>
+          <span>اختر مجموعة أصناف تفصيلية لعرض الأصناف</span>
+        </div>
+      }
+    </div>
+
+    <!-- Left Panel: Items Grid -->
+    <div class="items-panel">
+      @if (selectedGroup) {
+        <div class="panel-header">
+          <h2>أصناف: {{ selectedGroup.groupNameAr }}</h2>
+          <p-button 
+            label="صنف جديد" 
+            icon="pi pi-plus" 
+            (onClick)="openAddItemDialog()"
+            styleClass="p-button-success"
+          />
+        </div>
+
+        <p-table 
+          [value]="items" 
+          [loading]="isLoadingItems"
+          [paginator]="true"
+          [rows]="10"
+          [rowsPerPageOptions]="[10, 25, 50]"
+          stripedRows
+          responsiveLayout="scroll"
+          dir="rtl"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th>الكود</th>
+              <th>الباركود</th>
+              <th>الاسم (عربي)</th>
+              <th>الاسم (إنجليزي)</th>
+              <th>الوحدة</th>
+              <th>التكلفة المعيارية</th>
+              <th>متوسط التكلفة</th>
+              <th>الإجراءات</th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-item>
+            <tr>
+              <td>{{ item.itemCode }}</td>
+              <td>{{ item.barcode || '-' }}</td>
+              <td>{{ item.itemNameAr }}</td>
+              <td>{{ item.itemNameEn }}</td>
+              <td>{{ getUnitName(item.safetyStockUnitId) }}</td>
+              <td>{{ item.standardCost | number: '1.2-2' }}</td>
+              <td>{{ item.averageCost | number: '1.2-2' }}</td>
+              <td>
+                <p-button 
+                  icon="pi pi-pencil" 
+                  rounded 
+                  text 
+                  (onClick)="openEditItemDialog(item)"
+                  pTooltip="تعديل"
+                  tooltipPosition="top"
+                />
+                <p-button 
+                  icon="pi pi-trash" 
+                  rounded 
+                  text 
+                  severity="danger" 
+                  (onClick)="confirmDeleteItem(item)"
+                  pTooltip="حذف"
+                  tooltipPosition="top"
+                />
+              </td>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="empty">
+            <tr>
+              <td colspan="8" class="empty-message">
+                <i class="pi pi-inbox"></i>
+                <span>لا توجد أصناف في هذه المجموعة</span>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      }
+    </div>
+  </div>
+
+  <!-- Group Dialog -->
+  <p-dialog 
+    [(visible)]="groupDialogVisible" 
+    [header]="isGroupEditMode ? 'تعديل المجموعة' : 'مجموعة جديدة'"
+    [modal]="true"
+    [style]="{ width: '600px' }"
+    [closable]="true"
+    (onHide)="closeGroupDialog()"
+    dir="rtl"
+  >
+    <div class="dialog-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="groupCode">الكود <span class="required">*</span></label>
+          <input 
+            pInputText 
+            id="groupCode" 
+            [(ngModel)]="currentGroup.groupCode" 
+            placeholder="أدخل كود المجموعة"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="isDetail">النوع</label>
+          <p-select 
+            id="isDetail"
+            [(ngModel)]="currentGroup.isDetail"
+            [options]="[
+              { label: 'مجموعة رئيسية', value: false },
+              { label: 'مجموعة تفصيلية', value: true }
+            ]"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="اختر النوع"
+          />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="groupNameAr">الاسم (عربي) <span class="required">*</span></label>
+          <input 
+            pInputText 
+            id="groupNameAr" 
+            [(ngModel)]="currentGroup.groupNameAr" 
+            placeholder="أدخل الاسم بالعربية"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="groupNameEn">الاسم (إنجليزي) <span class="required">*</span></label>
+          <input 
+            pInputText 
+            id="groupNameEn" 
+            [(ngModel)]="currentGroup.groupNameEn" 
+            placeholder="أدخل الاسم بالإنجليزية"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="parentGroupId">المجموعة الرئيسية</label>
+        <p-select 
+          id="parentGroupId"
+          [(ngModel)]="currentGroup.parentGroupId"
+          [options]="flatGroups"
+          optionLabel="groupNameAr"
+          optionValue="id"
+          placeholder="اختر المجموعة الرئيسية"
+          [showClear]="true"
+        />
+      </div>
+
+      @if (currentGroup.isDetail) {
+        <div class="accounts-section">
+          <div class="section-header">
+            <h3>الربط المحاسبي</h3>
+            <p-toggleButton 
+              [(ngModel)]="currentGroup.autoGenerateAccounts" 
+              onLabel="تلقائي" 
+              offLabel="يدوي"
+            />
+          </div>
+
+          @if (!currentGroup.autoGenerateAccounts) {
+            <div class="form-row">
+              <div class="form-group">
+                <label for="inventoryAccountId">حساب المخزون</label>
+                <p-select 
+                  id="inventoryAccountId"
+                  [(ngModel)]="currentGroup.inventoryAccountId"
+                  [options]="inventoryAccounts"
+                  optionLabel="accountNameAr"
+                  optionValue="id"
+                  placeholder="اختر حساب المخزون"
+                  [showClear]="true"
+                  [filter]="true"
+                  filterBy="accountNameAr,accountCode"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="salesAccountId">حساب المبيعات</label>
+                <p-select 
+                  id="salesAccountId"
+                  [(ngModel)]="currentGroup.salesAccountId"
+                  [options]="salesAccounts"
+                  optionLabel="accountNameAr"
+                  optionValue="id"
+                  placeholder="اختر حساب المبيعات"
+                  [showClear]="true"
+                  [filter]="true"
+                  filterBy="accountNameAr,accountCode"
+                />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="cogsAccountId">حساب تكلفة المبيعات</label>
+                <p-select 
+                  id="cogsAccountId"
+                  [(ngModel)]="currentGroup.costOfGoodsSoldAccountId"
+                  [options]="cogsAccounts"
+                  optionLabel="accountNameAr"
+                  optionValue="id"
+                  placeholder="اختر حساب تكلفة المبيعات"
+                  [showClear]="true"
+                  [filter]="true"
+                  filterBy="accountNameAr,accountCode"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="expenseAccountId">حساب المصروفات</label>
+                <p-select 
+                  id="expenseAccountId"
+                  [(ngModel)]="currentGroup.expenseAccountId"
+                  [options]="expenseAccounts"
+                  optionLabel="accountNameAr"
+                  optionValue="id"
+                  placeholder="اختر حساب المصروفات"
+                  [showClear]="true"
+                  [filter]="true"
+                  filterBy="accountNameAr,accountCode"
+                />
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <ng-template pTemplate="footer">
+      <p-button 
+        label="إلغاء" 
+        icon="pi pi-times" 
+        text 
+        (onClick)="closeGroupDialog()"
+      />
+      <p-button 
+        label="حفظ" 
+        icon="pi pi-check" 
+        (onClick)="saveGroup()"
+        [loading]="isLoadingTree"
+      />
+    </ng-template>
+  </p-dialog>
+
+  <!-- Item Dialog -->
+  <p-dialog 
+    [(visible)]="itemDialogVisible" 
+    [header]="isItemEditMode ? 'تعديل الصنف' : 'صنف جديد'"
+    [modal]="true"
+    [style]="{ width: '700px' }"
+    [closable]="true"
+    (onHide)="closeItemDialog()"
+    dir="rtl"
+  >
+    <div class="dialog-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="itemCode">الكود <span class="required">*</span></label>
+          <input 
+            pInputText 
+            id="itemCode" 
+            [(ngModel)]="currentItem.itemCode" 
+            placeholder="أدخل كود الصنف"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="barcode">الباركود</label>
+          <input 
+            pInputText 
+            id="barcode" 
+            [(ngModel)]="currentItem.barcode" 
+            placeholder="أدخل الباركود"
+          />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="itemNameAr">الاسم (عربي) <span class="required">*</span></label>
+          <input 
+            pInputText 
+            id="itemNameAr" 
+            [(ngModel)]="currentItem.itemNameAr" 
+            placeholder="أدخل الاسم بالعربية"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="itemNameEn">الاسم (إنجليزي) <span class="required">*</span></label>
+          <input 
+            pInputText 
+            id="itemNameEn" 
+            [(ngModel)]="currentItem.itemNameEn" 
+            placeholder="أدخل الاسم بالإنجليزية"
+          />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="defaultPurchasePrice">سعر الشراء الافتراضي</label>
+          <p-inputNumber 
+            id="defaultPurchasePrice"
+            [(ngModel)]="currentItem.defaultPurchasePrice"
+            [minFractionDigits]="2"
+            [maxFractionDigits]="2"
+            mode="decimal"
+            [min]="0"
+            placeholder="0.00"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="salesPrice">سعر البيع</label>
+          <p-inputNumber 
+            id="salesPrice"
+            [(ngModel)]="currentItem.salesPrice"
+            [minFractionDigits]="2"
+            [maxFractionDigits]="2"
+            mode="decimal"
+            [min]="0"
+            placeholder="0.00"
+          />
+        </div>
+      </div>
+
+      <div class="costs-section">
+        <h3>التكاليف</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="standardCost">التكلفة المعيارية</label>
+            <p-inputNumber 
+              id="standardCost"
+              [(ngModel)]="currentItem.standardCost"
+              [minFractionDigits]="2"
+              [maxFractionDigits]="2"
+              mode="decimal"
+              [min]="0"
+              placeholder="0.00"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="averageCost">متوسط التكلفة</label>
+            <p-inputNumber 
+              id="averageCost"
+              [(ngModel)]="currentItem.averageCost"
+              [minFractionDigits]="2"
+              [maxFractionDigits]="2"
+              mode="decimal"
+              [min]="0"
+              placeholder="0.00"
+              [disabled]="true"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <p-button 
+        label="إلغاء" 
+        icon="pi pi-times" 
+        text 
+        (onClick)="closeItemDialog()"
+      />
+      <p-button 
+        label="حفظ" 
+        icon="pi pi-check" 
+        (onClick)="saveItem()"
+        [loading]="isLoadingItems"
+      />
+    </ng-template>
+  </p-dialog>
+</div>
+
+<p-toast />

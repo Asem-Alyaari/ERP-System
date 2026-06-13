@@ -342,7 +342,7 @@ public class PostInventoryTransactionCommandHandler : IRequestHandler<PostInvent
             cancellationToken);
     }
 
-    private async Task UpdateAverageCost(Item item, Guid warehouseId, decimal newQuantity, decimal newPrice)
+    private async Task UpdateAverageCost(Item item, Guid? warehouseId, decimal newQuantity, decimal newPrice)
     {
         // حساب إجمالي الكمية والقيمة الحالية
         var currentStockQuantity = await GetCurrentStockQuantity(item.Id, warehouseId);
@@ -363,7 +363,7 @@ public class PostInventoryTransactionCommandHandler : IRequestHandler<PostInvent
         }
     }
 
-    private async Task<decimal> GetCurrentStockQuantity(Guid itemId, Guid warehouseId)
+    private async Task<decimal> GetCurrentStockQuantity(Guid itemId, Guid? warehouseId)
     {
         var spec = new ItemBatchByItemAndWarehouseSpecification(itemId, warehouseId);
         var batches = await _unitOfWork.Repository<ItemBatch>().ListAsync(spec);
@@ -371,7 +371,7 @@ public class PostInventoryTransactionCommandHandler : IRequestHandler<PostInvent
         return batches.Sum(b => b.QuantityOnHand);
     }
 
-    private async Task ValidateStockAvailability(Guid itemId, Guid warehouseId, decimal requiredQuantity)
+    private async Task ValidateStockAvailability(Guid itemId, Guid? warehouseId, decimal requiredQuantity)
     {
         var availableQuantity = await GetAvailableStockQuantity(itemId, warehouseId);
 
@@ -379,7 +379,7 @@ public class PostInventoryTransactionCommandHandler : IRequestHandler<PostInvent
             throw new BusinessException($"عذراً، الكمية المطلوبة غير متوفرة في المستودع المحدد. المتوفر: {availableQuantity}، المطلوب: {requiredQuantity}");
     }
 
-    private async Task<decimal> GetAvailableStockQuantity(Guid itemId, Guid warehouseId)
+    private async Task<decimal> GetAvailableStockQuantity(Guid itemId, Guid? warehouseId)
     {
         var spec = new ItemBatchByItemAndWarehouseSpecification(itemId, warehouseId);
         var batches = await _unitOfWork.Repository<ItemBatch>().ListAsync(spec);
@@ -387,7 +387,7 @@ public class PostInventoryTransactionCommandHandler : IRequestHandler<PostInvent
         return batches.Sum(b => b.QuantityOnHand);
     }
 
-    private async Task UpdateBatchesForStockIn(Guid itemId, Guid warehouseId, decimal quantity, decimal cost, string? batchNumber)
+    private async Task UpdateBatchesForStockIn(Guid itemId, Guid? warehouseId, decimal quantity, decimal cost, string? batchNumber)
     {
         if (string.IsNullOrEmpty(batchNumber))
             throw new BusinessException("يجب تحديد رقم الدفعة للإضافة.");
@@ -416,7 +416,7 @@ public class PostInventoryTransactionCommandHandler : IRequestHandler<PostInvent
         }
     }
 
-    private async Task UpdateBatchesForStockOut(Guid itemId, Guid warehouseId, decimal quantity, string? batchNumber)
+    private async Task UpdateBatchesForStockOut(Guid itemId, Guid? warehouseId, decimal quantity, string? batchNumber)
     {
         if (string.IsNullOrEmpty(batchNumber))
             throw new BusinessException("يجب تحديد رقم الدفعة للصرف.");
