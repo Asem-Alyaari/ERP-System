@@ -15,11 +15,11 @@ export const INVENTORY_ROUTES: Routes = [
   },
   {
     path: 'stock-groups',
-    loadComponent: () => import('./stock-groups/stock-groups.component').then(m => m.StockGroupsComponent)
+    loadComponent: () => import('./items-catalog/items-catalog.component').then(m => m.ItemsCatalogComponent)
   },
   {
     path: 'items',
-    loadComponent: () => import('./items-catalog/items-catalog.component').then(m => m.ItemsCatalogComponent)
+    loadComponent: () => import('./items/items.component').then(m => m.ItemsComponent)
   },
   {
     path: '',

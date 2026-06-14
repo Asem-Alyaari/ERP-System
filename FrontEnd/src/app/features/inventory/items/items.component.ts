@@ -12,6 +12,7 @@ import { MessageService, ConfirmationService } from 'primeng/api';
   imports: [...SHARED_IMPORTS],
   providers: [MessageService, ConfirmationService],
   templateUrl: './items.component.html',
+  styleUrl: './items.component.scss',
 })
 export class ItemsComponent implements OnInit {
   items: Item[] = [];

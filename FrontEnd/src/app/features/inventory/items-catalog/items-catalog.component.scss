@@ -1,132 +1,264 @@
+// ═══════════════════════════════════════════════════════════════
+// Items Catalog Component Styles - Modern Clean Design
+// ═══════════════════════════════════════════════════════════════
+
 .items-catalog-container {
-  padding: 2rem;
-  height: calc(100vh - 120px);
+  padding: 0;
+  height: 100vh;
   display: flex;
   flex-direction: column;
+  background: var(--bg-page);
+  animation: fadeIn 0.4s ease-out;
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 
   .header {
-    margin-bottom: 2rem;
+    padding: 1.5rem 2rem;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-color);
 
     h1 {
       margin: 0;
-      color: var(--text-color);
-      font-size: 1.75rem;
-      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
     }
   }
 
   .catalog-layout {
-    display: grid;
-    grid-template-columns: 350px 1fr;
-    gap: 2rem;
+    display: flex;
     flex: 1;
     overflow: hidden;
+    gap: 0;
 
-    .tree-panel,
-    .items-panel {
-      background: var(--surface-ground);
-      border-radius: 8px;
-      padding: 1.5rem;
+    // Left Panel - Tree (No Card)
+    .tree-panel {
+      width: 320px;
+      flex-shrink: 0;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
-    }
+      border-right: 1px solid var(--border-color);
+      background: var(--bg-surface);
 
-    .panel-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-
-      h2 {
-        margin: 0;
-        color: var(--text-color);
-        font-size: 1.25rem;
-        font-weight: 600;
-      }
-    }
-
-    .stock-groups-tree {
-      flex: 1;
-      overflow: auto;
-
-      .tree-node {
+      .panel-header {
+        padding: 1.25rem 1.5rem;
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        gap: 0.5rem;
-        padding: 0.25rem 0.5rem;
-        border-radius: 4px;
-        transition: background 0.2s;
+        border-bottom: 1px solid var(--border-color);
 
-        &:hover {
-          background: var(--surface-hover);
+        h2 {
+          margin: 0;
+          color: var(--text-primary);
+          font-size: 0.95rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
         }
+      }
 
-        i {
-          color: var(--primary-color);
-        }
+      .stock-groups-tree {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0.5rem 0;
 
-        span {
-          flex: 1;
-        }
+        ::ng-deep {
+          .p-tree-container {
+            border: none;
+            background: transparent;
+          }
 
-        p-button {
-          opacity: 0;
-          transition: opacity 0.2s;
+          .p-treenode {
+            padding: 0;
+          }
 
-          &:hover {
-            opacity: 1;
+          .p-treenode-content {
+            border-radius: 0;
+            transition: all 0.15s ease;
+            padding: 0.6rem 1.25rem;
+            margin: 0.15rem 0.75rem;
+
+            &:hover {
+              background: var(--bg-surface-hover);
+            }
+
+            &.p-highlight {
+              background: var(--color-primary);
+              color: white;
+              box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+
+              .tree-node i,
+              .tree-node span {
+                color: white;
+              }
+            }
+          }
+
+          .p-treenode-children {
+            padding: 0;
           }
         }
 
-        &:hover p-button {
-          opacity: 1;
+        .tree-node {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+
+          i {
+            color: var(--color-primary);
+            font-size: 0.9rem;
+          }
+
+          span {
+            flex: 1;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+          }
+
+          p-button {
+            opacity: 0;
+            transition: opacity 0.15s ease;
+          }
+
+          &:hover p-button {
+            opacity: 1;
+          }
+        }
+      }
+
+      .no-selection {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        gap: 0.75rem;
+        padding: 2rem;
+        text-align: center;
+
+        i {
+          font-size: 2.5rem;
+          opacity: 0.3;
+        }
+
+        span {
+          font-size: 0.875rem;
+          font-weight: 500;
+          line-height: 1.5;
         }
       }
     }
 
-    .no-selection {
+    // Right Panel - Items Table (No Card)
+    .items-panel {
       flex: 1;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-secondary-color);
-      gap: 1rem;
+      background: var(--bg-page);
+      overflow: hidden;
 
-      i {
-        font-size: 3rem;
-        opacity: 0.5;
+      .panel-header {
+        padding: 1.25rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--bg-surface);
+        border-bottom: 1px solid var(--border-color);
+
+        h2 {
+          margin: 0;
+          color: var(--text-primary);
+          font-size: 1.1rem;
+          font-weight: 600;
+        }
       }
 
-      span {
-        font-size: 1.1rem;
+      // Table styling - Clean Modern
+      ::ng-deep {
+        .p-datatable {
+          border: none;
+          background: transparent;
+
+          .p-datatable-thead > tr > th {
+            background: var(--bg-surface);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 1rem 1.5rem;
+            border-bottom: 2px solid var(--border-color);
+            border-right: none;
+            border-left: none;
+          }
+
+          .p-datatable-tbody > tr > td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            border-right: none;
+            border-left: none;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+          }
+
+          .p-datatable-tbody > tr {
+            transition: background 0.15s ease;
+
+            &:hover {
+              background: rgba(37, 99, 235, 0.04);
+            }
+          }
+
+          .p-paginator {
+            background: var(--bg-surface);
+            border: none;
+            border-top: 1px solid var(--border-color);
+            padding: 1rem 1.5rem;
+          }
+        }
       }
-    }
 
-    .empty-message {
-      text-align: center;
-      padding: 3rem;
-      color: var(--text-secondary-color);
+      .empty-message {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        gap: 0.75rem;
+        padding: 3rem;
+        text-align: center;
 
-      i {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-        display: block;
-        opacity: 0.5;
-      }
+        i {
+          font-size: 3rem;
+          opacity: 0.25;
+        }
 
-      span {
-        display: block;
-        font-size: 1.1rem;
+        span {
+          font-size: 0.9rem;
+          font-weight: 500;
+        }
       }
     }
   }
 
+  // Dialog styling - Modern Clean
   .dialog-form {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1.25rem;
 
     .form-row {
       display: grid;
@@ -137,42 +269,134 @@
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 0.4rem;
 
       label {
-        font-weight: 500;
-        color: var(--text-color);
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
 
         .required {
-          color: var(--danger-color);
+          color: var(--color-danger);
         }
       }
 
       input,
-      p-dropdown,
-      p-inputNumber,
-      p-toggleButton {
+      ::ng-deep p-dropdown,
+      ::ng-deep p-inputNumber,
+      ::ng-deep p-toggleButton {
         width: 100%;
+      }
+
+      ::ng-deep input:disabled {
+        background: var(--bg-surface-hover);
+        cursor: not-allowed;
+        opacity: 0.7;
       }
     }
 
     .accounts-section,
     .costs-section {
-      border-top: 1px solid var(--surface-border);
-      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-color);
+      padding-top: 1.25rem;
+      margin-top: 0.5rem;
 
       .section-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--border-color);
 
         h3 {
           margin: 0;
-          color: var(--text-color);
-          font-size: 1.1rem;
+          color: var(--text-primary);
+          font-size: 0.9rem;
           font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.03em;
         }
+      }
+    }
+  }
+
+  // Dialog styling
+  ::ng-deep {
+    .p-dialog {
+      .p-dialog-header {
+        background: var(--bg-surface);
+        border-bottom: 1px solid var(--border-color);
+        padding: 1.25rem 1.5rem;
+
+        .p-dialog-title {
+          font-weight: 600;
+          font-size: 1rem;
+          color: var(--text-primary);
+        }
+      }
+
+      .p-dialog-content {
+        padding: 1.5rem;
+        background: var(--bg-page);
+      }
+
+      .p-dialog-footer {
+        padding: 1.25rem 1.5rem;
+        border-top: 1px solid var(--border-color);
+        background: var(--bg-surface);
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 1024px) {
+  .items-catalog-container {
+    .catalog-layout {
+      .tree-panel {
+        width: 280px;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .items-catalog-container {
+    .header {
+      padding: 1rem 1.5rem;
+
+      h1 {
+        font-size: 1.25rem;
+      }
+    }
+
+    .catalog-layout {
+      flex-direction: column;
+
+      .tree-panel {
+        width: 100%;
+        max-height: 300px;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .items-panel {
+        .panel-header {
+          padding: 1rem 1.5rem;
+
+          h2 {
+            font-size: 1rem;
+          }
+        }
+      }
+    }
+
+    .dialog-form {
+      .form-row {
+        grid-template-columns: 1fr;
       }
     }
   }
