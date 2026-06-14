@@ -22,6 +22,10 @@ export const INVENTORY_ROUTES: Routes = [
     loadComponent: () => import('./items/items.component').then(m => m.ItemsComponent)
   },
   {
+    path: 'transactions',
+    loadComponent: () => import('./inventory-transactions/inventory-transactions.component').then(m => m.InventoryTransactionsComponent)
+  },
+  {
     path: '',
     redirectTo: 'items',
     pathMatch: 'full'

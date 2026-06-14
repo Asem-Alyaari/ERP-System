@@ -1,0 +1,317 @@
+<div class="inventory-transactions-container">
+  <div class="header">
+    <h1>الحركات المخزنية</h1>
+    <p-button 
+      label="حركة مخزنية جديدة" 
+      icon="pi pi-plus" 
+      (onClick)="openAddTransactionDialog()"
+      styleClass="p-button-success"
+    />
+  </div>
+
+  <p-table 
+    [value]="transactions" 
+    [loading]="isLoadingTransactions"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    stripedRows
+    responsiveLayout="scroll"
+    dir="rtl"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>رقم المستند</th>
+        <th>التاريخ</th>
+        <th>النوع</th>
+        <th>المخزن المصدر</th>
+        <th>المخزن المستقبل</th>
+        <th>الحالة</th>
+        <th>الإجراءات</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-transaction>
+      <tr>
+        <td>{{ transaction.documentNumber }}</td>
+        <td>{{ transaction.transactionDate | date: 'dd/MM/yyyy' }}</td>
+        <td>{{ getTransactionTypeName(transaction.transactionType) }}</td>
+        <td>{{ getWarehouseName(transaction.sourceWarehouseId) }}</td>
+        <td>{{ transaction.destinationWarehouseId ? getWarehouseName(transaction.destinationWarehouseId) : '-' }}</td>
+        <td>
+          <p-tag 
+            [value]="getTransactionStatusName(transaction.status)"
+            [severity]="getTransactionStatusSeverity(transaction.status)"
+          />
+        </td>
+        <td>
+          <p-button 
+            icon="pi pi-pencil" 
+            rounded 
+            text 
+            (onClick)="openEditTransactionDialog(transaction)"
+            pTooltip="تعديل"
+            tooltipPosition="top"
+            [disabled]="transaction.status === 1"
+          />
+          <p-button 
+            icon="pi pi-check-circle" 
+            rounded 
+            text 
+            severity="warning"
+            (onClick)="confirmPostTransaction(transaction)"
+            pTooltip="ترحيل"
+            tooltipPosition="top"
+            [disabled]="transaction.status === 1"
+          />
+          <p-button 
+            icon="pi pi-trash" 
+            rounded 
+            text 
+            severity="danger" 
+            (onClick)="confirmDeleteTransaction(transaction)"
+            pTooltip="حذف"
+            tooltipPosition="top"
+            [disabled]="transaction.status === 1"
+          />
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="empty">
+      <tr>
+        <td colspan="7" class="empty-message">
+          <i class="pi pi-inbox"></i>
+          <span>لا توجد حركات مخزنية</span>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<!-- Transaction Dialog -->
+<p-dialog 
+  [(visible)]="transactionDialogVisible" 
+  [header]="isEditMode ? 'تعديل الحركة المخزنية' : 'حركة مخزنية جديدة'"
+  [modal]="true"
+  [style]="{ width: '90vw', maxWidth: '1200px' }"
+  [closable]="true"
+  (onHide)="closeTransactionDialog()"
+  dir="rtl"
+>
+  <div class="transaction-dialog">
+    <form [formGroup]="transactionForm" class="transaction-form">
+      <!-- Header Fields -->
+      <div class="form-section">
+        <h3>بيانات الحركة</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="transactionDate">التاريخ <span class="required">*</span></label>
+            <p-calendar 
+              id="transactionDate"
+              formControlName="transactionDate"
+              [showIcon]="true"
+              [dateFormat]="'dd/mm/yy'"
+              placeholder="اختر التاريخ"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="transactionType">نوع الحركة <span class="required">*</span></label>
+            <p-select 
+              id="transactionType"
+              formControlName="transactionType"
+              [options]="transactionTypeOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="اختر نوع الحركة"
+              (onChange)="onTransactionTypeChange()"
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="sourceWarehouseId">المخزن المصدر <span class="required">*</span></label>
+            <p-select 
+              id="sourceWarehouseId"
+              formControlName="sourceWarehouseId"
+              [options]="warehouses"
+              optionLabel="nameAr"
+              optionValue="id"
+              placeholder="اختر المخزن المصدر"
+              [loading]="isLoadingWarehouses"
+              [filter]="true"
+              filterBy="nameAr,nameEn,code"
+            />
+          </div>
+
+          <div class="form-group" *ngIf="transactionForm.get('transactionType')?.value === 2">
+            <label for="destinationWarehouseId">المخزن المستقبل <span class="required">*</span></label>
+            <p-select 
+              id="destinationWarehouseId"
+              formControlName="destinationWarehouseId"
+              [options]="warehouses"
+              optionLabel="nameAr"
+              optionValue="id"
+              placeholder="اختر المخزن المستقبل"
+              [loading]="isLoadingWarehouses"
+              [filter]="true"
+              filterBy="nameAr,nameEn,code"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="notes">ملاحظات</label>
+          <textarea 
+            pInputTextarea 
+            id="notes" 
+            formControlName="notes"
+            rows="2"
+            placeholder="أدخل ملاحظات (اختياري)"
+          />
+        </div>
+      </div>
+
+      <!-- Lines Grid -->
+      <div class="form-section">
+        <div class="section-header">
+          <h3>الأصناف</h3>
+          <p-button 
+            label="إضافة صنف" 
+            icon="pi pi-plus" 
+            size="small"
+            (onClick)="addLine()"
+            styleClass="p-button-outlined"
+          />
+        </div>
+
+        <p-table 
+          [value]="linesArray.controls"
+          [scrollable]="true"
+          scrollHeight="300px"
+          dir="rtl"
+          [showGridlines]="true"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width: 25%">الصنف</th>
+              <th style="width: 12%">الرصيد المتاح</th>
+              <th style="width: 12%">الكمية</th>
+              <th style="width: 12%">سعر الوحدة</th>
+              <th style="width: 12%">الإجمالي</th>
+              <th style="width: 15%">رقم الباتش</th>
+              <th style="width: 12%">إجراءات</th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-lineForm let-i="index">
+            <tr [formGroup]="lineForm">
+              <td>
+                <p-autoComplete 
+                  formControlName="itemId"
+                  [suggestions]="getFilteredItems($event)"
+                  (completeMethod)="getFilteredItems($event)"
+                  field="itemNameAr"
+                  [dropdown]="true"
+                  [minLength]="0"
+                  placeholder="اختر الصنف"
+                  [loading]="isLoadingItems"
+                  (onChange)="onItemChange(i)"
+                >
+                  <ng-template let-item pTemplate="item">
+                    <div>{{ item.itemNameAr }}</div>
+                    <small>{{ item.itemCode }}</small>
+                  </ng-template>
+                </p-autoComplete>
+              </td>
+              <td>
+                <p-inputNumber 
+                  formControlName="availableQty"
+                  [disabled]="true"
+                  [minFractionDigits]="2"
+                  [maxFractionDigits]="2"
+                  mode="decimal"
+                />
+              </td>
+              <td>
+                <p-inputNumber 
+                  formControlName="quantity"
+                  [min]="0.01"
+                  [minFractionDigits]="2"
+                  [maxFractionDigits]="2"
+                  mode="decimal"
+                  (onInput)="onQuantityChange(i)"
+                />
+              </td>
+              <td>
+                <p-inputNumber 
+                  formControlName="unitCost"
+                  [min]="0"
+                  [minFractionDigits]="2"
+                  [maxFractionDigits]="2"
+                  mode="decimal"
+                  (onInput)="onUnitCostChange(i)"
+                />
+              </td>
+              <td>
+                <p-inputNumber 
+                  formControlName="totalCost"
+                  [disabled]="true"
+                  [minFractionDigits]="2"
+                  [maxFractionDigits]="2"
+                  mode="decimal"
+                />
+              </td>
+              <td>
+                <input 
+                  pInputText 
+                  formControlName="batchNumber"
+                  placeholder="رقم الباتش"
+                />
+              </td>
+              <td>
+                <p-button 
+                  icon="pi pi-trash" 
+                  rounded 
+                  text 
+                  severity="danger" 
+                  size="small"
+                  (onClick)="removeLine(i)"
+                  pTooltip="حذف"
+                  tooltipPosition="top"
+                />
+              </td>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="empty">
+            <tr>
+              <td colspan="7" class="empty-message">
+                <span>لا توجد أصناف مضافة</span>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </form>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button 
+      label="إلغاء" 
+      icon="pi pi-times" 
+      text 
+      (onClick)="closeTransactionDialog()"
+    />
+    <p-button 
+      label="حفظ" 
+      icon="pi pi-check" 
+      (onClick)="saveTransaction()"
+    />
+  </ng-template>
+</p-dialog>
+
+<p-toast />
+<p-confirmDialog />
