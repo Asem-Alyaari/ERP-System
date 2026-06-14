@@ -58,7 +58,7 @@
             icon="pi pi-check-circle" 
             rounded 
             text 
-            severity="warning"
+            severity="warn"
             (onClick)="confirmPostTransaction(transaction)"
             pTooltip="ترحيل"
             tooltipPosition="top"
@@ -107,11 +107,11 @@
         <div class="form-row">
           <div class="form-group">
             <label for="transactionDate">التاريخ <span class="required">*</span></label>
-            <p-calendar 
+            <p-datepicker 
               id="transactionDate"
               formControlName="transactionDate"
               [showIcon]="true"
-              [dateFormat]="'dd/mm/yy'"
+              dateFormat="dd/mm/yy"
               placeholder="اختر التاريخ"
             />
           </div>
@@ -146,20 +146,22 @@
             />
           </div>
 
-          <div class="form-group" *ngIf="transactionForm.get('transactionType')?.value === 2">
-            <label for="destinationWarehouseId">المخزن المستقبل <span class="required">*</span></label>
-            <p-select 
-              id="destinationWarehouseId"
-              formControlName="destinationWarehouseId"
-              [options]="warehouses"
-              optionLabel="nameAr"
-              optionValue="id"
-              placeholder="اختر المخزن المستقبل"
-              [loading]="isLoadingWarehouses"
-              [filter]="true"
-              filterBy="nameAr,nameEn,code"
-            />
-          </div>
+          @if (transactionForm.get('transactionType')?.value === 2) {
+            <div class="form-group">
+              <label for="destinationWarehouseId">المخزن المستقبل <span class="required">*</span></label>
+              <p-select 
+                id="destinationWarehouseId"
+                formControlName="destinationWarehouseId"
+                [options]="warehouses"
+                optionLabel="nameAr"
+                optionValue="id"
+                placeholder="اختر المخزن المستقبل"
+                [loading]="isLoadingWarehouses"
+                [filter]="true"
+                filterBy="nameAr,nameEn,code"
+              />
+            </div>
+          }
         </div>
 
         <div class="form-group">
@@ -170,7 +172,7 @@
             formControlName="notes"
             rows="2"
             placeholder="أدخل ملاحظات (اختياري)"
-          />
+          ></textarea>
         </div>
       </div>
 
@@ -209,14 +211,14 @@
           <ng-template pTemplate="body" let-lineForm let-i="index">
             <tr [formGroup]="lineForm">
               <td>
-                <p-autoComplete 
+                <p-select 
                   formControlName="itemId"
-                  [suggestions]="getFilteredItems($event)"
-                  (completeMethod)="getFilteredItems($event)"
-                  field="itemNameAr"
-                  [dropdown]="true"
-                  [minLength]="0"
+                  [options]="items"
+                  optionLabel="itemNameAr"
+                  optionValue="id"
                   placeholder="اختر الصنف"
+                  [filter]="true"
+                  filterBy="itemNameAr,itemNameEn,itemCode"
                   [loading]="isLoadingItems"
                   (onChange)="onItemChange(i)"
                 >
@@ -224,7 +226,7 @@
                     <div>{{ item.itemNameAr }}</div>
                     <small>{{ item.itemCode }}</small>
                   </ng-template>
-                </p-autoComplete>
+                </p-select>
               </td>
               <td>
                 <p-inputNumber 

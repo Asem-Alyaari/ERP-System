@@ -344,7 +344,7 @@ export class InventoryTransactionsComponent implements OnInit {
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'ترحيل',
       rejectLabel: 'إلغاء',
-      acceptButtonStyleClass: 'p-button-warning',
+      acceptButtonStyleClass: 'p-button-warn',
       accept: () => {
         this.postTransaction(transaction.id);
       }
@@ -409,7 +409,7 @@ export class InventoryTransactionsComponent implements OnInit {
     }
   }
 
-  getTransactionStatusSeverity(status: TransactionStatus): string {
+  getTransactionStatusSeverity(status: TransactionStatus): 'success' | 'danger' | 'secondary' | 'info' | 'warn' | 'contrast' | null | undefined {
     switch (status) {
       case TransactionStatus.Draft: return 'info';
       case TransactionStatus.Posted: return 'success';
@@ -425,14 +425,5 @@ export class InventoryTransactionsComponent implements OnInit {
   getItemName(itemId: string): string {
     const item = this.items.find(i => i.id === itemId);
     return item ? item.itemNameAr : '-';
-  }
-
-  getFilteredItems(event: any): Item[] {
-    const query = event.query?.toLowerCase() || '';
-    return this.items.filter(item => 
-      item.itemNameAr.toLowerCase().includes(query) ||
-      item.itemNameEn.toLowerCase().includes(query) ||
-      item.itemCode.toLowerCase().includes(query)
-    );
   }
 }
